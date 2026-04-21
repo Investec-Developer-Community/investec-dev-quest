@@ -30,7 +30,7 @@
     "test": "pnpm validate",
     "test:watch": "vitest",
     "lint": "pnpm -r lint",
-    "game": "pnpm --filter @investec-game/cli run dev",
+    "game": "pnpm --filter @investec-game/shared build && pnpm --filter @investec-game/cli run dev",
     "validate": "node scripts/validate-levels.mjs",
     "create-level": "node scripts/create-level.mjs"
   },
