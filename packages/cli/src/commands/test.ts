@@ -105,7 +105,7 @@ export function registerTestCommand(program: Command): void {
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
         console.error(chalk.red(`Level S${season}L${level} not found.`))
-        process.exit(1)
+        process.exit(2)
       }
 
       const resolved = loadLevel(levelDir)
@@ -122,7 +122,7 @@ export function registerTestCommand(program: Command): void {
             'Tip: loading a level creates starter code and sets your active level for test/hint/reset/watch.'
           )
         )
-        process.exit(1)
+        process.exit(2)
       }
 
       // Start mock API if this level needs it
@@ -135,7 +135,7 @@ export function registerTestCommand(program: Command): void {
           apiSpinner.fail(
             err instanceof Error ? err.message : 'Failed to start mock API'
           )
-          process.exit(1)
+          process.exit(2)
         }
       }
 
