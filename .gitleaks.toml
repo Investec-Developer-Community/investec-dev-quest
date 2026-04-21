@@ -11,9 +11,9 @@ useDefault = true
     '''game_token_''',
   ]
   paths = [
-    ".env.example",
-    "packages/mock-api/src/routes/oauth.ts",
-    "packages/mock-api/src/data/fixtures.ts",
-    "seasons/**/tests/**",
-    "seasons/**/attack/**",
+    '''^\.env\.example$''',
+    '''^packages/mock-api/src/routes/oauth\.ts$''',
+    '''^packages/mock-api/src/data/fixtures\.ts$''',
+    '''^seasons/.*/tests/.*$''',
+    '''^seasons/.*/attack/.*$''',
   ]

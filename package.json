@@ -12,7 +12,7 @@
     "url": "https://github.com/Investec-Developer-Community/investec-dev-quest/issues"
   },
   "homepage": "https://github.com/Investec-Developer-Community/investec-dev-quest#readme",
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@9.12.3",
   "keywords": [
     "investec",
     "developer-game",
