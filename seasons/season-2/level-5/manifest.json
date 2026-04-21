@@ -1,0 +1,9 @@
+{
+  "id": "s2-l5",
+  "name": "Limit Loop",
+  "season": 2,
+  "level": 5,
+  "difficulty": "intermediate",
+  "apiRequired": false,
+  "tags": ["card-code", "spend-limit", "off-by-one", "budget"]
+}

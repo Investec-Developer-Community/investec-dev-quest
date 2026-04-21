@@ -1,0 +1,9 @@
+{
+  "id": "s1-l3",
+  "name": "Transaction Trail",
+  "season": 1,
+  "level": 3,
+  "difficulty": "intermediate",
+  "apiRequired": true,
+  "tags": ["transactions", "date-filter", "pagination", "compliance"]
+}

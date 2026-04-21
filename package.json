@@ -1,0 +1,41 @@
+{
+  "name": "investec-developer-game",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A local-first developer learning game for the Investec developer community",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Investec-Developer-Community/investec-dev-quest.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Investec-Developer-Community/investec-dev-quest/issues"
+  },
+  "homepage": "https://github.com/Investec-Developer-Community/investec-dev-quest#readme",
+  "keywords": [
+    "investec",
+    "developer-game",
+    "security",
+    "fintech",
+    "learning"
+  ],
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "dev": "pnpm -r --parallel dev",
+    "test": "pnpm validate",
+    "test:watch": "vitest",
+    "lint": "pnpm -r lint",
+    "game": "pnpm --filter @investec-game/cli run dev",
+    "validate": "node scripts/validate-levels.mjs",
+    "create-level": "node scripts/create-level.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "typescript": "^5.4.5",
+    "vitest": "^2.1.0"
+  }
+}

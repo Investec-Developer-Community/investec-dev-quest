@@ -1,0 +1,9 @@
+{
+  "id": "s2-l4",
+  "name": "Country Control",
+  "season": 2,
+  "level": 4,
+  "difficulty": "beginner",
+  "apiRequired": false,
+  "tags": ["card-code", "geo-restriction", "allowlist", "normalisation"]
+}

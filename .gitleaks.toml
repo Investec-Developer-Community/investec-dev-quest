@@ -1,0 +1,19 @@
+[extend]
+useDefault = true
+
+[allowlist]
+  description = "Allow known game mock credentials in fixture/example files"
+  regexes = [
+    # These are intentional mock credentials used in the game — not real secrets
+    '''game_client_id''',
+    '''game_client_secret''',
+    '''game_api_key''',
+    '''game_token_''',
+  ]
+  paths = [
+    ".env.example",
+    "packages/mock-api/src/routes/oauth.ts",
+    "packages/mock-api/src/data/fixtures.ts",
+    "seasons/**/tests/**",
+    "seasons/**/attack/**",
+  ]

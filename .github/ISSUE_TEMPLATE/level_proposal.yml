@@ -1,0 +1,74 @@
+name: Level proposal
+description: Propose a new level or scenario
+labels: [level-proposal]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Great ideas make the game better. Fill in as much detail as you can.
+
+  - type: input
+    id: name
+    attributes:
+      label: Level name
+      placeholder: Webhook Whiplash
+    validations:
+      required: true
+
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      options:
+        - beginner
+        - intermediate
+        - advanced
+    validations:
+      required: true
+
+  - type: dropdown
+    id: season
+    attributes:
+      label: Proposed season
+      options:
+        - Season 1 — API Fundamentals
+        - Season 2 — Defensive Coding
+        - Season 3 — Security Patterns
+        - New Season
+    validations:
+      required: true
+
+  - type: textarea
+    id: scenario
+    attributes:
+      label: Scenario summary
+      description: What is the developer task? What bug or gap does the player need to fix?
+    validations:
+      required: true
+
+  - type: textarea
+    id: learning
+    attributes:
+      label: Learning objective
+      description: What is the single concept the player should learn?
+    validations:
+      required: true
+
+  - type: textarea
+    id: exploit
+    attributes:
+      label: Attack vector
+      description: How would an attacker exploit the unpatched code?
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: api
+    attributes:
+      label: API endpoints required
+      options:
+        - label: Accounts
+        - label: Transactions
+        - label: OAuth2
+        - label: Beneficiaries
+        - label: None / custom mock

@@ -1,0 +1,9 @@
+{
+  "id": "s2-l1",
+  "name": "Merchant Mirage",
+  "season": 2,
+  "level": 1,
+  "difficulty": "beginner",
+  "apiRequired": false,
+  "tags": ["card-code", "mcc", "type-coercion", "authorization"]
+}

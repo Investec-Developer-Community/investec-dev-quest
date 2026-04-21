@@ -1,0 +1,9 @@
+{
+  "id": "s2-l3",
+  "name": "Velocity Vault",
+  "season": 2,
+  "level": 3,
+  "difficulty": "intermediate",
+  "apiRequired": false,
+  "tags": ["card-code", "velocity", "rate-limiting", "fraud-prevention"]
+}

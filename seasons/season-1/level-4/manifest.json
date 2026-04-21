@@ -1,0 +1,9 @@
+{
+  "id": "s1-l4",
+  "name": "Beneficiary Blueprint",
+  "season": 1,
+  "level": 4,
+  "difficulty": "intermediate",
+  "apiRequired": true,
+  "tags": ["beneficiaries", "validation", "404", "payments"]
+}

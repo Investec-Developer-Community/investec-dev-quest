@@ -1,0 +1,22 @@
+{
+  "name": "@investec-game/mock-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.11.1",
+    "@investec-game/shared": "workspace:*",
+    "hono": "^4.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "tsx": "^4.9.4",
+    "typescript": "^5.4.5"
+  }
+}

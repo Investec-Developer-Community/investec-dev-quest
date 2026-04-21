@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  # ─── Type-check and build ─────────────────────────────────────────────────
+  build:
+    name: Build & type-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: true
+
+      - name: Build shared package
+        run: pnpm --filter @investec-game/shared build
+
+      - name: Type-check CLI
+        run: npx tsc -p packages/cli/tsconfig.json --noEmit
+
+      - name: Type-check mock-api
+        run: npx tsc -p packages/mock-api/tsconfig.json --noEmit
+
+  # ─── Level content contract ───────────────────────────────────────────────
+  validate-levels:
+    name: Validate level content
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: true
+
+      - name: Build shared package
+        run: pnpm --filter @investec-game/shared build
+
+      - name: Start mock API
+        run: |
+          cp .env.example .env
+          npx tsx packages/mock-api/src/index.ts &
+          sleep 3
+          curl -sf http://localhost:3001/health
+
+      - name: Validate all levels
+        run: node scripts/validate-levels.mjs
+        env:
+          GAME_API_BASE_URL: http://localhost:3001
+          GAME_API_CLIENT_ID: game_client_id
+          GAME_API_CLIENT_SECRET: game_client_secret
+          GAME_API_KEY: game_api_key
+
+  # ─── Secret scanning ──────────────────────────────────────────────────────
+  secrets:
+    name: Secret scanning
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Scan for secrets with gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

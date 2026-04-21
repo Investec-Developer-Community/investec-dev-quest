@@ -1,0 +1,9 @@
+{
+  "id": "s4-l1",
+  "name": "Tool Gatekeeper",
+  "season": 4,
+  "level": 1,
+  "difficulty": "intermediate",
+  "apiRequired": false,
+  "tags": ["ai-agents", "tool-permissions", "allowlist", "boundaries"]
+}

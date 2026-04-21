@@ -1,0 +1,9 @@
+{
+  "id": "s3-l1",
+  "name": "Webhook Whiplash",
+  "season": 3,
+  "level": 1,
+  "difficulty": "intermediate",
+  "apiRequired": false,
+  "tags": ["webhooks", "hmac", "signature", "timing-safe-compare"]
+}

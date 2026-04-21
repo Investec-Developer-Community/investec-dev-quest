@@ -1,0 +1,9 @@
+{
+  "id": "s1-l2",
+  "name": "Token Trouble",
+  "season": 1,
+  "level": 2,
+  "difficulty": "intermediate",
+  "apiRequired": true,
+  "tags": ["oauth2", "token-refresh", "retry", "resilience"]
+}

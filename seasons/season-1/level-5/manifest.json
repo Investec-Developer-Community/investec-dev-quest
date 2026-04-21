@@ -1,0 +1,9 @@
+{
+  "id": "s1-l5",
+  "name": "Idempotency Island",
+  "season": 1,
+  "level": 5,
+  "difficulty": "advanced",
+  "apiRequired": true,
+  "tags": ["idempotency", "payments", "retry", "safety"]
+}

@@ -1,0 +1,161 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "commit-and-push-workflows",
+			"type": "shell",
+			"command": "git add .github/workflows/ci.yml .github/workflows/release.yml .gitignore && git commit -m \"chore: add GitHub workflows and update ignore rules\" && git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "inspect-git-state",
+			"type": "shell",
+			"command": "git status -sb && echo '---' && git log --oneline --decorate --graph --max-count=8 --all && echo '---' && git config --get user.name && git config --get user.email",
+			"isBackground": false
+		},
+		{
+			"label": "inspect-git-state-no-pager",
+			"type": "shell",
+			"command": "GIT_PAGER=cat git status -sb; echo '---'; GIT_PAGER=cat git --no-pager log --oneline --decorate --graph --max-count=8 --all; echo '---'; git config --get user.name; git config --get user.email",
+			"isBackground": false
+		},
+		{
+			"label": "push-main",
+			"type": "shell",
+			"command": "git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "push-main-force-with-lease",
+			"type": "shell",
+			"command": "git push --force-with-lease origin main",
+			"isBackground": false
+		},
+		{
+			"label": "fetch-and-force-push",
+			"type": "shell",
+			"command": "git fetch origin main && git push --force-with-lease origin main",
+			"isBackground": false
+		},
+		{
+			"label": "check-gh-auth-user",
+			"type": "shell",
+			"command": "gh auth status",
+			"isBackground": false
+		},
+		{
+			"label": "check-https-credential-username",
+			"type": "shell",
+			"command": "printf \"protocol=https\\nhost=github.com\\n\\n\" | git credential-osxkeychain get",
+			"isBackground": false
+		},
+		{
+			"label": "rewrite-commit-author-noreply",
+			"type": "shell",
+			"command": "git config user.name \"programmable-banking-community\" && git config user.email \"programmable-banking-community@users.noreply.github.com\" && GIT_SEQUENCE_EDITOR=: git rebase --root --exec \"git commit --amend --no-edit --reset-author\"",
+			"isBackground": false
+		},
+		{
+			"label": "force-push-main-after-rewrite",
+			"type": "shell",
+			"command": "git fetch origin main && git push --force-with-lease origin main",
+			"isBackground": false
+		},
+		{
+			"label": "remove-workflows-and-push",
+			"type": "shell",
+			"command": "git rm --cached .github/workflows/ci.yml .github/workflows/release.yml && git commit -m \"chore: keep workflow files local until workflow-scope token is available\" && git fetch origin main && git push --force-with-lease origin main",
+			"isBackground": false
+		},
+		{
+			"label": "verify-pushed-author",
+			"type": "shell",
+			"command": "GIT_PAGER=cat git --no-pager log -1 --pretty=format:'%h%n%an%n%ae%n%s' && echo && git status -sb",
+			"isBackground": false
+		},
+		{
+			"label": "push-with-current-creds",
+			"type": "shell",
+			"command": "GIT_PAGER=cat git status -sb; echo '---'; ls .github/workflows; echo '---'; git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "commit-and-push-workflows-now",
+			"type": "shell",
+			"command": "git add .github/workflows/ci.yml .github/workflows/release.yml && git commit -m \"ci: add GitHub Actions workflows\" && git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "verify-and-push-main-now",
+			"type": "shell",
+			"command": "GIT_PAGER=cat git status -sb; echo '---'; GIT_PAGER=cat git --no-pager log --oneline --decorate -3; echo '---'; git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "credential-reset-check",
+			"type": "shell",
+			"command": "printf \"protocol=https\\nhost=github.com\\n\\n\" | git credential-osxkeychain erase; printf \"protocol=https\\nhost=github.com\\n\\n\" | git credential reject; git remote -v",
+			"isBackground": false
+		},
+		{
+			"label": "reauth-push-attempt",
+			"type": "shell",
+			"command": "git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "inspect-auth-config",
+			"type": "shell",
+			"command": "git config --show-origin --get-all credential.helper; echo '---'; git config --show-origin --get-regexp '^credential\\..*'; echo '---'; git config --show-origin --get-regexp '^url\\..*insteadof$'",
+			"isBackground": false
+		},
+		{
+			"label": "set-correct-commit-identity",
+			"type": "shell",
+			"command": "git config user.name \"Programmable Banking Community\" && git config user.email \"developercommunity@investec.co.za\" && git commit --amend --reset-author --no-edit && GIT_PAGER=cat git --no-pager log -1 --pretty=format:'%h%n%an%n%ae%n%s'",
+			"isBackground": false
+		},
+		{
+			"label": "push-with-correct-identity-attempt",
+			"type": "shell",
+			"command": "printf \"protocol=https\\nhost=github.com\\n\\n\" | git credential-osxkeychain erase; printf \"protocol=https\\nhost=github.com\\n\\n\" | git credential reject; git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "erase-path-scoped-credential",
+			"type": "shell",
+			"command": "printf \"protocol=https\\nhost=github.com\\npath=Investec-Developer-Community/investec-dev-quest.git\\n\\n\" | git credential-osxkeychain get; echo '---'; printf \"protocol=https\\nhost=github.com\\npath=Investec-Developer-Community/investec-dev-quest.git\\nusername=nick-benson_invghcp\\n\\n\" | git credential-osxkeychain erase; printf \"protocol=https\\nhost=github.com\\npath=Investec-Developer-Community/investec-dev-quest.git\\n\\n\" | git credential-osxkeychain get",
+			"isBackground": false
+		},
+		{
+			"label": "push-after-path-erase",
+			"type": "shell",
+			"command": "git push origin main",
+			"isBackground": false
+		},
+		{
+			"label": "inspect-hidden-git-auth-overrides",
+			"type": "shell",
+			"command": "git config --show-origin --get-regexp '^(remote\\.origin\\.url|credential\\..*|http\\..*extraheader|url\\..*insteadof)$'",
+			"isBackground": false
+		},
+		{
+			"label": "dump-git-config-auth",
+			"type": "shell",
+			"command": "git config --show-origin --list | grep -Ei 'credential|extraheader|insteadof|remote.origin.url'",
+			"isBackground": false
+		},
+		{
+			"label": "pin-credential-username",
+			"type": "shell",
+			"command": "git config credential.username programmable-banking-community && git remote set-url origin https://programmable-banking-community@github.com/Investec-Developer-Community/investec-dev-quest.git && git config --get credential.username && git remote -v",
+			"isBackground": false
+		},
+		{
+			"label": "push-after-username-pin",
+			"type": "shell",
+			"command": "git push origin main",
+			"isBackground": false
+		}
+	]
+}

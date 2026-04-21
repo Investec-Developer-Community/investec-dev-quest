@@ -1,0 +1,9 @@
+{
+  "id": "s4-l2",
+  "name": "Approval Anchor",
+  "season": 4,
+  "level": 2,
+  "difficulty": "intermediate",
+  "apiRequired": false,
+  "tags": ["ai-agents", "approval-gates", "risk-control", "human-in-the-loop"]
+}

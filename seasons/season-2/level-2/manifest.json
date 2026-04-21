@@ -1,0 +1,9 @@
+{
+  "id": "s2-l2",
+  "name": "Budget Guardian",
+  "season": 2,
+  "level": 2,
+  "difficulty": "beginner",
+  "apiRequired": false,
+  "tags": ["card-code", "budget", "afterTransaction", "stateful-rules"]
+}

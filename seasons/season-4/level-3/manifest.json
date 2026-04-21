@@ -1,0 +1,9 @@
+{
+  "id": "s4-l3",
+  "name": "Citation Checkpoint",
+  "season": 4,
+  "level": 3,
+  "difficulty": "advanced",
+  "apiRequired": false,
+  "tags": ["ai-agents", "hallucination", "citations", "answer-validation"]
+}

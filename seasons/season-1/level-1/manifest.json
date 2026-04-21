@@ -1,0 +1,9 @@
+{
+  "id": "s1-l1",
+  "name": "First Contact",
+  "season": 1,
+  "level": 1,
+  "difficulty": "beginner",
+  "apiRequired": true,
+  "tags": ["oauth2", "accounts", "pagination", "authentication"]
+}

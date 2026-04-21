@@ -1,0 +1,9 @@
+{
+  "id": "sX-lY",
+  "name": "Your Level Name",
+  "season": 1,
+  "level": 99,
+  "difficulty": "beginner",
+  "apiRequired": false,
+  "tags": ["tag-1", "tag-2"]
+}

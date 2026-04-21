@@ -1,0 +1,50 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          registry-url: https://registry.npmjs.org
+
+      - uses: pnpm/action-setup@v4
+        with:
+          run_install: true
+
+      - name: Build all packages
+        run: pnpm build
+
+      - name: Validate levels before release
+        run: |
+          cp .env.example .env
+          npx tsx packages/mock-api/src/index.ts &
+          sleep 3
+          node scripts/validate-levels.mjs
+        env:
+          GAME_API_BASE_URL: http://localhost:3001
+          GAME_API_CLIENT_ID: game_client_id
+          GAME_API_CLIENT_SECRET: game_client_secret
+          GAME_API_KEY: game_api_key
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
