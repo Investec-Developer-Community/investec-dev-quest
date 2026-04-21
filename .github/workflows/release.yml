@@ -28,7 +28,9 @@ jobs:
           run_install: true
 
       - name: Build all packages
-        run: pnpm build
+        run: |
+          pnpm --filter @investec-game/shared exec tsc -b --force
+          pnpm build
 
       - name: Validate levels before release
         run: |

@@ -24,7 +24,7 @@ jobs:
           run_install: true
 
       - name: Build shared package
-        run: pnpm --filter @investec-game/shared build
+        run: pnpm --filter @investec-game/shared exec tsc -b --force
 
       - name: Build and type-check CLI
         run: pnpm --filter @investec-game/cli build
@@ -49,7 +49,7 @@ jobs:
           run_install: true
 
       - name: Build shared package
-        run: pnpm --filter @investec-game/shared build
+        run: pnpm --filter @investec-game/shared exec tsc -b --force
 
       - name: Start mock API
         run: |

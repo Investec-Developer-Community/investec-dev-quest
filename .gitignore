@@ -2,6 +2,9 @@
 node_modules/
 dist/
 *.js.map
+*.tsbuildinfo
 seasons/**/solution.js
+!seasons/**/starter/solution.js
+!seasons/**/reference/solution.js
 .investec-game/
 
