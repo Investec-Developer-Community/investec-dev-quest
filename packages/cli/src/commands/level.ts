@@ -37,9 +37,9 @@ export function registerLevelCommand(program: Command): void {
         }
         mkdirSync(levelDir, { recursive: true })
         copyFileSync(starterPath, solutionPath)
-        console.log(chalk.cyan(`\n→ Starter code copied to: ${chalk.bold('solution.js')}`))
+        console.log(chalk.cyan(`\n→ Starter code copied to: ${chalk.bold(solutionPath)}`))
       } else {
-        console.log(chalk.dim(`\n→ solution.js already exists — resuming previous work`))
+        console.log(chalk.dim(`\n→ solution.js already exists at: ${solutionPath} — resuming previous work`))
       }
 
       // Record progress
@@ -64,7 +64,7 @@ export function registerLevelCommand(program: Command): void {
         chalk.bold.white(`\nLevel: ${manifest.name}`) +
           chalk.dim(` (S${manifest.season} L${manifest.level} — ${manifest.difficulty})`)
       )
-      console.log(chalk.dim('\nEdit solution.js then run: ') + chalk.cyan('pnpm game test'))
+      console.log(chalk.dim(`\nEdit ${solutionPath} then run: `) + chalk.cyan('pnpm game test'))
       if (manifest.apiRequired) {
         console.log(
           chalk.dim('This level uses the mock Investec API — it will start automatically.')

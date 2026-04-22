@@ -37,6 +37,12 @@ Then to test your solution:
 pnpm game test
 ```
 
+Your editable file for this first level is:
+
+```text
+seasons/season-1/level-1/solution.js
+```
+
 ---
 
 ## First Run (Beginner Path)
@@ -80,8 +86,8 @@ Each level lives in `seasons/season-N/level-N/` and contains:
 | File | Purpose |
 |---|---|
 | `story.md` | The scenario — read this first |
-| `starter/solution.js` | Your starting point — **you edit this** |
-| `solution.js` | Your working solution (copied from starter on first load) |
+| `starter/solution.js` | Starter template (copied into `solution.js` on first load) |
+| `solution.js` | Your working solution — **you edit this** |
 | `tests/behavior.test.js` | Behavior tests — must pass |
 | `attack/exploit.test.js` | Attack script — must pass after your fix |
 | `hints/hint-1.md` | First hint (revealed on demand) |
