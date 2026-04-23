@@ -13,3 +13,7 @@ seasons/**/solution.js
 !.vscode/extensions.json
 !.vscode/settings.json
 
+# Terminal demo capture artifacts (local only)
+*.cast
+docs/media/raw/
+

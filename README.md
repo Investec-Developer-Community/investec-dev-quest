@@ -43,6 +43,18 @@ Your editable file for this first level is:
 seasons/season-1/level-1/solution.js
 ```
 
+## Terminal Demo GIF
+
+Want to show a short gameplay clip (start, test, complete) in this repo?
+
+1. Follow [docs/terminal-demo-gif.md](docs/terminal-demo-gif.md) to record terminal-only output.
+2. Save the final optimized GIF to `docs/media/gameplay-demo.gif`.
+3. Embed it in this README with:
+
+```markdown
+![Terminal gameplay demo](docs/media/gameplay-demo.gif)
+```
+
 ---
 
 ## First Run (Beginner Path)
