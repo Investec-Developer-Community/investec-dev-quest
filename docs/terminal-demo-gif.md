@@ -31,7 +31,7 @@ Run your commands, then press `Ctrl+D` to stop recording.
 ### 3. Convert to GIF
 
 ```bash
-agg --fps 12 --font-size 18 --speed 1.1 docs/media/raw/gameplay.cast docs/media/gameplay-demo.gif
+agg --fps-cap 12 --font-size 18 --speed 1.1 docs/media/raw/gameplay.cast docs/media/gameplay-demo.gif
 ```
 
 ## Optional: Native macOS Recording

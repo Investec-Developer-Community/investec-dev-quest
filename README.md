@@ -43,18 +43,6 @@ Your editable file for this first level is:
 seasons/season-1/level-1/solution.js
 ```
 
-## Terminal Demo GIF
-
-Want to show a short gameplay clip (start, test, complete) in this repo?
-
-1. Follow [docs/terminal-demo-gif.md](docs/terminal-demo-gif.md) to record terminal-only output.
-2. Save the final optimized GIF to `docs/media/gameplay-demo.gif`.
-3. Embed it in this README with:
-
-```markdown
-![Terminal gameplay demo](docs/media/gameplay-demo.gif)
-```
-
 ---
 
 ## First Run (Beginner Path)
@@ -87,7 +75,25 @@ pnpm game reset --yes              # Skip confirmation
 pnpm game status                   # Show progress across all levels
 ```
 
----
+Your progress is saved to `~/.investec-game/progress.json`. To reset all progress and start fresh, delete that file:
+
+```bash
+rm ~/.investec-game/progress.json
+```
+
+## Finished The Quest? Claim Your Prize
+
+If you complete all 14 levels, you can claim Investec Developer Game swag.
+
+To reduce spam and bot submissions, the claim form link is not posted publicly in this repo.
+
+Claim flow:
+1. Run `pnpm game status` and confirm it shows `14/14 levels complete`.
+2. Open a GitHub issue in this repository with title `Swag claim request`.
+3. Include your `pnpm game status` screenshot in the issue.
+4. A maintainer will share the claim form link with you directly.
+
+We still run this on a community honor system and review claims in good faith.
 
 ## How it works
 
