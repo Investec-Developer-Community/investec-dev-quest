@@ -6,11 +6,17 @@ const VALID_CLIENT_SECRET = process.env['GAME_API_CLIENT_SECRET'] ?? 'game_clien
 const VALID_API_KEY = process.env['GAME_API_KEY'] ?? 'game_api_key'
 
 // Simple in-memory token store (no persistence needed — it's a local game)
-const validTokens = new Set<string>()
+const validTokens = new Map<string, number>()
 let tokenCounter = 0
 
 export function isValidToken(token: string): boolean {
-  return validTokens.has(token)
+  const expiresAt = validTokens.get(token)
+  if (!expiresAt) return false
+  if (Date.now() > expiresAt) {
+    validTokens.delete(token)
+    return false
+  }
+  return true
 }
 
 export const oauthRouter = new Hono()
@@ -54,10 +60,13 @@ oauthRouter.post('/token', async (c) => {
 
   tokenCounter += 1
   const token = `game_token_${tokenCounter}_${Date.now()}`
-  validTokens.add(token)
 
-  // Tokens expire after 30 minutes (simulated — this clock only applies if you check it)
-  const expiresIn = 1800
+  // Tokens expire after 30 minutes by default. Override only for explicit tests/demos.
+  const configuredExpiresIn = parseInt(process.env['GAME_API_TOKEN_TTL_SECONDS'] ?? '1800', 10)
+  const expiresIn = Number.isFinite(configuredExpiresIn) && configuredExpiresIn > 0
+    ? configuredExpiresIn
+    : 1800
+  validTokens.set(token, Date.now() + expiresIn * 1000)
 
   return c.json({
     access_token: token,

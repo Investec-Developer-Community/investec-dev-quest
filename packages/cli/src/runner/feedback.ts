@@ -50,19 +50,33 @@ export function renderTestResults(results: TestRunResult, label = 'Tests'): void
   )
 }
 
-export function renderWinBanner(levelName: string, nextLevelCommand?: string): void {
+interface WinBannerOptions {
+  attempts?: number
+  hintsUsed?: number
+  referenceCommand?: string
+  nextLevelCommand?: string
+}
+
+export function renderWinBanner(levelName: string, options: WinBannerOptions = {}): void {
+  const attempts = options.attempts ?? 0
+  const hintsUsed = options.hintsUsed ?? 0
   const lines = [
     chalk.yellow.bold('  🎉  Level Complete!'),
     '',
     chalk.white(`  "${levelName}" is solved.`),
     '',
     chalk.dim('  Both behavior tests and the attack script pass.'),
+    chalk.dim(`  Attempts: ${attempts}  Hints used: ${hintsUsed}`),
     chalk.dim('  Run `pnpm game status` to see your progress.'),
   ]
 
-  if (nextLevelCommand) {
+  if (options.referenceCommand) {
+    lines.push(chalk.cyan(`  Review reference: ${options.referenceCommand}`))
+  }
+
+  if (options.nextLevelCommand) {
     lines.push('')
-    lines.push(chalk.cyan(`  Next level: ${nextLevelCommand}`))
+    lines.push(chalk.cyan(`  Next level: ${options.nextLevelCommand}`))
   }
 
   const content = lines.join('\n')
@@ -122,6 +136,7 @@ export function renderBeginnerGuidance(): void {
     chalk.white('  2. Use `pnpm game hint` for a nudge.'),
     chalk.white('  3. Make one small change, then run `pnpm game test` again.'),
     '',
+    chalk.dim('  Tip: behavior tests protect the feature; the attack script protects the fix.'),
     chalk.dim('  You can run `pnpm game status` anytime to track progress.'),
   ].join('\n')
 

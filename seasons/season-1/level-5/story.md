@@ -1,16 +1,18 @@
 # Idempotency Island
 
-## The situation
+## Mission Brief
 
 FinFlow's payment service has a critical bug. After a network outage last week, the retry logic fired — and some customers were charged **twice** for the same payment.
 
-The root cause: when the first payment request times out (no response received), the code retries the request. But the first request **did** go through — it just took too long. When the retry fires, the API processes a second, identical payment.
+## Bug Report
+
+The suspicious pattern: retries sometimes produce a second transfer response instead of safely returning the result of the first successful payment.
 
 This is a well-known problem in distributed systems. The solution is **idempotency**: attach a unique key to each payment request, derived from the request itself. The server uses that key to detect and deduplicate retries.
 
 The Investec mock API supports this via an `Idempotency-Key` header.
 
-## Your task
+## Your Task
 
 Fix `submitPayment` so it:
 
@@ -65,8 +67,12 @@ Response (200):
 
 If the same `Idempotency-Key` is sent again, the API returns the **same response** without processing a second payment.
 
-## Win condition
+## Threat
+
+The attack repeats the same payment request and checks that the API treats the retry as the same operation, not a second transfer.
+
+## Win Condition
 
 Both test suites must pass.
 
-The attack script will call `submitPayment` twice with identical data and verify that only **one** payment is processed — the second call returns the cached response.
+The attack script will call `submitPayment` twice with identical data and verify that only **one** payment is processed.

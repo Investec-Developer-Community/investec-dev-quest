@@ -7,8 +7,9 @@ export const accountsRouter = new Hono()
 accountsRouter.get('/', (c) => {
   const cursor = c.req.query('cursor') ?? null
   const pageSize = parseInt(c.req.query('pageSize') ?? '10', 10)
+  const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 10
 
-  const { page, nextCursor } = paginate(ACCOUNTS, cursor, pageSize)
+  const { page, nextCursor } = paginate(ACCOUNTS, cursor, safePageSize)
 
   return c.json({
     data: {
@@ -19,7 +20,10 @@ accountsRouter.get('/', (c) => {
       ...(nextCursor ? { next: `/za/pb/v1/accounts?cursor=${nextCursor}` } : {}),
     },
     meta: {
-      totalPages: 1,
+      count: page.length,
+      totalCount: ACCOUNTS.length,
+      pageSize: safePageSize,
+      totalPages: Math.ceil(ACCOUNTS.length / safePageSize),
       nextCursor,
     },
   })

@@ -1,12 +1,14 @@
 # Approval Anchor
 
-## The situation
+## Mission Brief
 
 An AI deployment agent can open pull requests and propose production changes. High-risk actions must never auto-approve.
 
-The buggy implementation trusts `requestedBy: "system"` and bypasses manual approval for high-risk actions.
+## Bug Report
 
-## Your task
+The starter trusts metadata inside the action too much, so a high-risk action can be made to look safer than it really is.
+
+## Your Task
 
 Implement:
 
@@ -20,8 +22,12 @@ Rules:
 - Never trust `action.requestedBy` as an approval signal
 - Return `{ approved: boolean, reason?: string }`
 
-## Win condition
+## Threat
+
+The attack forges a high-risk action as `requestedBy: "system"` and expects the approval gate to still require explicit human approval.
+
+## Win Condition
 
 Both test suites pass.
 
-The attack forges a high-risk action as `requestedBy: "system"`. Starter approves it; your fix must deny it without human approval.
+Your fix must deny high-risk actions without human approval.

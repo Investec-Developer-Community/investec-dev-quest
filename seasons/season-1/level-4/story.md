@@ -1,14 +1,14 @@
 # Beneficiary Blueprint
 
-## The situation
+## Mission Brief
 
 FinFlow has shipped a "Pay a Beneficiary" feature. It's been running for two weeks when the support team starts getting reports of failed payments — but the UI shows success.
 
-After digging through logs, you find the issue: **the code doesn't check whether the beneficiary actually exists** before submitting the payment. It just blindly fires a payment to whatever ID the user provides. When the payment API rejects it with a 404, that error gets swallowed somewhere and the user sees a success screen.
+## Bug Report
 
-Worse, a penetration tester on the team has shown that a user can construct an API call to pay any arbitrary beneficiary ID — not just their own beneficiaries. The validation layer is completely missing.
+Support logs show failed payment attempts that the UI treated as successful. A tester can also construct a call with an arbitrary beneficiary ID, so the validation layer needs to prove the ID belongs to the profile before payment code continues.
 
-## Your task
+## Your Task
 
 Implement two functions that form the validation layer:
 
@@ -47,8 +47,12 @@ Response shape:
 - `validateBeneficiary` must call `getBeneficiaries` and check if the ID exists
 - If the ID is not found, throw `Error('Beneficiary not found')`
 
-## Win condition
+## Threat
+
+The attack tries to validate a beneficiary ID that is not present in the profile's beneficiary list.
+
+## Win Condition
 
 Both test suites must pass.
 
-The attack script will attempt to validate a beneficiary ID that does **not** exist. The buggy starter always returns `true`; the reference correctly throws.
+The attack script will attempt to validate a beneficiary ID that does **not** exist.

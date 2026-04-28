@@ -1,15 +1,17 @@
 # Tool Gatekeeper
 
-## The situation
+## Mission Brief
 
 FinFlow runs an AI operations assistant with tool access. The policy is simple:
 
 - Allow only explicitly permitted tools
 - Deny everything else by default
 
-A production incident occurred because the implementation used prefix matching. The allowed tool `read.file` accidentally allowed `read.file.delete`.
+## Bug Report
 
-## Your task
+A production incident occurred when a permitted read-only tool name also matched a more powerful tool name. The policy needs exact tool decisions, not look-alike matches.
+
+## Your Task
 
 Implement:
 
@@ -23,8 +25,12 @@ Rules:
 - Unknown tools must be denied
 - Return shape: `{ allowed: boolean, reason?: string }`
 
-## Win condition
+## Threat
+
+The attack uses a crafted tool name that starts with an allowed tool but is not itself allowed.
+
+## Win Condition
 
 Both test suites pass.
 
-The attack tries a crafted tool name with an allowed prefix. The starter allows it; your fix must block it.
+The attack tries a crafted tool name with an allowed prefix. Your fix must block it.

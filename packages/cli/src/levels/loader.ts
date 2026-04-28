@@ -18,6 +18,7 @@ export interface ResolvedLevel {
   testsDir: string
   attackDir: string
   referencePath: string
+  debriefPath: string
 }
 
 export function findLevelDir(seasonNum: number, levelNum: number): string | null {
@@ -46,6 +47,7 @@ export function loadLevel(levelDir: string): ResolvedLevel {
     testsDir: join(levelDir, 'tests'),
     attackDir: join(levelDir, 'attack'),
     referencePath: join(levelDir, 'reference', 'solution.js'),
+    debriefPath: join(levelDir, 'debrief.md'),
   }
 }
 

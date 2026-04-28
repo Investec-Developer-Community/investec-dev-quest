@@ -1,6 +1,6 @@
 # Webhook Whiplash
 
-## The situation
+## Mission Brief
 
 FinFlow receives payment notifications through webhooks. To ensure webhook authenticity, each webhook includes:
 
@@ -13,9 +13,11 @@ Signature algorithm:
 2. Compute HMAC-SHA256 using a shared secret
 3. Compare against the signature from the header
 
-A bug slipped into production: the verification logic uses `startsWith` for signature comparison, which allows partial signatures to pass.
+## Bug Report
 
-## Your task
+Malformed signatures are being accepted in some cases, so forged webhook payloads may reach downstream payment logic.
+
+## Your Task
 
 Implement:
 
@@ -29,8 +31,12 @@ Rules:
 - Signature header must start with `sha256=`
 - Use a full, timing-safe comparison
 
-## Win condition
+## Threat
+
+The attack sends a truncated signature prefix and expects the verifier to reject it.
+
+## Win Condition
 
 Both test suites pass.
 
-The attack sends a truncated signature prefix. Starter code incorrectly accepts it. Your fix must reject it.
+The attack sends a truncated signature prefix. Your fix must reject it.

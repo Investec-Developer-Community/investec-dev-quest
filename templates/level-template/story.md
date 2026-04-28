@@ -1,9 +1,13 @@
 # Level N: [Your Level Name]
 
-## The Scenario
+## Mission Brief
 
 [Set the scene. Give it a real company name, a realistic situation, a concrete problem to solve.
 Avoid abstract exercises — model something a real Investec developer would face.]
+
+## Bug Report
+
+[Describe what is going wrong from the user's or operator's point of view. Avoid naming the exact fix.]
 
 ## Background
 
@@ -17,6 +21,10 @@ Edit `solution.js` to implement:
 ### `functionName(param)`
 
 [Describe what it should do, what it returns, what errors it should throw.]
+
+## Threat
+
+[Describe what the attack test is trying to prove without giving away the implementation detail.]
 
 ## Win Condition
 

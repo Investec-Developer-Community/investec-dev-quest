@@ -49,8 +49,32 @@ seasons/season-1/level-1/solution.js
 
 1. Load level: run `pnpm game level 1 --season 1` to read the story and copy starter code.
 2. Run test: execute `pnpm game test` to see the first failing checks.
-3. Use hint: if stuck, run `pnpm game hint` to reveal guidance.
-4. Check status: run `pnpm game status` to track your progress.
+3. Make one small edit in `seasons/season-1/level-1/solution.js`.
+4. Re-run `pnpm game test`, or use `pnpm game watch` for automatic feedback while editing.
+5. Use hint: if stuck, run `pnpm game hint` to reveal guidance.
+6. After completion, run `pnpm game reference` to compare with the reference solution and read any debrief.
+7. Check status: run `pnpm game status` to track your progress.
+
+Behavior tests prove the feature works. Attack tests prove the vulnerability is blocked. A level is only complete when both pass.
+
+---
+
+
+## Player Paths
+
+**Note:** The paths below are just suggested learning orders for different interests or workshop tracks. To claim swag, you must complete *all 14 levels* (see the claim instructions below).
+
+Pick a path based on the session you want to run.
+
+| Path | Recommended levels | Best for |
+|---|---|---|
+| Beginner path | Season 1 Level 1, then Season 2 Level 1 | New players learning the edit-test-hint loop |
+| API foundations path | Season 1 Levels 1-5 | OAuth2, pagination, token refresh, beneficiaries, idempotent payments |
+| Card code path | Season 2 Levels 1-5 | Programmable Banking `beforeTransaction` rules, MCCs, budgets, velocity limits |
+| Security path | Season 2 Level 1, Season 3 Level 1, Season 4 Level 1 | Defensive validation, HMAC verification, exact allowlists |
+| AI automation path | Season 4 Levels 1-3 | Tool boundaries, human approval gates, citation integrity |
+
+Peeps new to the API should start with the beginner path and use hints early. Senior peeps can skip straight to the security or AI automation path and treat each level as a code-review and threat-modeling exercise.
 
 ---
 
@@ -69,6 +93,9 @@ pnpm game watch --season 2 --level 3 --debounce 300
 pnpm game hint                     # Reveal next hint
 pnpm game hint --all               # Show all unlocked hints
 
+pnpm game reference                # Show reference code for a completed level
+pnpm game reference --season 2 --level 1 --no-debrief
+
 pnpm game reset                    # Restore starter code (with confirmation)
 pnpm game reset --yes              # Skip confirmation
 
@@ -83,13 +110,14 @@ rm ~/.investec-game/progress.json
 
 ## Finished The Quest? Claim Your Prize
 
-If you complete all 14 levels, you can claim Investec Developer Game swag.
+
+**Swag eligibility:** You must complete *all 14 levels* to claim swag, regardless of which path you followed. Partial completion (even if you finish a path) does not qualify.
 
 To reduce spam and bot submissions, the claim form link is not posted publicly in this repo.
 
 Claim flow:
 1. Run `pnpm game status` and confirm it shows `14/14 levels complete`.
-2. Open a GitHub issue in this repository with title `Swag claim request`.
+2. Open a GitHub issue in this repo with title `Swag claim request`.
 3. Include your `pnpm game status` screenshot in the issue.
 4. A maintainer will share the claim form link with you directly.
 
@@ -111,6 +139,7 @@ Each level lives in `seasons/season-N/level-N/` and contains:
 | `hints/hint-1.md` | First hint (revealed on demand) |
 | `hints/hint-2.md` | Second hint |
 | `reference/solution.js` | Reference solution (revealed after completion) |
+| `debrief.md` | Optional post-solve explanation shown by `pnpm game reference` |
 
 ### Win condition
 
@@ -120,6 +149,31 @@ A level is complete when **both** test suites pass:
 2. **Attack script** — the vulnerability is fixed (the exploit is blocked)
 
 The attack script is written so that it **passes** when the exploit is blocked. This is the dual-validation mechanic: you can't over-restrict (breaks behavior tests) and can't under-fix (attack script still fails).
+
+### Flow diagram
+
+```mermaid
+flowchart LR
+    Player[Player edits solution.js] --> CLI[pnpm game test]
+    CLI --> API[Mock Investec API]
+    CLI --> Behavior[Behavior tests]
+    CLI --> Attack[Attack tests]
+    Behavior --> Result{Both pass?}
+    Attack --> Result
+    Result -->|Yes| Complete[Level complete]
+    Result -->|No| Iterate[Edit, hint, test again]
+    Complete --> Reference[pnpm game reference]
+```
+
+### Dual-validation diagram
+
+```mermaid
+flowchart TB
+    Solution[Player solution] --> Feature[Behavior tests: expected functionality]
+    Solution --> Defense[Attack tests: exploit blocked]
+    Feature --> Win[Win condition]
+    Defense --> Win
+```
 
 ---
 
@@ -131,6 +185,13 @@ The attack script is written so that it **passes** when the exploit is blocked. 
 | 2 | Card Code & Rules Engine — `beforeTransaction`, MCC filters, velocity limits |
 | 3 | Secure Fintech Workflows — Webhook signatures, replay protection, secrets |
 | 4 | Intelligent Banking Automation — Agent tool boundaries, approval gates, citation integrity |
+
+```mermaid
+flowchart LR
+    S1[Season 1: API Foundations] --> S2[Season 2: Card Code]
+    S2 --> S3[Season 3: Secure Workflows]
+    S3 --> S4[Season 4: AI Automation]
+```
 
 ---
 

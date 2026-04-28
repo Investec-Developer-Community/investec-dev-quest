@@ -1,14 +1,16 @@
 # Budget Guardian
 
-## The situation
+## Mission Brief
 
 A parent has set up a Programmable Banking card for their teenager. They want a hard spending limit: **no more than R500 per month at fast-food restaurants** (MCC 5812 — Eating Places & Restaurants).
 
-You've been asked to implement the card rule. The first version was shipped in a hurry and only has a placeholder — it approves every transaction regardless of category or accumulated spend.
+You've been asked to implement the card rule. The first version was shipped in a hurry and only has a placeholder: it approves every transaction regardless of category or accumulated spend.
+
+## Bug Report
 
 A quick test confirms the bug: 6 × R100 fast-food transactions all go through. The sixth should have been declined.
 
-## Your task
+## Your Task
 
 Implement two functions that work together:
 
@@ -41,8 +43,12 @@ kv.set('fastfood_spend', 350.0)  // stores a value
 
 Start the running total at `0` if `kv.get('fastfood_spend')` returns `undefined`.
 
-## Win condition
+## Threat
+
+The attack simulates repeated fast-food approvals and expects the rule to stop the transaction that would exceed the monthly cap.
+
+## Win Condition
 
 Both test suites must pass.
 
-The attack simulates 6 × R100 fast-food transactions in sequence (calling `afterTransaction` after each approval). The 6th transaction must be **declined**.
+The attack simulates 6 × R100 fast-food transactions in sequence. The 6th transaction must be **declined**.

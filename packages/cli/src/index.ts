@@ -10,6 +10,7 @@ import { registerHintCommand } from './commands/hint.js'
 import { registerResetCommand } from './commands/reset.js'
 import { registerStatusCommand } from './commands/status.js'
 import { registerWatchCommand } from './commands/watch.js'
+import { registerReferenceCommand } from './commands/reference.js'
 
 const REPO_ROOT = fileURLToPath(new URL('../../..', import.meta.url))
 loadEnv({ path: join(REPO_ROOT, '.env') })
@@ -28,5 +29,6 @@ registerHintCommand(program)
 registerResetCommand(program)
 registerStatusCommand(program)
 registerWatchCommand(program)
+registerReferenceCommand(program)
 
 await program.parseAsync()

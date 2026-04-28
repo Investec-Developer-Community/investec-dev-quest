@@ -1,17 +1,14 @@
 # Transaction Trail
 
-## The situation
+## Mission Brief
 
 FinFlow's compliance team needs to generate monthly statements. They've built a report that calls your transaction API client and filters transactions by date range.
 
-The problem: the report is showing transactions from **every month**, not just the requested one. An audit is coming up, and sending regulators the wrong data is a serious problem.
+## Bug Report
 
-You dig into the code and find two bugs:
+The report is showing transactions from **every month**, not just the requested one. It also misses records when the API returns more than one page. An audit is coming up, and sending regulators the wrong data is a serious problem.
 
-1. The `fromDate` and `toDate` parameters are never passed to the API — the endpoint receives them but the client ignores them
-2. The client only fetches the **first page** of transactions and stops, missing older records
-
-## Your task
+## Your Task
 
 Fix `getTransactions` so it:
 
@@ -49,8 +46,12 @@ Follow `meta.nextCursor` for subsequent pages.
 - Do not client-side filter — trust the API's date filtering
 - All pages must be fetched before returning
 
-## Win condition
+## Threat
+
+The attack requests a narrow date window and verifies the client does not return unrelated history or silently stop at the first page.
+
+## Win Condition
 
 Both the behavior tests and the attack script must pass.
 
-The attack will request a narrow date window and verify that **only transactions in that window are returned** — not the full history.
+The attack will request a narrow date window and verify that **only transactions in that window are returned**.

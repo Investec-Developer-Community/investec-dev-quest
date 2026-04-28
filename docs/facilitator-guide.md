@@ -32,6 +32,36 @@ If `status` shows available levels and no errors, they're ready.
 
 ## Suggested session formats
 
+> **Facilitator note:** While the Player Paths and session tracks below are great for learning or workshop pacing, remind participants that *to claim swag, they must complete all 14 levels* (not just a single path or track). Encourage them to use the paths for learning, but check their full progress with `pnpm game status` if they want to claim a prize.
+
+### Junior workshop track
+
+Use this when the room is new to Investec API, Programmable Banking, or test-driven security work.
+
+| Time | Activity |
+|------|----------|
+| 0-10 min | Setup check and explanation of behavior tests versus attack tests |
+| 10-35 min | Season 1 Level 1 as a guided walkthrough |
+| 35-55 min | Season 1 Level 2 or Season 2 Level 1 in pairs |
+| 55-75 min | Independent solve time with hints encouraged |
+| 75-90 min | Run `pnpm game reference` for completed levels and discuss debriefs |
+
+Facilitation style: encourage small edits, frequent `pnpm game test`, and early hint usage. The goal is confidence with the loop, not speed.
+
+### Senior workshop track
+
+Use this when the room already knows JavaScript and wants deeper security or architecture discussion.
+
+| Time | Activity |
+|------|----------|
+| 0-10 min | Briefing: dual-validation mechanic and threat-model mindset |
+| 10-35 min | Season 2 Level 1 as a quick calibration challenge |
+| 35-65 min | Season 3 Level 1 or Season 4 Level 1 as a code-review exercise |
+| 65-85 min | Compare fixes with `pnpm game reference` and debate trade-offs |
+| 85-90 min | Capture production habits and follow-up level ideas |
+
+Facilitation style: ask participants to describe the exploit before coding, then compare whether their fix blocks the attack without breaking valid behavior.
+
 ### 90-minute intro workshop
 
 | Time | Activity |
@@ -62,6 +92,47 @@ If `status` shows available levels and no errors, they're ready.
 
 ---
 
+## Level-by-level learning outcomes
+
+| Level | Outcome | Common stuck point |
+|------|---------|--------------------|
+| S1 L1 First Contact | OAuth2 credentials, pagination, account balance aggregation | Hardcoding credentials or fetching only the first page |
+| S1 L2 Token Trouble | Recovering once from stale OAuth tokens | Retrying forever or forgetting to update the token store |
+| S1 L3 Transaction Trail | Date filtering and cursor pagination | Client-side filtering instead of sending query parameters |
+| S1 L4 Beneficiary Blueprint | Validating beneficiary IDs before payment flow | Returning truthy results without checking the fetched list |
+| S1 L5 Idempotency Island | Deterministic idempotency keys for payment retries | Generating a random key per retry |
+| S2 L1 Merchant Mirage | Normalising external card event fields before decisions | Comparing string MCCs to numeric blocklists |
+| S2 L2 Budget Guardian | Pre-approval budget checks and post-approval state updates | Updating spend in the wrong hook |
+| S2 L3 Velocity Vault | Rolling-window transaction velocity limits | Counting all history instead of recent timestamps |
+| S2 L4 Country Control | Exact country allowlists and default-deny logic | Building the allow path but forgetting the deny path |
+| S2 L5 Limit Loop | State writes only after approved decisions | Recording declined transactions as spend |
+| S3 L1 Webhook Whiplash | HMAC verification and timing-safe comparison | Accepting partial or malformed signatures |
+| S4 L1 Tool Gatekeeper | Exact tool allowlists for AI agents | Prefix matching tool names |
+| S4 L2 Approval Anchor | Human approval for high-risk automation | Trusting action metadata as approval evidence |
+| S4 L3 Citation Checkpoint | Validating every answer claim has support | Checking only the first claim |
+
+## Debrief prompts
+
+Use these after participants complete a level and run `pnpm game reference`:
+
+1. What did the behavior tests prove?
+2. What did the attack script prove?
+3. What real production habit does this level teach?
+4. Did your fix reject anything legitimate?
+5. What additional edge case would you add to the tests?
+
+## Common stuck points
+
+| Symptom | Facilitation nudge |
+|---------|--------------------|
+| Player edits reference code | Remind them to edit `solution.js`, not `reference/solution.js` |
+| Behavior passes but attack fails | Ask what the exploit input is proving |
+| Attack passes but behavior fails | Ask whether the fix became too restrictive |
+| Hints feel like failure | Frame hints as workshop pacing tools, not scoring penalties |
+| Mock API confusion | Show `curl http://localhost:3001/health` and explain the CLI auto-starts it |
+
+---
+
 ## How the game works
 
 Each level has two validation layers:
@@ -77,6 +148,7 @@ Players win a level only when **both suites pass**. This is the dual-validation 
 pnpm game level 1 --season 1          # read the brief and story
 pnpm game hint --season 1 --level 1   # optional: unlock a hint
 pnpm game test --season 1 --level 1   # run tests (real-time feedback)
+pnpm game reference --season 1 --level 1 # after completion, review reference/debrief
 ```
 
 The game auto-starts the mock API if it isn't running.

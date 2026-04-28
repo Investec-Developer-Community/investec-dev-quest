@@ -6,8 +6,33 @@ import { TRANSACTIONS, PAYMENT_CACHE, paginate } from './data/fixtures.js'
 import { randomUUID } from 'crypto'
 
 const PORT = parseInt(process.env['GAME_API_PORT'] ?? '3001', 10)
+const DEBUG = process.env['GAME_API_DEBUG'] === '1' || process.env['GAME_API_DEBUG'] === 'true'
+const LATENCY_MS = parseInt(process.env['GAME_API_LATENCY_MS'] ?? '0', 10)
+const ERROR_RATE = Number(process.env['GAME_API_ERROR_RATE'] ?? '0')
 
 const app = new Hono()
+
+// Optional local-only realism knobs for demos and resilience levels. Defaults are deterministic.
+app.use('*', async (c, next) => {
+  const startedAt = Date.now()
+  const safeLatency = Number.isFinite(LATENCY_MS) && LATENCY_MS > 0 ? LATENCY_MS : 0
+  const safeErrorRate = Number.isFinite(ERROR_RATE) && ERROR_RATE > 0 ? Math.min(ERROR_RATE, 1) : 0
+
+  if (safeLatency > 0) {
+    await new Promise((resolve) => setTimeout(resolve, safeLatency))
+  }
+
+  if (safeErrorRate > 0 && c.req.path !== '/health' && Math.random() < safeErrorRate) {
+    if (DEBUG) console.log(`${c.req.method} ${c.req.path} -> 503 simulated`)
+    return c.json({ error: 'simulated_upstream_failure' }, 503)
+  }
+
+  await next()
+
+  if (DEBUG) {
+    console.log(`${c.req.method} ${c.req.path} -> ${c.res.status} (${Date.now() - startedAt}ms)`)
+  }
+})
 
 // ─── Auth middleware ─────────────────────────────────────────────────────────
 
@@ -37,6 +62,7 @@ app.get('/za/pb/v1/accounts/:accountId/transactions', (c) => {
   const { accountId } = c.req.param()
   const cursor = c.req.query('cursor') ?? null
   const pageSize = parseInt(c.req.query('pageSize') ?? '10', 10)
+  const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 10
   const fromDate = c.req.query('fromDate') ?? null   // YYYY-MM-DD
   const toDate = c.req.query('toDate') ?? null       // YYYY-MM-DD
   const transactionType = c.req.query('transactionType') ?? null
@@ -58,7 +84,7 @@ app.get('/za/pb/v1/accounts/:accountId/transactions', (c) => {
     all = all.filter((tx) => tx.transactionType === transactionType)
   }
 
-  const { page, nextCursor } = paginate(all, cursor, pageSize)
+  const { page, nextCursor } = paginate(all, cursor, safePageSize)
 
   return c.json({
     data: { transactions: page },
@@ -68,7 +94,13 @@ app.get('/za/pb/v1/accounts/:accountId/transactions', (c) => {
         ? { next: `/za/pb/v1/accounts/${accountId}/transactions?cursor=${nextCursor}` }
         : {}),
     },
-    meta: { totalPages: 1, nextCursor },
+    meta: {
+      count: page.length,
+      totalCount: all.length,
+      pageSize: safePageSize,
+      totalPages: Math.ceil(all.length / safePageSize),
+      nextCursor,
+    },
   })
 })
 

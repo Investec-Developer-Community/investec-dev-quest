@@ -1,7 +1,7 @@
 /**
  * Level N: [Your Level Name]
  *
- * [One-line description of what the player needs to implement.]
+ * This starter should run, but contain the specific bug the level teaches.
  *
  * READ story.md for the full brief.
  */
@@ -13,6 +13,6 @@
  * @returns {type}
  */
 export function yourFunction(param) {
-  // TODO: implement this
-  throw new Error('Not implemented')
+  // Intentionally flawed baseline: replace with a realistic bug for this level.
+  return param
 }

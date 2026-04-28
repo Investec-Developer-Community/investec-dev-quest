@@ -1,12 +1,14 @@
 # Citation Checkpoint
 
-## The situation
+## Mission Brief
 
 Your AI assistant answers policy questions using internal docs. Every claim must include at least one supporting citation id.
 
-A bug slipped in: only the first claim is validated. The model can hallucinate unsupported claims later in the answer.
+## Bug Report
 
-## Your task
+Answers can pass validation even when later claims are unsupported. The model can still hallucinate policy details after an initially valid-looking claim.
+
+## Your Task
 
 Implement:
 
@@ -29,8 +31,12 @@ Rules:
 - If any claim is missing citations, answer is invalid
 - Return `{ valid: boolean, reason?: string }`
 
-## Win condition
+## Threat
+
+The attack supplies a fully cited first claim and an uncited second claim.
+
+## Win Condition
 
 Both test suites pass.
 
-The attack supplies a fully cited first claim and an uncited second claim. Starter accepts it; your fix must reject it.
+Your fix must reject answers when any claim lacks supporting citations.

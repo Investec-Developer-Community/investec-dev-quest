@@ -79,15 +79,23 @@ export async function runLevelEvaluation(
     incrementAttempts(manifest.id)
   }
 
+  const attempts = progress.attempts + (countAttempt ? 1 : 0)
+
   const levelComplete = testResults.passed && exploitBlocked
   if (levelComplete) {
     upsertProgress({
       ...progress,
       status: 'complete',
+      attempts,
       completedAt: progress.completedAt ?? new Date().toISOString(),
     })
     if (showBanner) {
-      renderWinBanner(manifest.name, nextLevelCommand)
+      renderWinBanner(manifest.name, {
+        attempts,
+        hintsUsed: progress.hintsUsed,
+        referenceCommand: `pnpm game reference --season ${manifest.season} --level ${manifest.level}`,
+        ...(nextLevelCommand ? { nextLevelCommand } : {}),
+      })
     }
   }
 

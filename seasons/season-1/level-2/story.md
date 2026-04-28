@@ -1,6 +1,6 @@
 # Token Trouble
 
-## The situation
+## Mission Brief
 
 FinFlow's API client has been running in production for a week. Everything looks fine during business hours — but every morning the support team finds a wave of errors in the overnight logs:
 
@@ -10,9 +10,11 @@ Error: Request failed with status 401
   ...
 ```
 
-After some digging, you find the root cause: **OAuth2 access tokens expire after 30 minutes**. The client fetches a token at startup and uses it forever. When it expires, every API call fails with `401 Unauthorized`.
+## Bug Report
 
-## Your task
+Logs show the client works at startup, then begins returning `401 Unauthorized` after it has been running for a while. The starter already performs authenticated requests, but it does not recover from that failure mode.
+
+## Your Task
 
 Fix the `apiFetch` function so it **automatically retries** with a fresh token when it receives a `401`.
 
@@ -42,7 +44,11 @@ After a successful refresh, update `tokenStore.token` with the new value so call
 - On second `401`: throw `Error('Token refresh failed')`
 - Any non-401 non-ok response: throw `Error('Request failed: <status>')`
 
-## Win condition
+## Threat
+
+The attack uses a stale token against a protected endpoint and expects the client to recover without pushing refresh logic onto every caller.
+
+## Win Condition
 
 Both the behavior tests and the attack script must pass.
 

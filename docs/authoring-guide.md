@@ -95,12 +95,69 @@ The starter code is the file the player edits. It must:
 1. **Compile/parse successfully** (no syntax errors)
 2. **Fail the behavior tests** (so there's something to fix)
 3. **Allow the attack to succeed** (so there's a vulnerability to address)
-4. Contain clear `// TODO:` markers and JSDoc on every export
+4. Feel like realistic code under investigation, not a blank kata
+5. Contain clear JSDoc on every export where the contract is not obvious
 
 Common patterns:
-- Throw `new Error('Not implemented')` in all functions
 - Introduce a subtle bug (type coercion, off-by-one, missing check)
 - Leave a `// TODO: handle pagination` comment with just the first page implemented
+- Implement the happy path but skip the edge case the attack script exploits
+- Trust one unsafe field, such as `requestedBy`, `country.code`, or a partial signature
+
+Avoid blank `throw new Error('Not implemented')` starters unless the level is intentionally an onboarding exercise. The best levels feel like fixing a real incident: the code runs, some behavior appears correct, and the player has to discover the flawed assumption.
+
+### Starter examples
+
+Good starter: realistic, runnable, and flawed in the way the level teaches.
+
+```js
+const BLOCKED_MCCS = [5816, 7995]
+
+export function beforeTransaction(event) {
+  const mcc = event?.merchant?.category?.code
+  if (BLOCKED_MCCS.includes(mcc)) {
+    return { approved: false, message: 'Restricted merchant category' }
+  }
+  return { approved: true }
+}
+```
+
+Bad starter: it gives the player no incident to investigate.
+
+```js
+export function beforeTransaction(event) {
+  throw new Error('Not implemented')
+}
+```
+
+Bad starter: it is so broken that the intended lesson disappears.
+
+```js
+export function beforeTransaction() {
+  return null
+}
+```
+
+### Story structure
+
+Use this structure for new levels:
+
+1. **Mission Brief** — a short scenario with a concrete user or operational problem.
+2. **Bug Report** — what is failing or risky, without naming the exact fix.
+3. **Background** — only the domain context needed to start.
+4. **Your Task** — required exports and expected contract.
+5. **Threat** — what the attack proves, without giving away the implementation.
+6. **Win Condition** — behavior tests pass and the attack is blocked.
+
+Move root-cause explanations into hints or post-solve debriefs. Players should read the story and know what to investigate; they should not read the story and already know the exact line to change.
+
+Good story copy:
+
+> A QA tester noticed that some blocked merchant transactions are still being approved. The event payload comes from a platform boundary, so inspect the input shape before making authorization decisions.
+
+Bad story copy:
+
+> The bug is that `Array.includes` uses strict equality and the MCC is a string, so convert it to a number.
 
 ---
 
@@ -121,6 +178,22 @@ Write exactly 2 hints per level, in increasing specificity:
 - **Hint 1**: Points at the right concept without giving it away. `"What type does Array.includes use for equality?"` 
 - **Hint 2**: Shows the pattern. Code snippet allowed, but not the complete solution.
 
+Hint 1 should help the player choose what to inspect. Hint 2 can show a small implementation pattern, but should still leave the final integration to the player.
+
+---
+
+## Debriefs
+
+Debriefs are optional per level, but recommended for levels with security or production engineering lessons. If present, `pnpm game reference` shows them after completion.
+
+Use this structure:
+
+1. **What changed** — the essential implementation difference.
+2. **Why it matters** — the risk or failure mode this prevents.
+3. **Production habit** — the durable engineering practice players should remember.
+
+Keep each section short. The debrief should explain the lesson, not duplicate the reference solution line by line.
+
 ---
 
 ## Validation checklist
@@ -133,6 +206,8 @@ Before submitting a new level, verify:
 - [ ] Reference code passes `tests/` (copy reference to solution.js, run `vitest run tests/`)
 - [ ] Reference code causes `attack/` to pass (run `vitest run attack/`) — exploit blocked
 - [ ] `story.md` introduces the scenario without giving away the answer
+- [ ] `story.md` includes `Mission Brief`, `Bug Report`, `Your Task`, `Threat`, and `Win Condition`
+- [ ] Exactly two hints exist under `hints/`
 - [ ] Level is completable in ≤ 25 minutes (test on a fresh player)
 
 ---

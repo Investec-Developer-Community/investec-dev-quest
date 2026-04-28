@@ -1,12 +1,18 @@
 # Level 1: First Contact
 
-## The Scenario
+## Mission Brief
 
 You've just joined the team at **FinFlow**, a startup building on top of the Investec Programmable Banking API.
 
-Your first task: implement the account data client. This is the foundation everything else depends on — budgeting dashboards, spend tracking, and the card control features coming in Season 2.
+Your first task is to finish the account data client. This is the foundation everything else depends on: budgeting dashboards, spend tracking, and the card control features coming in Season 2.
 
-The mock API is already running. Your job is to build a client that:
+## Bug Report
+
+The current client only works as a sketch. It needs to authenticate with the mock API, collect every paginated account, and calculate a reliable total balance without relying on embedded credentials.
+
+## Background
+
+The mock API is already running. The client must:
 
 1. **Authenticates** using OAuth 2.0 client credentials
 2. **Fetches all accounts** (handling pagination correctly)
@@ -53,6 +59,10 @@ const clientSecret = process.env.GAME_API_CLIENT_SECRET
 const apiKey = process.env.GAME_API_KEY
 const baseUrl = process.env.GAME_API_BASE_URL
 ```
+
+## Threat
+
+The attack script checks whether the implementation secretly uses hardcoded credentials instead of the values supplied by the caller and environment.
 
 ## Win Condition
 

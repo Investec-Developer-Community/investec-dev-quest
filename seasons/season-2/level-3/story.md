@@ -1,14 +1,16 @@
 # Velocity Vault
 
-## The situation
+## Mission Brief
 
 FinFlow's security team has flagged a pattern on one of their business cards: rapid small transactions from multiple merchants in quick succession. This is a classic **carding attack** — a compromised card is being tested with tiny amounts to verify it works before larger fraudulent charges are made.
 
 The rule they want: **no more than 3 transactions within any 60-second window**. If a 4th transaction arrives within 60 seconds of the first, it should be declined.
 
-The current `beforeTransaction` implementation approves everything — it has no rate limiting at all.
+## Bug Report
 
-## Your task
+The current `beforeTransaction` implementation approves everything, so it has no effective rate limiting for rapid-fire card activity.
+
+## Your Task
 
 Implement velocity limiting in `beforeTransaction`:
 
@@ -32,8 +34,12 @@ Same as Level 2 — use `kv.get('tx_timestamps')` / `kv.set('tx_timestamps', arr
 
 Store timestamps as an array of numbers (milliseconds since epoch).
 
-## Win condition
+## Threat
+
+The attack fires four transactions in a tight window and expects the fourth to be declined while earlier transactions remain valid.
+
+## Win Condition
 
 Both test suites must pass.
 
-The attack fires 4 transactions with timestamps 1 second apart (all within 60s). The 4th must be **declined**. The buggy starter approves all 4.
+The attack fires 4 transactions with timestamps 1 second apart. The 4th must be **declined**.

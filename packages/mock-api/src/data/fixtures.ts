@@ -253,9 +253,11 @@ export function paginate<T>(
   cursor: string | null,
   pageSize: number
 ): { page: T[]; nextCursor: string | null } {
-  const startIndex = cursor ? parseInt(cursor, 10) : 0
-  const page = items.slice(startIndex, startIndex + pageSize)
-  const nextStart = startIndex + pageSize
+  const parsedCursor = cursor ? parseInt(cursor, 10) : 0
+  const startIndex = Number.isFinite(parsedCursor) && parsedCursor >= 0 ? parsedCursor : 0
+  const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 10
+  const page = items.slice(startIndex, startIndex + safePageSize)
+  const nextStart = startIndex + safePageSize
   const nextCursor = nextStart < items.length ? String(nextStart) : null
   return { page, nextCursor }
 }

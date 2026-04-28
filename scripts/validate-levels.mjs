@@ -27,6 +27,8 @@ import { randomBytes } from 'crypto'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(__dirname, '..')
 const SEASONS_DIR = join(REPO_ROOT, 'seasons')
+const TEMPLATE_DIR = join(REPO_ROOT, 'templates', 'level-template')
+const REQUIRED_STORY_SECTIONS = ['Mission Brief', 'Bug Report', 'Your Task', 'Threat', 'Win Condition']
 
 // ─── Load .env from repo root ─────────────────────────────────────────────────
 
@@ -50,8 +52,8 @@ loadDotEnv()
 
 function isApiReachable() {
   try {
-    execFileSync('curl', ['-s', '--max-time', '2', '-o', '/dev/null', '-w', '%{http_code}', 'http://localhost:3001/za/pb/v1/accounts'], { stdio: 'pipe' })
-    return true
+    const output = execFileSync('curl', ['-s', '--max-time', '2', 'http://localhost:3001/health'], { stdio: 'pipe' }).toString()
+    return output.includes('investec-mock-api')
   } catch {
     return false
   }
@@ -79,6 +81,69 @@ function validateManifest(manifestPath, levelDir) {
   if (!Array.isArray(raw.tags)) throw new Error('tags must be an array')
 
   return raw
+}
+
+// ─── Content structure validation ────────────────────────────────────────────
+
+function validateStorySections(storyPath) {
+  const story = readFileSync(storyPath, 'utf-8')
+  const missing = REQUIRED_STORY_SECTIONS.filter((section) => {
+    const pattern = new RegExp(`^##\\s+${section}\\s*$`, 'm')
+    return !pattern.test(story)
+  })
+
+  if (missing.length > 0) {
+    throw new Error(`story.md missing standard section(s): ${missing.join(', ')}`)
+  }
+}
+
+function validateHints(hintsDir) {
+  const hintFiles = readdirSync(hintsDir)
+    .filter((name) => /^hint-\d+\.md$/.test(name))
+    .sort()
+
+  if (hintFiles.length !== 2) {
+    throw new Error(`Expected exactly 2 hint files, found ${hintFiles.length}`)
+  }
+
+  for (const expected of ['hint-1.md', 'hint-2.md']) {
+    if (!hintFiles.includes(expected)) throw new Error(`Missing required hint file: hints/${expected}`)
+  }
+}
+
+function validateTemplate() {
+  const errors = []
+  const requiredTemplatePaths = [
+    ['manifest.json', join(TEMPLATE_DIR, 'manifest.json')],
+    ['story.md', join(TEMPLATE_DIR, 'story.md')],
+    ['starter/solution.js', join(TEMPLATE_DIR, 'starter', 'solution.js')],
+    ['tests/', join(TEMPLATE_DIR, 'tests')],
+    ['attack/', join(TEMPLATE_DIR, 'attack')],
+    ['hints/', join(TEMPLATE_DIR, 'hints')],
+    ['hints/hint-1.md', join(TEMPLATE_DIR, 'hints', 'hint-1.md')],
+    ['hints/hint-2.md', join(TEMPLATE_DIR, 'hints', 'hint-2.md')],
+    ['reference/solution.js', join(TEMPLATE_DIR, 'reference', 'solution.js')],
+    ['debrief.md', join(TEMPLATE_DIR, 'debrief.md')],
+    ['vitest.config.js', join(TEMPLATE_DIR, 'vitest.config.js')],
+  ]
+
+  for (const [label, path] of requiredTemplatePaths) {
+    if (!existsSync(path)) errors.push(`Template missing required file: ${label}`)
+  }
+
+  try {
+    validateStorySections(join(TEMPLATE_DIR, 'story.md'))
+  } catch (err) {
+    errors.push(`Template ${err.message}`)
+  }
+
+  try {
+    validateHints(join(TEMPLATE_DIR, 'hints'))
+  } catch (err) {
+    errors.push(`Template ${err.message}`)
+  }
+
+  return errors
 }
 
 // ─── Test runner helper ───────────────────────────────────────────────────────
@@ -130,6 +195,8 @@ function validateLevel(levelDir) {
   const referencePath = join(levelDir, 'reference', 'solution.js')
   const testsDir = join(levelDir, 'tests')
   const attackDir = join(levelDir, 'attack')
+  const storyPath = join(levelDir, 'story.md')
+  const hintsDir = join(levelDir, 'hints')
 
   // Required files
   for (const [label, p] of [
@@ -137,12 +204,17 @@ function validateLevel(levelDir) {
     ['reference/solution.js', referencePath],
     ['tests/', testsDir],
     ['attack/', attackDir],
-    ['story.md', join(levelDir, 'story.md')],
-    ['hints/hint-1.md', join(levelDir, 'hints', 'hint-1.md')],
+    ['story.md', storyPath],
+    ['hints/', hintsDir],
+    ['hints/hint-1.md', join(hintsDir, 'hint-1.md')],
+    ['hints/hint-2.md', join(hintsDir, 'hint-2.md')],
     ['vitest.config.js', join(levelDir, 'vitest.config.js')],
   ]) {
     if (!existsSync(p)) throw new Error(`Missing required file: ${label}`)
   }
+
+  validateStorySections(storyPath)
+  validateHints(hintsDir)
 
   const errors = []
 
@@ -197,6 +269,17 @@ const filterId = process.argv[2] ?? null
 
 let totalLevels = 0
 let failedLevels = 0
+let failedQualityGates = 0
+
+process.stdout.write('  Validating level template... ')
+const templateErrors = validateTemplate()
+if (templateErrors.length === 0) {
+  console.log('✓')
+} else {
+  console.log('✗')
+  for (const e of templateErrors) console.error(`    ✗ ${e}`)
+  failedQualityGates++
+}
 
 for (const seasonEntry of readdirSync(SEASONS_DIR).sort()) {
   const seasonDir = join(SEASONS_DIR, seasonEntry)
@@ -247,6 +330,6 @@ if (totalLevels === 0) {
 
 console.log(`\n  ${totalLevels - failedLevels}/${totalLevels} levels pass the content contract.`)
 
-if (failedLevels > 0) {
+if (failedLevels > 0 || failedQualityGates > 0) {
   process.exit(1)
 }
