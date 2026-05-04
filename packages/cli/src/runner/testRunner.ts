@@ -3,10 +3,8 @@ import { join } from 'path'
 import { readFileSync, unlinkSync, existsSync } from 'fs'
 import { tmpdir } from 'os'
 import { randomBytes } from 'crypto'
-import { fileURLToPath } from 'url'
 import type { TestRunResult } from '@investec-game/shared'
-
-const REPO_ROOT = fileURLToPath(new URL('../../../..', import.meta.url))
+import { REPO_ROOT } from '../paths.js'
 
 function tempJsonPath(): string {
   return join(tmpdir(), `investec-game-${randomBytes(6).toString('hex')}.json`)

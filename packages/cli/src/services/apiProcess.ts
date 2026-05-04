@@ -1,9 +1,8 @@
 import { spawn } from 'child_process'
 import { join } from 'path'
-import { fileURLToPath } from 'url'
+import { REPO_ROOT } from '../paths.js'
 
 const MOCK_API_PORT = parseInt(process.env['GAME_API_PORT'] ?? '3001', 10)
-const REPO_ROOT = fileURLToPath(new URL('../../../..', import.meta.url))
 const HEALTH_URL = `http://127.0.0.1:${MOCK_API_PORT}/health`
 
 export async function isApiRunning(): Promise<boolean> {

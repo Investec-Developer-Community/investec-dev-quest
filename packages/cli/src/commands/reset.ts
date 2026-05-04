@@ -1,10 +1,10 @@
 import type { Command } from 'commander'
 import { existsSync, copyFileSync } from 'fs'
-import chalk from 'chalk'
+import { p, pc } from '../ui/theme.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress, upsertProgress } from '../db/progress.js'
-import * as readline from 'readline'
+import { isCancel } from '@clack/prompts'
 import { resolveLevelSelection } from './levelSelection.js'
 
 export function registerResetCommand(program: Command): void {
@@ -19,35 +19,30 @@ export function registerResetCommand(program: Command): void {
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        program.error(chalk.red(`Level S${season}L${level} not found.`), {
-          exitCode: EXIT_CODES.USAGE_ERROR,
-          code: 'game.reset.not-found',
-        })
+        p.cancel(pc.red(`Level S${season}L${level} not found.`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       const resolved = loadLevel(levelDir)
       const { manifest, solutionPath, starterPath } = resolved
 
       if (!existsSync(starterPath)) {
-        program.error(chalk.red(`No starter code found at ${starterPath}`), {
-          exitCode: EXIT_CODES.USAGE_ERROR,
-          code: 'game.reset.no-starter',
-        })
+        p.cancel(pc.red(`No starter code found at ${starterPath}`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       if (!opts.yes) {
-        const confirmed = await confirm(
-          chalk.yellow(`Reset solution.js for "${manifest.name}" to starter code? `) +
-            chalk.dim('(y/N) ')
-        )
-        if (!confirmed) {
-          console.log(chalk.dim('Reset cancelled.'))
+        const confirmed = await p.confirm({
+          message: `Reset solution.js for "${manifest.name}" to starter code?`,
+        })
+        if (isCancel(confirmed) || !confirmed) {
+          p.cancel('Reset cancelled.')
           return
         }
       }
 
       copyFileSync(starterPath, solutionPath)
-      console.log(chalk.green('solution.js reset to starter code.'))
+      p.log.success(pc.green('solution.js reset to starter code.'))
 
       // Mark as active again if it was complete
       const progress = getProgress(manifest.id)
@@ -57,17 +52,7 @@ export function registerResetCommand(program: Command): void {
           status: 'active',
           completedAt: null,
         })
-        console.log(chalk.dim('Progress status reset to active.'))
+        p.log.message(pc.dim('Progress status reset to active.'))
       }
     })
-}
-
-function confirm(prompt: string): Promise<boolean> {
-  return new Promise((resolve) => {
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout })
-    rl.question(prompt, (answer) => {
-      rl.close()
-      resolve(answer.toLowerCase() === 'y')
-    })
-  })
 }

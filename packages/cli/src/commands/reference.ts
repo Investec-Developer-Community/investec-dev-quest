@@ -1,7 +1,6 @@
 import type { Command } from 'commander'
 import { existsSync, readFileSync } from 'fs'
-import chalk from 'chalk'
-import boxen from 'boxen'
+import { p, pc } from '../ui/theme.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress } from '../db/progress.js'
@@ -19,10 +18,8 @@ export function registerReferenceCommand(program: Command): void {
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        program.error(chalk.red(`Level S${season}L${level} not found.`), {
-          exitCode: EXIT_CODES.USAGE_ERROR,
-          code: 'game.reference.not-found',
-        })
+        p.cancel(pc.red(`Level S${season}L${level} not found.`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       const resolved = loadLevel(levelDir)
@@ -30,53 +27,39 @@ export function registerReferenceCommand(program: Command): void {
       const progress = getProgress(manifest.id)
 
       if (progress?.status !== 'complete') {
-        console.log(
-          boxen(
-            [
-              chalk.yellow.bold('Reference locked'),
-              '',
-              chalk.white(`Complete "${manifest.name}" before viewing the reference solution.`),
-              '',
-              chalk.dim('Run `pnpm game test` until both behavior tests and the attack script pass.'),
-              chalk.dim('Use `pnpm game hint` if you want a nudge.'),
-            ].join('\n'),
-            {
-              padding: 1,
-              borderColor: 'yellow',
-            }
-          )
+        p.note(
+          [
+            `Complete "${manifest.name}" before viewing the reference solution.`,
+            '',
+            pc.dim('Run `pnpm game test` until both behavior tests and the attack script pass.'),
+            pc.dim('Use `pnpm game hint` if you want a nudge.'),
+          ].join('\n'),
+          pc.yellow(pc.bold('Reference locked'))
         )
         return
       }
 
       if (!existsSync(referencePath)) {
-        program.error(chalk.red(`No reference solution found at ${referencePath}`), {
-          exitCode: EXIT_CODES.USAGE_ERROR,
-          code: 'game.reference.missing',
-        })
+        p.cancel(pc.red(`No reference solution found at ${referencePath}`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
-      console.log(
-        boxen(
-          [
-            chalk.green.bold(`Reference: ${manifest.name}`),
-            chalk.dim(`S${manifest.season} L${manifest.level} — ${manifest.difficulty}`),
-          ].join('\n'),
-          {
-            padding: 1,
-            borderColor: 'green',
-          }
-        )
+      p.note(
+        [
+          pc.green(pc.bold(`Reference: ${manifest.name}`)),
+          pc.dim(`S${manifest.season} L${manifest.level} — ${manifest.difficulty}`),
+        ].join('\n'),
+        pc.green(manifest.name)
       )
 
-      console.log(chalk.bold('\nreference/solution.js\n'))
+      p.log.step(pc.bold('reference/solution.js'))
       console.log(readFileSync(referencePath, 'utf-8'))
 
       if (opts.debrief !== false && existsSync(debriefPath)) {
-        console.log(chalk.bold('\nDebrief\n'))
+        p.log.step(pc.bold('Debrief'))
         console.log(readFileSync(debriefPath, 'utf-8'))
       } else if (opts.debrief !== false) {
-        console.log(chalk.dim('\nNo debrief.md exists for this level yet.'))
+        p.log.message(pc.dim('No debrief.md exists for this level yet.'))
       }
     })
 }

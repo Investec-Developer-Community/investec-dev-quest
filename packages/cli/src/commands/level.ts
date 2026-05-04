@@ -1,6 +1,6 @@
 import type { Command } from 'commander'
 import { existsSync, readFileSync, copyFileSync, mkdirSync } from 'fs'
-import chalk from 'chalk'
+import { p, pc, showBanner } from '../ui/theme.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress, upsertProgress, setCurrentLevel } from '../db/progress.js'
@@ -16,36 +16,33 @@ export function registerLevelCommand(program: Command): void {
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        program.error(
-          `${chalk.red(`Level S${season}L${level} not found.`)}\n${chalk.dim(
-            `Looked in: seasons/season-${season}/level-${level}`
-          )}`,
-          { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.level.not-found' }
-        )
+        p.cancel(pc.red(`Level S${season}L${level} not found.`))
+        p.log.message(pc.dim(`Looked in: seasons/season-${season}/level-${level}`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       const resolved = loadLevel(levelDir)
       const { manifest, storyPath, solutionPath, starterPath } = resolved
 
+      showBanner()
+
       // Print story
       if (existsSync(storyPath)) {
-        console.log('\n' + readFileSync(storyPath, 'utf-8'))
+        p.note(readFileSync(storyPath, 'utf-8'), pc.bold(manifest.name))
       }
 
       // Initialise solution.js from starter only if not already started
       let progress = getProgress(manifest.id)
       if (!existsSync(solutionPath)) {
         if (!existsSync(starterPath)) {
-          program.error(chalk.red(`No starter code found at ${starterPath}`), {
-            exitCode: EXIT_CODES.USAGE_ERROR,
-            code: 'game.level.no-starter',
-          })
+          p.cancel(pc.red(`No starter code found at ${starterPath}`))
+          process.exit(EXIT_CODES.USAGE_ERROR)
         }
         mkdirSync(levelDir, { recursive: true })
         copyFileSync(starterPath, solutionPath)
-        console.log(chalk.cyan(`\n→ Starter code copied to: ${chalk.bold(solutionPath)}`))
+        p.log.success(pc.cyan(`→ Starter code copied to: ${pc.bold(solutionPath)}`))
       } else {
-        console.log(chalk.dim(`\n→ solution.js already exists at: ${solutionPath} — resuming previous work`))
+        p.log.message(pc.dim(`→ solution.js already exists at: ${solutionPath} — resuming previous work`))
       }
 
       // Record progress
@@ -66,14 +63,14 @@ export function registerLevelCommand(program: Command): void {
       // Persist "currently selected" level for commands that omit --season/--level.
       setCurrentLevel(manifest.id)
 
-      console.log(
-        chalk.bold.white(`\nLevel: ${manifest.name}`) +
-          chalk.dim(` (S${manifest.season} L${manifest.level} — ${manifest.difficulty})`)
+      p.log.step(
+        pc.bold(`Level: ${manifest.name}`) +
+          pc.dim(` (S${manifest.season} L${manifest.level} — ${manifest.difficulty})`)
       )
-      console.log(chalk.dim(`\nEdit ${solutionPath} then run: `) + chalk.cyan('pnpm game test'))
+      p.log.info(pc.dim(`Edit ${solutionPath} then run: `) + pc.cyan('pnpm game test'))
       if (manifest.apiRequired) {
-        console.log(
-          chalk.dim('This level uses the mock Investec API — it will start automatically.')
+        p.log.message(
+          pc.dim('This level uses the mock Investec API — it will start automatically.')
         )
       }
     })

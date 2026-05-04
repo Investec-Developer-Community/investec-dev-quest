@@ -1,7 +1,6 @@
 import type { Command } from 'commander'
 import { existsSync } from 'fs'
-import chalk from 'chalk'
-import ora from 'ora'
+import { p, pc } from '../ui/theme.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel, loadAllLevels } from '../levels/loader.js'
 import { runTests, runAttack } from '../runner/testRunner.js'
@@ -50,15 +49,17 @@ export async function runLevelEvaluation(
   const nextLevelCommand = options.nextLevelCommand
 
   // Run behaviour tests
-  const testSpinner = ora('Running behavior tests…').start()
+  const testSpinner = p.spinner()
+  testSpinner.start('Running behavior tests…')
   const testResults = await runTests(testsDir, manifest.id)
-  testSpinner.stop()
+  testSpinner.stop('Behavior tests complete')
   renderTestResults(testResults, 'Behavior Tests')
 
   // Run attack script
-  const attackSpinner = ora('Running attack script…').start()
+  const attackSpinner = p.spinner()
+  attackSpinner.start('Running attack script…')
   const attackResults = await runAttack(attackDir, manifest.id)
-  attackSpinner.stop()
+  attackSpinner.stop('Attack script complete')
 
   // The attack script is written so that it PASSES when the exploit is blocked.
   // If attack tests all pass -> exploit is blocked -> good.
@@ -113,41 +114,35 @@ export function registerTestCommand(program: Command): void {
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        program.error(chalk.red(`Level S${season}L${level} not found.`), {
-          exitCode: EXIT_CODES.USAGE_ERROR,
-          code: 'game.test.not-found',
-        })
+        p.cancel(pc.red(`Level S${season}L${level} not found.`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       const resolved = loadLevel(levelDir)
       const { manifest, solutionPath } = resolved
 
       if (!existsSync(solutionPath)) {
-        program.error(
-          `${chalk.red(`No solution.js found. Run: pnpm game level ${level} --season ${season}`)}\n${chalk.dim(
-            'Tip: loading a level creates starter code and sets your active level for test/hint/reset/watch.'
-          )}`,
-          { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.test.no-solution' }
-        )
+        p.cancel(pc.red(`No solution.js found. Run: pnpm game level ${level} --season ${season}`))
+        p.log.message(pc.dim('Tip: loading a level creates starter code and sets your active level for test/hint/reset/watch.'))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       // Start mock API if this level needs it
       if (manifest.apiRequired) {
-        const apiSpinner = ora('Starting mock Investec API…').start()
+        const apiSpinner = p.spinner()
+        apiSpinner.start('Starting mock Investec API…')
         try {
           await ensureApiRunning()
-          apiSpinner.succeed('Mock Investec API is running')
+          apiSpinner.stop('Mock Investec API is running')
         } catch (err) {
           const msg = err instanceof Error ? err.message : 'Failed to start mock API'
-          apiSpinner.fail(msg)
-          program.error(chalk.red(msg), {
-            exitCode: EXIT_CODES.USAGE_ERROR,
-            code: 'game.test.api-start-failed',
-          })
+          apiSpinner.stop(pc.red(msg))
+          p.cancel(pc.red(msg))
+          process.exit(EXIT_CODES.USAGE_ERROR)
         }
       }
 
-      console.log(chalk.bold(`\nRunning: ${manifest.name}\n`))
+      p.log.step(pc.bold(`Running: ${manifest.name}`))
 
       const nextLevelCommand = getNextLevelCommand(manifest.id)
       const evaluationOptions: RunLevelEvaluationOptions = nextLevelCommand
@@ -157,6 +152,8 @@ export function registerTestCommand(program: Command): void {
       if (!complete) {
         renderBeginnerGuidance()
         process.exitCode = EXIT_CODES.EXPECTED_TEST_FAILURE
+      } else {
+        p.outro(pc.green('Done!'))
       }
     })
 }

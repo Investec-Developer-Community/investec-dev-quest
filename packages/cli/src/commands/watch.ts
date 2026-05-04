@@ -1,8 +1,7 @@
 import type { Command } from 'commander'
 import { existsSync } from 'fs'
 import { relative } from 'path'
-import chalk from 'chalk'
-import ora from 'ora'
+import { p, pc } from '../ui/theme.js'
 import chokidar from 'chokidar'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
@@ -25,49 +24,42 @@ export function registerWatchCommand(program: Command): void {
         : 300
 
       if (!Number.isFinite(parsedDebounce) || parsedDebounce < 0) {
-        program.error(chalk.red(`Invalid debounce value: ${opts.debounce}`), {
-          exitCode: EXIT_CODES.USAGE_ERROR,
-          code: 'game.watch.invalid-debounce',
-        })
+        p.cancel(pc.red(`Invalid debounce value: ${opts.debounce}`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        program.error(chalk.red(`Level S${season}L${level} not found.`), {
-          exitCode: EXIT_CODES.USAGE_ERROR,
-          code: 'game.watch.not-found',
-        })
+        p.cancel(pc.red(`Level S${season}L${level} not found.`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       const resolved = loadLevel(levelDir)
       const { manifest, solutionPath, testsDir, attackDir, dir } = resolved
 
       if (!existsSync(solutionPath)) {
-        program.error(
-          chalk.red(`No solution.js found. Run: pnpm game level ${level} --season ${season}`),
-          { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.watch.no-solution' }
-        )
+        p.cancel(pc.red(`No solution.js found. Run: pnpm game level ${level} --season ${season}`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       if (manifest.apiRequired) {
-        const apiSpinner = ora('Starting mock Investec API…').start()
+        const apiSpinner = p.spinner()
+        apiSpinner.start('Starting mock Investec API…')
         try {
           await ensureApiRunning()
-          apiSpinner.succeed('Mock Investec API is running')
+          apiSpinner.stop('Mock Investec API is running')
         } catch (err) {
           const msg = err instanceof Error ? err.message : 'Failed to start mock API'
-          apiSpinner.fail(msg)
-          program.error(chalk.red(msg), {
-            exitCode: EXIT_CODES.USAGE_ERROR,
-            code: 'game.watch.api-start-failed',
-          })
+          apiSpinner.stop(pc.red(msg))
+          p.cancel(pc.red(msg))
+          process.exit(EXIT_CODES.USAGE_ERROR)
         }
       }
 
-      console.log(chalk.bold(`\nWatching: ${manifest.name}`))
-      console.log(chalk.dim(`Files: solution.js, tests/, attack/`))
-      console.log(chalk.dim(`Debounce: ${debounceMs}ms`))
-      console.log(chalk.dim('Press Ctrl+C to stop.\n'))
+      p.log.step(pc.bold(`Watching: ${manifest.name}`))
+      p.log.message(pc.dim(`Files: solution.js, tests/, attack/`))
+      p.log.message(pc.dim(`Debounce: ${debounceMs}ms`))
+      p.log.message(pc.dim('Press Ctrl+C to stop.'))
 
       let inFlight = false
       let rerunQueued = false
@@ -82,7 +74,7 @@ export function registerWatchCommand(program: Command): void {
         }
 
         inFlight = true
-        console.log(chalk.cyan(`\n[${new Date().toLocaleTimeString()}] Re-running (${reason})\n`))
+        p.log.info(pc.cyan(`[${new Date().toLocaleTimeString()}] Re-running (${reason})`))
 
         try {
           await runLevelEvaluation(resolved, {
@@ -124,7 +116,7 @@ export function registerWatchCommand(program: Command): void {
       watcher.on('unlink', (path) => schedule(`removed ${eventPathLabel(path)}`))
       watcher.on('error', (error) => {
         const msg = error instanceof Error ? error.message : String(error)
-        console.error(chalk.red(`Watcher error: ${msg}`))
+        p.log.error(pc.red(`Watcher error: ${msg}`))
       })
 
       await runCycle('initial run')
@@ -137,7 +129,7 @@ export function registerWatchCommand(program: Command): void {
           closing = true
           if (debounceTimer) clearTimeout(debounceTimer)
           await watcher.close()
-          console.log(chalk.dim('\nStopped watch mode.'))
+          p.log.message(pc.dim('Stopped watch mode.'))
           resolve()
         }
 

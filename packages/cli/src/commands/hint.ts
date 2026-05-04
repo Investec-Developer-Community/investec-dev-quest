@@ -1,7 +1,7 @@
 import type { Command } from 'commander'
 import { existsSync, readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
-import chalk from 'chalk'
+import { p, pc } from '../ui/theme.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress, recordHintUnlock, getUnlockedHints } from '../db/progress.js'
@@ -19,17 +19,15 @@ export function registerHintCommand(program: Command): void {
 
       const levelDir = findLevelDir(season, level)
       if (!levelDir) {
-        program.error(chalk.red(`Level S${season}L${level} not found.`), {
-          exitCode: EXIT_CODES.USAGE_ERROR,
-          code: 'game.hint.not-found',
-        })
+        p.cancel(pc.red(`Level S${season}L${level} not found.`))
+        process.exit(EXIT_CODES.USAGE_ERROR)
       }
 
       const resolved = loadLevel(levelDir)
       const { manifest, hintsDir } = resolved
 
       if (!existsSync(hintsDir)) {
-        console.log(chalk.yellow('No hints available for this level.'))
+        p.log.warn(pc.yellow('No hints available for this level.'))
         return
       }
 
@@ -38,7 +36,7 @@ export function registerHintCommand(program: Command): void {
         .sort()
 
       if (hintFiles.length === 0) {
-        console.log(chalk.yellow('No hints available for this level.'))
+        p.log.warn(pc.yellow('No hints available for this level.'))
         return
       }
 
@@ -46,14 +44,13 @@ export function registerHintCommand(program: Command): void {
 
       if (opts.all) {
         if (unlocked.length === 0) {
-          console.log(chalk.dim('No hints unlocked yet. Run `pnpm game hint` to unlock the first one.'))
+          p.log.message(pc.dim('No hints unlocked yet. Run `pnpm game hint` to unlock the first one.'))
           return
         }
         for (const idx of unlocked) {
           const file = hintFiles[idx]
           if (file) {
-            console.log(chalk.bold(`\nHint ${idx + 1}:`))
-            console.log(readFileSync(join(hintsDir, file), 'utf-8'))
+            p.note(readFileSync(join(hintsDir, file), 'utf-8'), `Hint ${idx + 1}`)
           }
         }
         return
@@ -62,8 +59,8 @@ export function registerHintCommand(program: Command): void {
       const nextIndex = unlocked.length
 
       if (nextIndex >= hintFiles.length) {
-        console.log(chalk.yellow(`You've already unlocked all ${hintFiles.length} hint(s) for this level.`))
-        console.log(chalk.dim('Run with --all to review them.'))
+        p.log.warn(pc.yellow(`You've already unlocked all ${hintFiles.length} hint(s) for this level.`))
+        p.log.message(pc.dim('Run with --all to review them.'))
         return
       }
 
@@ -72,18 +69,17 @@ export function registerHintCommand(program: Command): void {
 
       recordHintUnlock(manifest.id, nextIndex)
 
-      console.log(chalk.bold(`\nHint ${nextIndex + 1} of ${hintFiles.length}:`))
-      console.log(readFileSync(join(hintsDir, file), 'utf-8'))
+      p.note(readFileSync(join(hintsDir, file), 'utf-8'), `Hint ${nextIndex + 1} of ${hintFiles.length}`)
 
       const remaining = hintFiles.length - nextIndex - 1
       if (remaining > 0) {
-        console.log(chalk.dim(`\n${remaining} more hint(s) available.`))
+        p.log.message(pc.dim(`${remaining} more hint(s) available.`))
       }
 
       // Ensure progress row exists
       const progress = getProgress(manifest.id)
       if (!progress) {
-        console.log(chalk.dim(`\nRun \`pnpm game level ${level} --season ${season}\` first.`))
+        p.log.message(pc.dim(`Run \`pnpm game level ${level} --season ${season}\` first.`))
       }
     })
 }

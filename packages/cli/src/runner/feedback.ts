@@ -1,53 +1,37 @@
-import chalk from 'chalk'
-import boxen from 'boxen'
+import { p, pc } from '../ui/theme.js'
 import type { TestRunResult } from '@investec-game/shared'
 
 export function renderTestResults(results: TestRunResult, label = 'Tests'): void {
-  const lines: string[] = []
-
   if (results.error) {
-    console.log(
-      boxen(chalk.red(`Runner error:\n${results.error}`), {
-        title: `${label} — Error`,
-        titleAlignment: 'left',
-        padding: 1,
-        borderColor: 'red',
-      })
-    )
+    p.log.error(pc.red(`${label} — Error`))
+    p.note(pc.red(`Runner error:\n${results.error}`), pc.red(label))
     return
   }
 
+  const lines: string[] = []
   for (const test of results.tests) {
     if (test.status === 'pass') {
-      lines.push(`  ${chalk.green('✓')} ${chalk.dim(test.name)}`)
+      lines.push(`${pc.green('✓')} ${pc.dim(test.name)}`)
     } else if (test.status === 'skip') {
-      lines.push(`  ${chalk.yellow('⊘')} ${chalk.dim(test.name)} (skipped)`)
+      lines.push(`${pc.yellow('⊘')} ${pc.dim(test.name)} (skipped)`)
     } else {
-      lines.push(`  ${chalk.red('✗')} ${chalk.white(test.name)}`)
+      lines.push(`${pc.red('✗')} ${test.name}`)
       if (test.message) {
         const trimmed = test.message.split('\n').slice(0, 6).join('\n')
-        lines.push(chalk.red(`    ${trimmed.replace(/\n/g, '\n    ')}`))
+        lines.push(pc.red(`  ${trimmed.replace(/\n/g, '\n  ')}`))
       }
     }
   }
 
   const summary = results.passed
-    ? chalk.green.bold(`${results.total}/${results.total} passed`)
-    : chalk.red.bold(`${results.failed}/${results.total} failed`)
+    ? pc.green(pc.bold(`${results.total}/${results.total} passed`))
+    : pc.red(pc.bold(`${results.failed}/${results.total} failed`))
 
   lines.push('')
   lines.push(summary)
 
-  const borderColor = results.passed ? 'green' : 'red'
-
-  console.log(
-    boxen(lines.join('\n'), {
-      title: label,
-      titleAlignment: 'left',
-      padding: 1,
-      borderColor,
-    })
-  )
+  const title = results.passed ? pc.green(label) : pc.red(label)
+  p.note(lines.join('\n'), title)
 }
 
 interface WinBannerOptions {
@@ -61,50 +45,41 @@ export function renderWinBanner(levelName: string, options: WinBannerOptions = {
   const attempts = options.attempts ?? 0
   const hintsUsed = options.hintsUsed ?? 0
   const lines = [
-    chalk.yellow.bold('  🎉  Level Complete!'),
+    pc.yellow(pc.bold('🎉  Level Complete!')),
     '',
-    chalk.white(`  "${levelName}" is solved.`),
+    `"${levelName}" is solved.`,
     '',
-    chalk.dim('  Both behavior tests and the attack script pass.'),
-    chalk.dim(`  Attempts: ${attempts}  Hints used: ${hintsUsed}`),
-    chalk.dim('  Run `pnpm game status` to see your progress.'),
+    pc.dim('Both behavior tests and the attack script pass.'),
+    pc.dim(`Attempts: ${attempts}  Hints used: ${hintsUsed}`),
+    pc.dim('Run `pnpm game status` to see your progress.'),
   ]
 
   if (options.referenceCommand) {
-    lines.push(chalk.cyan(`  Review reference: ${options.referenceCommand}`))
+    lines.push(pc.cyan(`Review reference: ${options.referenceCommand}`))
   }
 
   if (options.nextLevelCommand) {
     lines.push('')
-    lines.push(chalk.cyan(`  Next level: ${options.nextLevelCommand}`))
+    lines.push(pc.cyan(`Next level: ${options.nextLevelCommand}`))
   }
 
-  const content = lines.join('\n')
-
-  console.log(
-    boxen(content, {
-      padding: 1,
-      borderColor: 'yellow',
-      borderStyle: 'double',
-    })
-  )
+  p.note(lines.join('\n'), pc.yellow('Level Complete'))
 }
 
 export function renderAttackResult(results: TestRunResult, exploitBlocked: boolean): void {
-  const label = 'Attack Script'
   const lines: string[] = []
 
   if (results.error) {
-    lines.push(chalk.red(`Runner error:\n${results.error}`))
+    lines.push(pc.red(`Runner error:\n${results.error}`))
   } else {
     for (const test of results.tests) {
       if (test.status === 'pass') {
-        lines.push(`  ${chalk.green('✓')} ${chalk.dim(test.name)}`)
+        lines.push(`${pc.green('✓')} ${pc.dim(test.name)}`)
       } else {
-        lines.push(`  ${chalk.red('✗')} ${chalk.white(test.name)}`)
+        lines.push(`${pc.red('✗')} ${test.name}`)
         if (test.message) {
           const trimmed = test.message.split('\n').slice(0, 4).join('\n')
-          lines.push(chalk.red(`    ${trimmed.replace(/\n/g, '\n    ')}`))
+          lines.push(pc.red(`  ${trimmed.replace(/\n/g, '\n  ')}`))
         }
       }
     }
@@ -113,37 +88,26 @@ export function renderAttackResult(results: TestRunResult, exploitBlocked: boole
   lines.push('')
 
   if (exploitBlocked) {
-    lines.push(chalk.green.bold('Exploit blocked ✓'))
+    lines.push(pc.green(pc.bold('Exploit blocked ✓')))
   } else {
-    lines.push(chalk.red.bold('Exploit succeeds — vulnerability not yet fixed'))
+    lines.push(pc.red(pc.bold('Exploit succeeds — vulnerability not yet fixed')))
   }
 
-  console.log(
-    boxen(lines.join('\n'), {
-      title: label,
-      titleAlignment: 'left',
-      padding: 1,
-      borderColor: exploitBlocked ? 'green' : 'red',
-    })
-  )
+  const title = exploitBlocked ? pc.green('Attack Script') : pc.red('Attack Script')
+  p.note(lines.join('\n'), title)
 }
 
 export function renderBeginnerGuidance(): void {
-  const content = [
-    chalk.cyan.bold('  What to do next'),
+  const lines = [
+    pc.cyan(pc.bold('What to do next')),
     '',
-    chalk.white('  1. Start with the first failing test above.'),
-    chalk.white('  2. Use `pnpm game hint` for a nudge.'),
-    chalk.white('  3. Make one small change, then run `pnpm game test` again.'),
+    '1. Start with the first failing test above.',
+    '2. Use `pnpm game hint` for a nudge.',
+    '3. Make one small change, then run `pnpm game test` again.',
     '',
-    chalk.dim('  Tip: behavior tests protect the feature; the attack script protects the fix.'),
-    chalk.dim('  You can run `pnpm game status` anytime to track progress.'),
-  ].join('\n')
+    pc.dim('Tip: behavior tests protect the feature; the attack script protects the fix.'),
+    pc.dim('You can run `pnpm game status` anytime to track progress.'),
+  ]
 
-  console.log(
-    boxen(content, {
-      padding: 1,
-      borderColor: 'cyan',
-    })
-  )
+  p.note(lines.join('\n'), pc.cyan('Guidance'))
 }

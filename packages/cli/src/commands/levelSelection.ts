@@ -1,5 +1,5 @@
 import type { Command } from 'commander'
-import chalk from 'chalk'
+import { p, pc } from '../ui/theme.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { getCurrentLevelCoordinates, setCurrentLevel } from '../db/progress.js'
 
@@ -18,10 +18,8 @@ export function resolveLevelSelection(program: Command, opts: LevelSelectionOpti
   const hasLevel = opts.level !== undefined
 
   if (hasSeason !== hasLevel) {
-    program.error(
-      chalk.red('Provide both --season and --level together, or omit both to use the active level.'),
-      { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.selection.missing-pair' }
-    )
+    p.cancel(pc.red('Provide both --season and --level together, or omit both to use the active level.'))
+    process.exit(EXIT_CODES.USAGE_ERROR)
   }
 
   if (hasSeason && hasLevel) {
@@ -29,16 +27,12 @@ export function resolveLevelSelection(program: Command, opts: LevelSelectionOpti
     const level = Number.parseInt(opts.level ?? '', 10)
 
     if (!Number.isFinite(season) || season <= 0) {
-      program.error(chalk.red(`Invalid season: ${opts.season}`), {
-        exitCode: EXIT_CODES.USAGE_ERROR,
-        code: 'game.selection.invalid-season',
-      })
+      p.cancel(pc.red(`Invalid season: ${opts.season}`))
+      process.exit(EXIT_CODES.USAGE_ERROR)
     }
     if (!Number.isFinite(level) || level <= 0) {
-      program.error(chalk.red(`Invalid level: ${opts.level}`), {
-        exitCode: EXIT_CODES.USAGE_ERROR,
-        code: 'game.selection.invalid-level',
-      })
+      p.cancel(pc.red(`Invalid level: ${opts.level}`))
+      process.exit(EXIT_CODES.USAGE_ERROR)
     }
 
     setCurrentLevel(`s${season}-l${level}`)
@@ -48,12 +42,10 @@ export function resolveLevelSelection(program: Command, opts: LevelSelectionOpti
 
   const current = getCurrentLevelCoordinates()
   if (!current) {
-    program.error(
-      chalk.red(
-        'No active level selected. Run `pnpm game level <number> --season <number>` first, or pass --season and --level.'
-      ),
-      { exitCode: EXIT_CODES.USAGE_ERROR, code: 'game.selection.no-active-level' }
+    p.cancel(
+      pc.red('No active level selected. Run `pnpm game level <number> --season <number>` first, or pass --season and --level.')
     )
+    process.exit(EXIT_CODES.USAGE_ERROR)
   }
 
   return current

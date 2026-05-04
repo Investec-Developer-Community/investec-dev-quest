@@ -1,11 +1,9 @@
 import { readFileSync, existsSync, readdirSync } from 'fs'
 import { join } from 'path'
-import { fileURLToPath } from 'url'
 import type { LevelManifest } from '@investec-game/shared'
 import { LevelManifestSchema } from '@investec-game/shared'
+import { REPO_ROOT } from '../paths.js'
 
-// Seasons directory relative to the repo root (2 levels up from packages/cli)
-const REPO_ROOT = fileURLToPath(new URL('../../../..', import.meta.url))
 export const SEASONS_DIR = join(REPO_ROOT, 'seasons')
 
 export interface ResolvedLevel {

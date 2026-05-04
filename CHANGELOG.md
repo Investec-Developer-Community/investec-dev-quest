@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.1.0] – 2026-05-04
+
+### Changed
+- **Terminal UI overhaul**: replaced `chalk`, `boxen`, and `ora` with `@clack/prompts` and `picocolors` across the entire CLI. Output now uses a connected-line diamond-bullet aesthetic with bordered note panels, integrated spinners, and styled confirm prompts.
+- Added "DEV QUEST" ASCII art banner with gray gradient to `status` and `level` commands.
+- Preflight errors now use the same `@clack/prompts` error styling as the rest of the CLI (previously used raw `console.error`).
+- Interactive `reset` confirmation now uses a proper confirm prompt instead of raw `readline`.
+
+### Fixed
+- Extracted a single `REPO_ROOT` constant (`packages/cli/src/paths.ts`) shared across all modules — was previously computed independently in 5 files with fragile relative paths.
+- Removed unused `LevelStatus` type import in `progress.ts`.
+- Removed stale `better-sqlite3` from `pnpm-workspace.yaml` `allowBuilds` (no longer a dependency).
+- Removed unused `@investec-game/shared` dependency and TypeScript project reference from `@investec-game/webhook-emitter` (the package only uses Node built-in `crypto`).
+
+---
+
 ## [1.0.0] – 2026-04-28
 
 ### Added

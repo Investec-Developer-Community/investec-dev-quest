@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import { join } from 'path'
-import type { LevelProgress, LevelStatus } from '@investec-game/shared'
+import type { LevelProgress } from '@investec-game/shared'
 
 const DB_DIR = join(homedir(), '.investec-game')
 const DB_PATH = join(DB_DIR, 'progress.json')

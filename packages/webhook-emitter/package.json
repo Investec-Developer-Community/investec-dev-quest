@@ -15,9 +15,6 @@
     "build": "tsc -b",
     "dev": "tsc -b --watch"
   },
-  "dependencies": {
-    "@investec-game/shared": "workspace:*"
-  },
   "devDependencies": {
     "typescript": "^5.4.5"
   }
