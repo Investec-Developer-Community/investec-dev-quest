@@ -1,6 +1,7 @@
 import type { Command } from 'commander'
 import { existsSync, readFileSync } from 'fs'
 import { p, pc } from '../ui/theme.js'
+import { renderMarkdown } from '../ui/markdown.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress } from '../db/progress.js'
@@ -57,7 +58,7 @@ export function registerReferenceCommand(program: Command): void {
 
       if (opts.debrief !== false && existsSync(debriefPath)) {
         p.log.step(pc.bold('Debrief'))
-        console.log(readFileSync(debriefPath, 'utf-8'))
+        console.log(renderMarkdown(readFileSync(debriefPath, 'utf-8')))
       } else if (opts.debrief !== false) {
         p.log.message(pc.dim('No debrief.md exists for this level yet.'))
       }

@@ -1,6 +1,7 @@
 import type { Command } from 'commander'
 import { existsSync, readFileSync, copyFileSync, mkdirSync } from 'fs'
 import { p, pc, showBanner } from '../ui/theme.js'
+import { renderMarkdown } from '../ui/markdown.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress, upsertProgress, setCurrentLevel } from '../db/progress.js'
@@ -28,7 +29,8 @@ export function registerLevelCommand(program: Command): void {
 
       // Print story
       if (existsSync(storyPath)) {
-        p.note(readFileSync(storyPath, 'utf-8'), pc.bold(manifest.name))
+        const story = renderMarkdown(readFileSync(storyPath, 'utf-8'))
+        p.note(story, pc.bold(manifest.name))
       }
 
       // Initialise solution.js from starter only if not already started

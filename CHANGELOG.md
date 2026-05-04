@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.0] – 2026-05-04
 
+### Added
+- **Terminal markdown renderer** (`packages/cli/src/ui/markdown.ts`): story files, hints, and debriefs now display with formatted headings, styled code blocks, bullet lists, blockquotes, and inline formatting instead of raw markdown.
+
 ### Changed
 - **Terminal UI overhaul**: replaced `chalk`, `boxen`, and `ora` with `@clack/prompts` and `picocolors` across the entire CLI. Output now uses a connected-line diamond-bullet aesthetic with bordered note panels, integrated spinners, and styled confirm prompts.
 - Added "DEV QUEST" ASCII art banner with gray gradient to `status` and `level` commands.

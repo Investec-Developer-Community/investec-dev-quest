@@ -2,6 +2,7 @@ import type { Command } from 'commander'
 import { existsSync, readFileSync, readdirSync } from 'fs'
 import { join } from 'path'
 import { p, pc } from '../ui/theme.js'
+import { renderMarkdown } from '../ui/markdown.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress, recordHintUnlock, getUnlockedHints } from '../db/progress.js'
@@ -50,7 +51,7 @@ export function registerHintCommand(program: Command): void {
         for (const idx of unlocked) {
           const file = hintFiles[idx]
           if (file) {
-            p.note(readFileSync(join(hintsDir, file), 'utf-8'), `Hint ${idx + 1}`)
+            p.note(renderMarkdown(readFileSync(join(hintsDir, file), 'utf-8')), `Hint ${idx + 1}`)
           }
         }
         return
@@ -69,7 +70,7 @@ export function registerHintCommand(program: Command): void {
 
       recordHintUnlock(manifest.id, nextIndex)
 
-      p.note(readFileSync(join(hintsDir, file), 'utf-8'), `Hint ${nextIndex + 1} of ${hintFiles.length}`)
+      p.note(renderMarkdown(readFileSync(join(hintsDir, file), 'utf-8')), `Hint ${nextIndex + 1} of ${hintFiles.length}`)
 
       const remaining = hintFiles.length - nextIndex - 1
       if (remaining > 0) {
