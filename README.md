@@ -19,6 +19,8 @@ Learn real-world Investec API patterns, Programmable Banking card logic, and sec
 
 Current content: **14 playable levels** across Seasons 1–4.
 
+![homepage iamge](docs/devquest_hp.png)
+
 ---
 
 ## Quickstart
