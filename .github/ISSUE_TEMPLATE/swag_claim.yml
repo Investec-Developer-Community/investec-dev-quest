@@ -1,0 +1,44 @@
+name: Swag claim request
+description: Claim your prize after completing all 14 levels
+labels: [swag-claim]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Congrats on finishing the quest! Fill in below so we can verify and share the claim form link with you.
+
+  - type: input
+    id: github_username
+    attributes:
+      label: GitHub username
+      description: Your GitHub handle (so we can tag you in the response)
+      placeholder: "@yourhandle"
+    validations:
+      required: true
+
+  - type: textarea
+    id: status_screenshot
+    attributes:
+      label: "pnpm game status screenshot"
+      description: "Paste a screenshot showing 14/14 levels complete. Drag-and-drop an image here."
+      placeholder: "Drag your screenshot here"
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Confirmation
+      options:
+        - label: I completed all 14 levels myself (not copied/generated)
+          required: true
+        - label: My screenshot shows 14/14 levels complete
+          required: true
+
+  - type: textarea
+    id: feedback
+    attributes:
+      label: Feedback (optional)
+      description: "Anything you loved, hated, or want to see next? Helps us improve the game."
+    validations:
+      required: false

@@ -119,7 +119,7 @@ To reduce spam and bot submissions, the claim form link is not posted publicly i
 
 Claim flow:
 1. Run `pnpm game status` and confirm it shows `14/14 levels complete`.
-2. Open a GitHub issue in this repo with title `Swag claim request`.
+2. Open a GitHub issue using the **Swag claim request** template.
 3. Include your `pnpm game status` screenshot in the issue.
 4. A maintainer will share the claim form link with you directly.
 
