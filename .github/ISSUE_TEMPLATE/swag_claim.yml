@@ -33,7 +33,7 @@ body:
       options:
         - label: I completed all 14 levels myself (not copied/generated)
           required: true
-        - label: My screenshot shows 14/14 levels complete
+        - label: My screenshot shows 16/16 levels complete
           required: true
 
   - type: textarea
