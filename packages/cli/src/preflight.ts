@@ -3,6 +3,7 @@
  * Exits with a clear actionable message on any failure.
  */
 import { existsSync } from 'fs'
+import { spawnSync } from 'child_process'
 import { join } from 'path'
 import { EXIT_CODES } from '@investec-game/shared'
 import { REPO_ROOT } from './paths.js'
@@ -58,8 +59,47 @@ export function checkRequiredEnvVars(): void {
   }
 }
 
+export function checkWindowsPowerShellPolicy(): void {
+  if (process.platform !== 'win32') return
+
+  const cmd =
+    '[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; ' +
+    '$p = Get-ExecutionPolicy; Write-Output $p'
+
+  const result = spawnSync('powershell', ['-NoLogo', '-NoProfile', '-NonInteractive', '-Command', cmd], {
+    encoding: 'utf8',
+  })
+
+  if (result.error || (result.status ?? 1) !== 0) {
+    p.cancel(
+      pc.red(
+        `Could not read PowerShell execution policy.\n` +
+          `  Ensure PowerShell is available, then run: ${pc.cyan('Get-ExecutionPolicy')}\n` +
+          `  See: ${pc.cyan('docs/windows-setup.md')}`
+      )
+    )
+    process.exit(EXIT_CODES.USAGE_ERROR)
+  }
+
+  const policy = (result.stdout ?? '').trim()
+  const blockedPolicies = new Set(['Restricted', 'AllSigned'])
+
+  if (blockedPolicies.has(policy)) {
+    p.cancel(
+      pc.red(
+        `PowerShell execution policy (${pc.bold(policy)}) can block npm/pnpm scripts on Windows.\n` +
+          `  Run (PowerShell as your user): ${pc.cyan('Set-ExecutionPolicy -Scope CurrentUser RemoteSigned')}\n` +
+          `  Then re-run your game command.\n` +
+          `  See: ${pc.cyan('docs/windows-setup.md')}`
+      )
+    )
+    process.exit(EXIT_CODES.USAGE_ERROR)
+  }
+}
+
 export function runPreflightChecks(): void {
   checkNodeVersion()
   checkEnvFile()
   checkRequiredEnvVars()
+  checkWindowsPowerShellPolicy()
 }

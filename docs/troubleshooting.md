@@ -51,6 +51,20 @@ pnpm --filter @investec-game/shared build
 npm install -g pnpm
 ```
 
+### `File ... cannot be loaded because running scripts is disabled on this system` (Windows)
+
+PowerShell execution policy is blocking npm/pnpm scripts.
+
+Open PowerShell and run:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+Then restart the terminal and retry your game command.
+
+Full Windows setup guide: [docs/windows-setup.md](windows-setup.md)
+
 ---
 
 ## Running levels

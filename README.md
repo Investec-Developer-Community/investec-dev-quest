@@ -33,6 +33,8 @@ cp .env.example .env
 pnpm game level 1 --season 1
 ```
 
+Windows players: read [Windows Setup](docs/windows-setup.md) before first run (PowerShell execution policy can block pnpm/npm scripts).
+
 Then to test your solution:
 
 ```bash
@@ -48,6 +50,8 @@ seasons/season-1/level-1/solution.js
 ---
 
 ## First Run (Beginner Path)
+
+If you are on Windows, complete [Windows Setup](docs/windows-setup.md) first.
 
 1. Load level: run `pnpm game level 1 --season 1` to read the story and copy starter code.
 2. Run test: execute `pnpm game test` to see the first failing checks.

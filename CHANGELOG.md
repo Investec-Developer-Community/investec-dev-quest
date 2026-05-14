@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [Unreleased]
+
+### Added
+- New Windows onboarding guide: `docs/windows-setup.md` with prerequisites, PowerShell execution policy remediation, verification commands, and security notes.
+- Contributor release checklist now requires a fresh-install Windows smoke test before public push/release (`CONTRIBUTING.md`).
+
+### Changed
+- README first-run flow now explicitly points Windows players to `docs/windows-setup.md` before running game commands.
+- Troubleshooting docs now include a dedicated Windows PowerShell execution-policy fix path (`docs/troubleshooting.md`).
+
+### Fixed
+- CLI mock API startup now uses `shell: true` on Windows only in `packages/cli/src/services/apiProcess.ts` to prevent platform-specific `npx` launch failures.
+- CLI mock API startup now surfaces spawn/early-exit failures immediately instead of failing silently behind health-check timeouts.
+- Preflight now performs a Windows-only PowerShell execution policy check and exits early with a friendly remediation command when policy blocks script execution (`packages/cli/src/preflight.ts`).
+
 ## [1.1.0] – 2026-05-04
 
 ### Added

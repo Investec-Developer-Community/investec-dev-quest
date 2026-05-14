@@ -89,6 +89,7 @@ node scripts/validate-levels.mjs s1-l1
 - [ ] No real credentials or PII in any file
 - [ ] New level follows the single-objective-per-level principle
 - [ ] Starter code fails tests, reference passes everything
+- [ ] Before a public push/release, run one fresh-install Windows smoke test (`pnpm install`, `cp .env.example .env`, `pnpm game level 1 --season 1`, `pnpm game test`)
 
 ---
 
