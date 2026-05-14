@@ -1,5 +1,5 @@
 name: Swag claim request
-description: Claim your prize after completing all 14 levels
+description: Claim your prize after completing ALL levels
 labels: [swag-claim]
 
 body:
@@ -21,7 +21,7 @@ body:
     id: status_screenshot
     attributes:
       label: "pnpm game status screenshot"
-      description: "Paste a screenshot showing 14/14 levels complete. Drag-and-drop an image here."
+      description: "Paste a screenshot showing ALL levels complete. Drag-and-drop an image here."
       placeholder: "Drag your screenshot here"
     validations:
       required: true
@@ -31,9 +31,9 @@ body:
     attributes:
       label: Confirmation
       options:
-        - label: I completed all 14 levels myself (not copied/generated)
+        - label: I completed all levels myself (not copied/generated)
           required: true
-        - label: My screenshot shows 16/16 levels complete
+        - label: My screenshot shows ALL levels complete
           required: true
 
   - type: textarea
