@@ -65,6 +65,7 @@ const manifest = {
   season: parseInt(season, 10),
   level: parseInt(level, 10),
   difficulty,
+  boss: false,
   apiRequired: false,
   tags: [],
 }

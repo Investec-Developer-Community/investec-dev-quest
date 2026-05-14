@@ -4,6 +4,7 @@
   "season": 1,
   "level": 99,
   "difficulty": "beginner",
+  "boss": false,
   "apiRequired": false,
   "tags": ["tag-1", "tag-2"]
 }

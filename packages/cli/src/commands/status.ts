@@ -72,10 +72,11 @@ export function registerStatusCommand(program: Command): void {
           : ''
 
         const difficulty = pc.dim(`[${level.manifest.difficulty}]`)
+        const boss = level.manifest.boss ? pc.magenta('[boss]') : ''
         const name = status === 'complete' ? pc.dim(level.manifest.name) : level.manifest.name
 
         p.log.message(
-          `${icon}  L${level.manifest.level} ${name} ${difficulty}${attempts}${hints}${badge}${completedAt}`
+          `${icon}  L${level.manifest.level} ${name} ${difficulty}${boss ? ` ${boss}` : ''}${attempts}${hints}${badge}${completedAt}`
         )
       }
 

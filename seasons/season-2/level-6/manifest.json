@@ -1,0 +1,18 @@
+{
+  "id": "s2-l6",
+  "name": "Season Boss: Rule Reactor",
+  "season": 2,
+  "level": 6,
+  "difficulty": "advanced",
+  "boss": true,
+  "apiRequired": false,
+  "tags": [
+    "boss",
+    "card-code",
+    "mcc",
+    "country",
+    "budget",
+    "velocity",
+    "daily-limit"
+  ]
+}

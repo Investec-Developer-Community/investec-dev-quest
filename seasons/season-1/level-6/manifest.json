@@ -1,0 +1,17 @@
+{
+  "id": "s1-l6",
+  "name": "Season Boss: Reconciliation Rift",
+  "season": 1,
+  "level": 6,
+  "difficulty": "advanced",
+  "boss": true,
+  "apiRequired": true,
+  "tags": [
+    "boss",
+    "oauth2",
+    "pagination",
+    "transactions",
+    "beneficiaries",
+    "idempotency"
+  ]
+}

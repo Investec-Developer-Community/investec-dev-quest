@@ -32,7 +32,7 @@ If `status` shows available levels and no errors, they're ready.
 
 ## Suggested session formats
 
-> **Facilitator note:** While the Player Paths and session tracks below are great for learning or workshop pacing, remind participants that *to claim swag, they must complete all 14 levels* (not just a single path or track). Encourage them to use the paths for learning, but check their full progress with `pnpm game status` if they want to claim a prize.
+> **Facilitator note:** While the Player Paths and session tracks below are great for learning or workshop pacing, remind participants that *to claim swag, they must complete all 16 levels* (not just a single path or track). Encourage them to use the paths for learning, but check their full progress with `pnpm game status` if they want to claim a prize.
 
 ### Junior workshop track
 

@@ -83,6 +83,7 @@ describe('Attack: type-coercion bypass', () => {
 | `season` | number | ✅ | 1–4 |
 | `level` | number | ✅ | 1-N within the season |
 | `difficulty` | string | ✅ | `"beginner"`, `"intermediate"`, or `"advanced"` |
+| `boss` | boolean | optional | Set to `true` for season capstone levels |
 | `apiRequired` | boolean | ✅ | `true` if the mock API must run (Season 1) |
 | `tags` | string[] | ✅ | Searchable tags, e.g. `["oauth2", "pagination"]` |
 
@@ -193,6 +194,18 @@ Use this structure:
 3. **Production habit** — the durable engineering practice players should remember.
 
 Keep each section short. The debrief should explain the lesson, not duplicate the reference solution line by line.
+
+## Boss levels (capstones)
+
+Boss levels are optional season capstones that combine multiple skills from that season into one incident.
+
+Guidelines:
+
+- Set `"boss": true` in `manifest.json`.
+- Keep one primary objective, even when combining multiple constraints.
+- Reuse mechanics taught earlier in the season; avoid introducing brand-new primitives in the boss.
+- Prefer realistic orchestration/debugging failures over puzzle-style trick questions.
+- Keep progressive hints strict: Hint 1 (strategy), Hint 2 (implementation nudge).
 
 ---
 

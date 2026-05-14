@@ -8,6 +8,7 @@ export const LevelManifestSchema = z.object({
   season: z.number().int().min(1),
   level: z.number().int().min(1),
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
+  boss: z.boolean().default(false),
   apiRequired: z.boolean(),    // whether mock-api must be running
   tags: z.array(z.string()).default([]),
 })
