@@ -1,0 +1,9 @@
+{
+  "id": "s4-l4",
+  "name": "Description Sanitizer",
+  "season": 4,
+  "level": 4,
+  "difficulty": "advanced",
+  "apiRequired": false,
+  "tags": ["ai-agents", "prompt-injection", "input-validation", "sanitization"]
+}

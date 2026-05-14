@@ -1,0 +1,9 @@
+{
+  "id": "s4-l6",
+  "name": "Loop Detector",
+  "season": 4,
+  "level": 6,
+  "difficulty": "advanced",
+  "apiRequired": false,
+  "tags": ["ai-agents", "safety", "infinite-loops", "runaway-detection"]
+}

@@ -17,7 +17,7 @@ A **local-first, level-based developer game** for the Investec developer communi
 
 Learn real-world Investec API patterns, Programmable Banking card logic, and secure fintech engineering — by solving problems in code, not reading slides.
 
-Current content: **16 playable levels** across Seasons 1–4.
+Current content: **19 playable levels** across Seasons 1–4.
 
 ![homepage iamge](docs/devquest_hp.png)
 
@@ -68,7 +68,7 @@ Behavior tests prove the feature works. Attack tests prove the vulnerability is 
 
 ## Player Paths
 
-**Note:** The paths below are just suggested learning orders for different interests or workshop tracks. To claim swag, you must complete *all 16 levels* (see the claim instructions below).
+**Note:** The paths below are just suggested learning orders for different interests or workshop tracks. To claim swag, you must complete *all 19 levels* (see the claim instructions below).
 
 Pick a path based on the session you want to run.
 
@@ -78,7 +78,7 @@ Pick a path based on the session you want to run.
 | API foundations path | Season 1 Levels 1-6 | OAuth2, pagination, token refresh, beneficiaries, idempotent payments |
 | Card code path | Season 2 Levels 1-6 | Programmable Banking `beforeTransaction` rules, MCCs, budgets, velocity limits |
 | Security path | Season 2 Level 1, Season 3 Level 1, Season 4 Level 1 | Defensive validation, HMAC verification, exact allowlists |
-| AI automation path | Season 4 Levels 1-3 | Tool boundaries, human approval gates, citation integrity |
+| AI automation path | Season 4 Levels 1-6 | Tool boundaries, human approval gates, citation integrity, prompt-injection defenses, tool supply-chain safety, loop controls |
 
 Peeps new to the API should start with the beginner path and use hints early. Senior peeps can skip straight to the security or AI automation path and treat each level as a code-review and threat-modeling exercise.
 
@@ -117,12 +117,12 @@ rm ~/.investec-game/progress.json
 ## Finished The Quest? Claim Your Prize
 
 
-**Swag eligibility:** You must complete *all 16 levels* to claim swag, regardless of which path you followed. Partial completion (even if you finish a path) does not qualify.
+**Swag eligibility:** You must complete *all 19 levels* to claim swag, regardless of which path you followed. Partial completion (even if you finish a path) does not qualify.
 
 To reduce spam and bot submissions, the claim form link is not posted publicly in this repo.
 
 Claim flow:
-1. Run `pnpm game status` and confirm it shows `16/16 levels complete`.
+1. Run `pnpm game status` and confirm it shows `19/19 levels complete`.
 2. Open a GitHub issue using the **Swag claim request** template.
 3. Include your `pnpm game status` screenshot in the issue.
 4. A maintainer will share the claim form link with you directly.

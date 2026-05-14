@@ -1,0 +1,9 @@
+{
+  "id": "s4-l5",
+  "name": "Registry Verifier",
+  "season": 4,
+  "level": 5,
+  "difficulty": "advanced",
+  "apiRequired": false,
+  "tags": ["ai-agents", "tool-poisoning", "supply-chain", "registry-validation"]
+}

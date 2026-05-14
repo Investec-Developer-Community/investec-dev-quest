@@ -14,12 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Contributor release checklist now requires a fresh-install Windows smoke test before public push/release (`CONTRIBUTING.md`).
 - Season 1 Boss level added: `s1-l6` "Reconciliation Rift" (OAuth2 + pagination + transaction filtering + beneficiary validation + idempotent payment orchestration).
 - Season 2 Boss level added: `s2-l6` "Rule Reactor" (MCC blocking + country allowlist + velocity + daily limit + fast-food budget state controls).
+- Season 4 Level 4 added: `s4-l4` "Description Sanitizer" (prompt-injection detection in transaction descriptions).
+- Season 4 Level 5 added: `s4-l5` "Registry Verifier" (tool poisoning defense via trusted registry resolution).
+- Season 4 Level 6 added: `s4-l6` "Loop Detector" (runaway agent loop detection on repeated tool calls).
 - Boss-level metadata support added with optional `boss` field in level manifests and a status UI boss badge.
 
 ### Changed
 - README first-run flow now explicitly points Windows players to `docs/windows-setup.md` before running game commands.
 - Troubleshooting docs now include a dedicated Windows PowerShell execution-policy fix path (`docs/troubleshooting.md`).
-- Player/facilitator docs now reflect 16 total levels and updated completion targets (`README.md`, `docs/facilitator-guide.md`, `PLAN.md`).
+- Player/facilitator docs now reflect 19 total levels and updated completion targets (`README.md`, `docs/facilitator-guide.md`, `PLAN.md`).
 
 ### Fixed
 - CLI mock API startup now uses `shell: true` on Windows only in `packages/cli/src/services/apiProcess.ts` to prevent platform-specific `npx` launch failures.

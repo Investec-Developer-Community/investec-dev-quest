@@ -32,7 +32,7 @@ If `status` shows available levels and no errors, they're ready.
 
 ## Suggested session formats
 
-> **Facilitator note:** While the Player Paths and session tracks below are great for learning or workshop pacing, remind participants that *to claim swag, they must complete all 16 levels* (not just a single path or track). Encourage them to use the paths for learning, but check their full progress with `pnpm game status` if they want to claim a prize.
+> **Facilitator note:** While the Player Paths and session tracks below are great for learning or workshop pacing, remind participants that *to claim swag, they must complete all 19 levels* (not just a single path or track). Encourage them to use the paths for learning, but check their full progress with `pnpm game status` if they want to claim a prize.
 
 ### Junior workshop track
 
@@ -89,6 +89,9 @@ Facilitation style: ask participants to describe the exploit before coding, then
 - Session 1: Season 4 Level 1 `Tool Gatekeeper` (tool allowlist boundaries)
 - Session 2: Season 4 Level 2 `Approval Anchor` (high-risk human approval gate)
 - Session 3: Season 4 Level 3 `Citation Checkpoint` (hallucination-resistant answer validation)
+- Session 4: Season 4 Level 4 `Description Sanitizer` (prompt-injection defense in transaction text)
+- Session 5: Season 4 Level 5 `Registry Verifier` (tool poisoning and trusted registry resolution)
+- Session 6: Season 4 Level 6 `Loop Detector` (runaway agent loop detection)
 
 ---
 
@@ -110,6 +113,9 @@ Facilitation style: ask participants to describe the exploit before coding, then
 | S4 L1 Tool Gatekeeper | Exact tool allowlists for AI agents | Prefix matching tool names |
 | S4 L2 Approval Anchor | Human approval for high-risk automation | Trusting action metadata as approval evidence |
 | S4 L3 Citation Checkpoint | Validating every answer claim has support | Checking only the first claim |
+| S4 L4 Description Sanitizer | Treating transaction descriptions as untrusted model input | Passing instruction-like payloads straight into agent context |
+| S4 L5 Registry Verifier | Preferring trusted tool entries over registry order | Executing the first duplicate tool match without trust checks |
+| S4 L6 Loop Detector | Detecting consecutive repeated tool use across param churn | Only flagging exact duplicate payloads and missing runaway loops |
 
 ## Debrief prompts
 
