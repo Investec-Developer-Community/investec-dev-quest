@@ -42,3 +42,12 @@ body:
       description: "Anything you loved, hated, or want to see next? Helps us improve the game."
     validations:
       required: false
+
+    - type: input
+    id: timestamp
+    attributes:
+      label: "How long did it take you to complete?"
+      description: "Please enter the total honest time."
+      placeholder: "HH:MM:00 (e.g., 01:40:2)"
+    validations:
+      required: true
