@@ -1,6 +1,7 @@
 name: Swag claim request
 description: Claim your prize after completing all 14 levels
 labels: [swag-claim]
+
 body:
   - type: markdown
     attributes:
@@ -12,7 +13,7 @@ body:
     attributes:
       label: GitHub username
       description: Your GitHub handle (so we can tag you in the response)
-      placeholder: "@yourhandle"
+      placeholder: "yourhandle"
     validations:
       required: true
 
@@ -43,11 +44,11 @@ body:
     validations:
       required: false
 
-    - type: input
+  - type: input
     id: timestamp
     attributes:
       label: "How long did it take you to complete?"
       description: "Please enter the total honest time."
-      placeholder: "HH:MM:00 (e.g., 01:40:2)"
+      placeholder: "HH:MM:SS (e.g., 01:40:02)"
     validations:
       required: true
