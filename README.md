@@ -1,10 +1,10 @@
-## Playground Project
+## ⚠️ Playground Project
 
 This is **not an official Investec product**.
 
 This repo is a community playground for learning Investec API and secure fintech engineering by solving code challenges.
 
-# Investec Developer Quest
+# 🛡️ Investec Developer Quest
 
 A local-first, level-based developer game for the Investec developer community.
 
@@ -12,11 +12,11 @@ Learn real-world Investec API patterns, Programmable Banking card logic, and sec
 
 Current content: **19 playable levels** across Seasons 1 to 4.
 
-![homepage image](docs/devquest_hp.png)
+![homepage image](docs/dev_quest_hp_v2.png)
 
-## Start Here (5 minutes)
+## 🚀 Start Here (5 minutes)
 
-### 1) Prerequisites
+### 🧰 1) Prerequisites
 
 - Node.js 20+
 - pnpm 9+
@@ -30,7 +30,7 @@ pnpm -v
 
 Windows players should read [Windows Setup](docs/windows-setup.md) first (PowerShell policy can block scripts).
 
-### 2) Install and load the first level
+### 📦 2) Install and load the first level
 
 ```bash
 git clone https://github.com/Investec-Developer-Community/investec-dev-quest.git
@@ -40,7 +40,7 @@ cp .env.example .env
 pnpm game level 1 --season 1
 ```
 
-### 3) Run once, then edit once
+### 🧪 3) Run once, then edit once
 
 ```bash
 pnpm game test
@@ -52,7 +52,7 @@ Edit this file:
 seasons/season-1/level-1/solution.js
 ```
 
-### 4) Tight feedback loop
+### 🔁 4) Tight feedback loop
 
 ```bash
 pnpm game test
@@ -64,7 +64,7 @@ pnpm game watch
 - Failures unclear? Use `pnpm game explain`
 - Journal becomes useful after choices/evidence are recorded: `pnpm game journal`
 
-### 5) Confirm you are on track
+### ✅ 5) Confirm you are on track
 
 ```bash
 pnpm game status
@@ -72,7 +72,7 @@ pnpm game status
 
 Behavior tests prove the feature works. Attack tests prove the exploit is blocked. A level is complete only when both pass.
 
-## Player Paths
+## 🧭 Player Paths
 
 These are suggested learning tracks. To claim swag, you must complete **all 19 levels**.
 
@@ -84,7 +84,7 @@ These are suggested learning tracks. To claim swag, you must complete **all 19 l
 | Security path | Season 2 Level 1, Season 3 Level 1, Season 4 Level 1 | Validation, HMAC verification, exact allowlists |
 | AI automation path | Season 4 Levels 1-6 | Tool boundaries, approval gates, citation integrity, injection defenses |
 
-## Commands
+## ⌨️ Commands
 
 ### Most-used commands
 
@@ -136,7 +136,7 @@ Reset all progress:
 rm ~/.investec-game/progress.json
 ```
 
-## How the Game Works
+## 🧠 How the Game Works
 
 ### Level structure
 
@@ -154,7 +154,7 @@ Each level lives in `seasons/season-N/level-N/`.
 | `reference/solution.js` | Reference implementation after completion |
 | `debrief.md` | Optional post-solve explanation |
 
-### Win condition
+### 🏁 Win condition
 
 Both suites must pass:
 
@@ -163,7 +163,7 @@ Both suites must pass:
 
 This enforces dual validation: no over-restricting and no under-fixing.
 
-### Carry-forward consequences
+### 📓 Carry-forward consequences
 
 Implementation quality can carry forward into later narrative/debrief context.
 
@@ -182,7 +182,7 @@ Current lenses:
 
 If a consequence section is missing, see [docs/troubleshooting.md](docs/troubleshooting.md).
 
-## Seasons
+## 📚 Seasons
 
 | Season | Theme |
 |---|---|
@@ -191,7 +191,7 @@ If a consequence section is missing, see [docs/troubleshooting.md](docs/troubles
 | 3 | Secure Fintech Workflows |
 | 4 | Intelligent Banking Automation |
 
-## Mock API
+## 🔌 Mock API
 
 Included endpoints:
 
@@ -209,7 +209,7 @@ Base URL: `http://localhost:3001`
 
 Credentials from `.env`: `game_client_id`, `game_client_secret`, `game_api_key`
 
-## Claim Your Prize
+## 🎁 Claim Your Prize
 
 Swag eligibility requires **19/19 levels complete**.
 
@@ -220,7 +220,7 @@ Claim flow:
 3. Include your `pnpm game status` screenshot.
 4. A maintainer shares the claim form link directly.
 
-## Contributing a Level
+## 🤝 Contributing a Level
 
 See [docs/authoring-guide.md](docs/authoring-guide.md).
 
@@ -233,7 +233,7 @@ Quick checklist:
 5. Verify starter fails and reference passes.
 6. Open a PR.
 
-## Project Structure
+## 🗂️ Project Structure
 
 ```text
 investec-developer-game/
@@ -253,7 +253,7 @@ investec-developer-game/
     └── authoring-guide.md
 ```
 
-## Inspired by
+## 🙌 Inspired by
 
 Inspired by GitHub Secure Code Game:
 https://securitylab.github.com/secure-code-game/
