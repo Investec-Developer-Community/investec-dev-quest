@@ -11,6 +11,8 @@ import { registerResetCommand } from './commands/reset.js'
 import { registerStatusCommand } from './commands/status.js'
 import { registerWatchCommand } from './commands/watch.js'
 import { registerReferenceCommand } from './commands/reference.js'
+import { registerJournalCommand } from './commands/journal.js'
+import { registerExplainCommand } from './commands/explain.js'
 
 loadEnv({ path: join(REPO_ROOT, '.env') })
 
@@ -29,5 +31,7 @@ registerResetCommand(program)
 registerStatusCommand(program)
 registerWatchCommand(program)
 registerReferenceCommand(program)
+registerJournalCommand(program)
+registerExplainCommand(program)
 
 await program.parseAsync()

@@ -1,7 +1,18 @@
 import { p, pc } from '../ui/theme.js'
 import type { TestRunResult } from '@investec-game/shared'
+import { summarizeFailureMessage } from './failureSummary.js'
 
-export function renderTestResults(results: TestRunResult, label = 'Tests'): void {
+interface RenderOptions {
+  verbose?: boolean
+}
+
+export function renderTestResults(
+  results: TestRunResult,
+  label = 'Tests',
+  options: RenderOptions = {}
+): void {
+  const verbose = options.verbose === true
+
   if (results.error) {
     p.log.error(pc.red(`${label} — Error`))
     p.note(pc.red(`Runner error:\n${results.error}`), pc.red(label))
@@ -17,8 +28,12 @@ export function renderTestResults(results: TestRunResult, label = 'Tests'): void
     } else {
       lines.push(`${pc.red('✗')} ${test.name}`)
       if (test.message) {
-        const trimmed = test.message.split('\n').slice(0, 6).join('\n')
-        lines.push(pc.red(`  ${trimmed.replace(/\n/g, '\n  ')}`))
+        if (verbose) {
+          const trimmed = test.message.split('\n').slice(0, 12).join('\n')
+          lines.push(pc.red(`  ${trimmed.replace(/\n/g, '\n  ')}`))
+        } else {
+          lines.push(pc.red(`  Why: ${summarizeFailureMessage(test.message)}`))
+        }
       }
     }
   }
@@ -29,6 +44,9 @@ export function renderTestResults(results: TestRunResult, label = 'Tests'): void
 
   lines.push('')
   lines.push(summary)
+  if (!results.passed && !verbose) {
+    lines.push(pc.dim('Tip: run with --verbose to see full failure traces.'))
+  }
 
   const title = results.passed ? pc.green(label) : pc.red(label)
   p.note(lines.join('\n'), title)
@@ -66,7 +84,12 @@ export function renderWinBanner(levelName: string, options: WinBannerOptions = {
   p.note(lines.join('\n'), pc.yellow('Level Complete'))
 }
 
-export function renderAttackResult(results: TestRunResult, exploitBlocked: boolean): void {
+export function renderAttackResult(
+  results: TestRunResult,
+  exploitBlocked: boolean,
+  options: RenderOptions = {}
+): void {
+  const verbose = options.verbose === true
   const lines: string[] = []
 
   if (results.error) {
@@ -78,8 +101,12 @@ export function renderAttackResult(results: TestRunResult, exploitBlocked: boole
       } else {
         lines.push(`${pc.red('✗')} ${test.name}`)
         if (test.message) {
-          const trimmed = test.message.split('\n').slice(0, 4).join('\n')
-          lines.push(pc.red(`  ${trimmed.replace(/\n/g, '\n  ')}`))
+          if (verbose) {
+            const trimmed = test.message.split('\n').slice(0, 10).join('\n')
+            lines.push(pc.red(`  ${trimmed.replace(/\n/g, '\n  ')}`))
+          } else {
+            lines.push(pc.red(`  Why: ${summarizeFailureMessage(test.message)}`))
+          }
         }
       }
     }
@@ -91,19 +118,38 @@ export function renderAttackResult(results: TestRunResult, exploitBlocked: boole
     lines.push(pc.green(pc.bold('Exploit blocked ✓')))
   } else {
     lines.push(pc.red(pc.bold('Exploit succeeds — vulnerability not yet fixed')))
+    if (!verbose) {
+      lines.push(pc.dim('Tip: run with --verbose to see full attack trace output.'))
+    }
   }
 
   const title = exploitBlocked ? pc.green('Attack Script') : pc.red('Attack Script')
   p.note(lines.join('\n'), title)
 }
 
-export function renderBeginnerGuidance(): void {
-  const lines = [
-    pc.cyan(pc.bold('What to do next')),
-    '',
+interface BeginnerGuidanceOptions {
+  includeJournal?: boolean
+}
+
+export function renderBeginnerGuidance(options: BeginnerGuidanceOptions = {}): void {
+  const includeJournal = options.includeJournal === true
+  const actionSteps = [
     '1. Start with the first failing test above.',
     '2. Use `pnpm game hint` for a nudge.',
     '3. Make one small change, then run `pnpm game test` again.',
+  ]
+
+  if (includeJournal) {
+    actionSteps.push('4. Run `pnpm game journal` to see recorded choices, evidence, and downstream consequences.')
+    actionSteps.push('5. Run `pnpm game explain` for non-spoiler next-step coaching from failing tests.')
+  } else {
+    actionSteps.push('4. Run `pnpm game explain` for non-spoiler next-step coaching from failing tests.')
+  }
+
+  const lines = [
+    pc.cyan(pc.bold('What to do next')),
+    '',
+    ...actionSteps,
     '',
     pc.dim('Tip: behavior tests protect the feature; the attack script protects the fix.'),
     pc.dim('You can run `pnpm game status` anytime to track progress.'),

@@ -42,12 +42,16 @@ describe('getBeneficiaries', () => {
 })
 
 describe('validateBeneficiary', () => {
-  it('returns true for a valid beneficiary ID', async () => {
+  it('A_S1L4_TAGS_ELEVATED_RISK_BENEFICIARY: returns true for a valid beneficiary ID', async () => {
     const result = await validateBeneficiary(token, 'ben-001')
     expect(result).toBe(true)
   })
 
-  it('throws "Beneficiary not found" for an ID that does not exist', async () => {
+  it('A_S1L4_REJECTS_UNKNOWN_BENEFICIARY: throws "Beneficiary not found" for an ID that does not exist', async () => {
     await expect(validateBeneficiary(token, 'ben-999')).rejects.toThrow('Beneficiary not found')
+  })
+
+  it('A_S1L4_BLOCKS_ELEVATED_RISK_BENEFICIARY: throws for a fabricated ID', async () => {
+    await expect(validateBeneficiary(token, 'ben-fabricated')).rejects.toThrow('Beneficiary not found')
   })
 })

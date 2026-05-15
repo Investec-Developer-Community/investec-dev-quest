@@ -223,6 +223,32 @@ Before submitting a new level, verify:
 - [ ] Exactly two hints exist under `hints/`
 - [ ] Level is completable in ≤ 25 minutes (test on a fresh player)
 
+## Carry-forward authoring checklist
+
+When adding a new arc consequence branch, use this checklist to keep rubric writes deterministic and auditable:
+
+- [ ] Add or extend typed arc flag schema in `packages/shared/src/schemas.ts`.
+- [ ] Add default flag value in `packages/cli/src/db/progress.ts` store defaults.
+- [ ] Add explicit signal-ID test names in level behavior/attack tests (for example `A_S4L6_...` or `OBS_S1L3_...`).
+- [ ] Map signal IDs to flag writes in `packages/cli/src/services/arcFlags.ts`.
+- [ ] Record evidence via existing `applyArcFlagWrites` flow (do not write ad-hoc evidence).
+- [ ] Add consequence projection logic in a single service under `packages/cli/src/services/`.
+- [ ] Add deterministic tests for projection branches (snapshot or explicit assertions).
+- [ ] Surface consequence output through CLI read paths (`reference`, `status`) only unless gameplay contract changes are intentional.
+- [ ] Update docs (`README.md`, facilitator/authoring/troubleshooting as relevant).
+- [ ] Add changelog entry under Unreleased.
+
+### Operational risk branch matrix (current)
+
+The operational risk summary uses this deterministic matrix:
+
+| `s1_token_fix_depth` | `s2_state_discipline` | Risk band |
+|---|---|---|
+| `patchy` | `eager-write` | `elevated` |
+| `patchy` | `approve-then-write` | `guarded` |
+| `robust` | `eager-write` | `guarded` |
+| `robust` | `approve-then-write` | `resilient` |
+
 ---
 
 ## Season guidelines

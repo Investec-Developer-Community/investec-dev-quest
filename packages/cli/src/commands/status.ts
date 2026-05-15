@@ -2,6 +2,7 @@ import type { Command } from 'commander'
 import { p, pc, showBanner } from '../ui/theme.js'
 import { loadAllLevels } from '../levels/loader.js'
 import { getAllProgress } from '../db/progress.js'
+import { getOperationalRiskProfile, hasOperationalRiskEvidence } from '../services/operationalRisk.js'
 
 const STATUS_ICON: Record<string, string> = {
   locked: pc.dim('○'),
@@ -82,6 +83,18 @@ export function registerStatusCommand(program: Command): void {
 
       const complete = allProgress.filter((pr) => pr.status === 'complete').length
       p.log.message(pc.dim(`\n${complete}/${levels.length} levels complete`))
+
+      if (hasOperationalRiskEvidence()) {
+        const riskProfile = getOperationalRiskProfile()
+        const riskTone = riskProfile.band === 'elevated'
+          ? pc.red
+          : riskProfile.band === 'guarded'
+            ? pc.yellow
+            : pc.green
+        p.log.message(pc.dim('Carry-forward operational risk: ') + riskTone(riskProfile.band))
+      } else {
+        p.log.message(pc.dim('Carry-forward operational risk: not assessed yet'))
+      }
 
       if (complete > 0) {
         p.log.message(pc.dim('Review completed level references with `pnpm game reference --season <n> --level <n>`.'))

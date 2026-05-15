@@ -52,6 +52,32 @@ export const LevelProgressSchema = z.object({
 
 export type LevelProgress = z.infer<typeof LevelProgressSchema>
 
+// ─── Arc flag tracking ───────────────────────────────────────────────────────
+
+export const ArcFlagsSchema = z.object({
+  s1_token_fix_depth: z.enum(['patchy', 'robust']),
+  s1_logging_maturity: z.enum(['none', 'basic', 'forensic']),
+  s1_beneficiary_risk: z.enum(['ignored', 'watched', 'blocked']),
+  s2_state_discipline: z.enum(['eager-write', 'approve-then-write']),
+  s4_tool_trust_mode: z.enum(['first-match', 'trusted-only']),
+  s4_prompt_hygiene: z.enum(['lax', 'strict']),
+  s4_loop_safety: z.enum(['absent', 'present']),
+})
+
+export type ArcFlags = z.infer<typeof ArcFlagsSchema>
+export type ArcFlagKey = keyof ArcFlags
+
+export const ArcFlagEvidenceSchema = z.object({
+  flag: z.string(),
+  value: z.string(),
+  levelId: z.string(),
+  writtenAt: z.string().datetime(),
+  testSignals: z.array(z.string()),
+  rubricVersion: z.literal('v1'),
+})
+
+export type ArcFlagEvidence = z.infer<typeof ArcFlagEvidenceSchema>
+
 // ─── Mock Investec API types ─────────────────────────────────────────────────
 
 export const AccountTypeSchema = z.enum(['CURRENT', 'SAVINGS'])

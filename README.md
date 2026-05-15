@@ -58,8 +58,9 @@ If you are on Windows, complete [Windows Setup](docs/windows-setup.md) first.
 3. Make one small edit in `seasons/season-1/level-1/solution.js`.
 4. Re-run `pnpm game test`, or use `pnpm game watch` for automatic feedback while editing.
 5. Use hint: if stuck, run `pnpm game hint` to reveal guidance.
-6. After completion, run `pnpm game reference` to compare with the reference solution and read any debrief.
-7. Check status: run `pnpm game status` to track your progress.
+6. If failures are confusing, run `pnpm game explain` for non-spoiler coaching and `pnpm game journal` to see recorded choices/consequences.
+7. After completion, run `pnpm game reference` to compare with the reference solution and read any debrief.
+8. Check status: run `pnpm game status` to track your progress.
 
 Behavior tests prove the feature works. Attack tests prove the vulnerability is blocked. A level is only complete when both pass.
 
@@ -92,9 +93,11 @@ pnpm game level <n> --season 2    # Load from a specific season (default: 1)
 
 pnpm game test                     # Run tests + attack script on active level
 pnpm game test --season 2 --level 1
+pnpm game test --verbose           # Show full Vitest failure traces
 
 pnpm game watch                    # Re-run test + attack on file changes
 pnpm game watch --season 2 --level 3 --debounce 300
+pnpm game watch --verbose          # Watch mode with full failure traces
 
 pnpm game hint                     # Reveal next hint
 pnpm game hint --all               # Show all unlocked hints
@@ -106,6 +109,9 @@ pnpm game reset                    # Restore starter code (with confirmation)
 pnpm game reset --yes              # Skip confirmation
 
 pnpm game status                   # Show progress across all levels
+pnpm game journal                  # Show recorded arc choices, evidence trail, and consequences
+pnpm game journal --all-evidence   # Show full evidence history
+pnpm game explain                  # Convert failing tests into non-spoiler next-step coaching
 ```
 
 Your progress is saved to `~/.investec-game/progress.json`. To reset all progress and start fresh, delete that file:
@@ -155,6 +161,41 @@ A level is complete when **both** test suites pass:
 2. **Attack script** — the vulnerability is fixed (the exploit is blocked)
 
 The attack script is written so that it **passes** when the exploit is blocked. This is the dual-validation mechanic: you can't over-restrict (breaks behavior tests) and can't under-fix (attack script still fails).
+
+### Carry-forward consequences model
+
+The game now tracks objective implementation quality signals and carries them forward into later reference/debrief context.
+
+How it works:
+1. Behavior/attack tests emit explicit rubric signal IDs.
+2. The CLI maps those signals into deterministic arc flags.
+3. Later levels surface consequence summaries (postmortem, visibility, beneficiary chain, operational risk) without changing level pass/fail contracts.
+
+Current consequence lenses:
+- Arc Postmortem: broad remediation consequences from unlocked flags.
+- Incident Visibility: derived from `s1_logging_maturity`.
+- Beneficiary Incident Chain: derived from `s1_beneficiary_risk` with boss-level wrap-up context.
+- Operational Risk Summary: derived from `s1_token_fix_depth` + `s2_state_discipline`.
+
+If a consequence section is missing, see troubleshooting guidance in [docs/troubleshooting.md](docs/troubleshooting.md).
+
+When test output still feels ambiguous, use `explain` for a guided next step:
+
+```bash
+pnpm game explain
+```
+
+Example output:
+
+```text
+What likely failed
+• Behavior: missing ownership check before exposing account data.
+• Attack path still succeeds with a forged accountId.
+
+Suggested next step
+• Add a server-side account ownership guard before returning balances.
+• Re-run `pnpm game test` to confirm behavior + attack both pass.
+```
 
 ### Flow diagram
 

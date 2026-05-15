@@ -17,7 +17,7 @@
  *   0 — all levels pass the contract
  *   1 — one or more levels fail
  */
-import { readdirSync, existsSync, readFileSync, copyFileSync, unlinkSync } from 'fs'
+import { readdirSync, existsSync, readFileSync, copyFileSync, unlinkSync, writeFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { execFileSync } from 'child_process'
@@ -217,10 +217,23 @@ function validateLevel(levelDir) {
   validateHints(hintsDir)
 
   const errors = []
+  const hadOriginalSolution = existsSync(solutionPath)
+  const originalSolution = hadOriginalSolution ? readFileSync(solutionPath, 'utf-8') : null
 
-  // ── Starter: tests must FAIL ──────────────────────────────────────────────
-  copyFileSync(starterPath, solutionPath)
+  const restoreSolution = () => {
+    if (hadOriginalSolution && originalSolution !== null) {
+      writeFileSync(solutionPath, originalSolution, 'utf-8')
+      return
+    }
+
+    if (existsSync(solutionPath)) {
+      unlinkSync(solutionPath)
+    }
+  }
+
   try {
+    // ── Starter: tests must FAIL ────────────────────────────────────────────
+    copyFileSync(starterPath, solutionPath)
     const starterTests = suiteResult(testsDir, levelDir)
     if (starterTests.total === 0) {
       errors.push('Starter: behavior tests collected 0 tests')
@@ -235,13 +248,9 @@ function validateLevel(levelDir) {
     } else if (starterAttack.passed) {
       errors.push('Starter: attack script passes on starter code (exploit should succeed before fix)')
     }
-  } finally {
-    if (existsSync(solutionPath)) unlinkSync(solutionPath)
-  }
 
-  // ── Reference: tests must PASS ───────────────────────────────────────────
-  copyFileSync(referencePath, solutionPath)
-  try {
+    // ── Reference: tests must PASS ─────────────────────────────────────────
+    copyFileSync(referencePath, solutionPath)
     const refTests = suiteResult(testsDir, levelDir)
     if (refTests.total === 0) {
       errors.push('Reference: behavior tests collected 0 tests')
@@ -257,7 +266,7 @@ function validateLevel(levelDir) {
       errors.push('Reference: attack script fails (exploit not blocked by reference solution)')
     }
   } finally {
-    if (existsSync(solutionPath)) unlinkSync(solutionPath)
+    restoreSolution()
   }
 
   return { manifest, errors }
@@ -270,6 +279,12 @@ const filterId = process.argv[2] ?? null
 let totalLevels = 0
 let failedLevels = 0
 let failedQualityGates = 0
+let skippedApiLevels = 0
+
+if (!API_ONLINE) {
+  console.log('  ⚠ Mock API is offline. API-required levels will be skipped.')
+  console.log('  ▶ Run `npx tsx packages/mock-api/src/index.ts` for full 19/19 validation.\n')
+}
 
 process.stdout.write('  Validating level template... ')
 const templateErrors = validateTemplate()
@@ -303,6 +318,7 @@ for (const seasonEntry of readdirSync(SEASONS_DIR).sort()) {
     if (manifest.apiRequired && !API_ONLINE) {
       console.log('⏭  (skipped — mock API not running)')
       totalLevels--
+      skippedApiLevels++
       continue
     }
 
@@ -329,6 +345,11 @@ if (totalLevels === 0) {
 }
 
 console.log(`\n  ${totalLevels - failedLevels}/${totalLevels} levels pass the content contract.`)
+
+if (skippedApiLevels > 0) {
+  console.log(`  ⚠ Skipped ${skippedApiLevels} API-required level${skippedApiLevels === 1 ? '' : 's'}.`)
+  console.log('  ▶ Run `npx tsx packages/mock-api/src/index.ts` and re-run `node scripts/validate-levels.mjs` for full 19/19 validation.')
+}
 
 if (failedLevels > 0 || failedQualityGates > 0) {
   process.exit(1)
