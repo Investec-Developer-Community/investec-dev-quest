@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-05-15
+
 ### Added
 - New Windows onboarding guide: `docs/windows-setup.md` with prerequisites, PowerShell execution policy remediation, verification commands, and security notes.
 - Contributor release checklist now requires a fresh-install Windows smoke test before public push/release (`CONTRIBUTING.md`).
@@ -44,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `scripts/validate-levels.mjs` now preserves/restores existing `solution.js` files during contract checks instead of clobbering contributor work.
 - Validator now prints explicit mock API startup guidance when API-required levels are skipped and summarizes skipped API levels.
 
-## [1.1.0] – 2026-05-04
+## [0.9.0] - 2026-05-04
 
 ### Added
 - **Terminal markdown renderer** (`packages/cli/src/ui/markdown.ts`): story files, hints, and debriefs now display with formatted headings, styled code blocks, bullet lists, blockquotes, and inline formatting instead of raw markdown.
@@ -63,7 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.0] – 2026-04-28
+## [0.8.0] - 2026-04-28
 
 ### Added
 - Season 1, Level 1 "First Contact" — OAuth2, pagination, balance validation
