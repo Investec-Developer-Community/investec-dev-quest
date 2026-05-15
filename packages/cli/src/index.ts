@@ -13,6 +13,7 @@ import { registerWatchCommand } from './commands/watch.js'
 import { registerReferenceCommand } from './commands/reference.js'
 import { registerJournalCommand } from './commands/journal.js'
 import { registerExplainCommand } from './commands/explain.js'
+import { CLI_VERSION } from './version.js'
 
 loadEnv({ path: join(REPO_ROOT, '.env') })
 
@@ -21,7 +22,7 @@ runPreflightChecks()
 program
   .name('investec-game')
   .description('A local-first developer game for the Investec developer community')
-  .version('1.0.0')
+  .version(CLI_VERSION)
   .showHelpAfterError('(run with --help for usage examples)')
 
 registerLevelCommand(program)
