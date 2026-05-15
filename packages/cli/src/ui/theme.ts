@@ -4,6 +4,8 @@
  */
 import * as p from '@clack/prompts'
 import pc from 'picocolors'
+import { CLI_VERSION } from '../version.js'
+import { loadAllLevels } from '../levels/loader.js'
 
 // ── ASCII art banner ────────────────────────────────────────────────
 // Hand-crafted Unicode block characters for "DEV QUEST"
@@ -29,13 +31,27 @@ const GRAYS = [
 
 const RESET = '\x1b[0m'
 
+function getMissionLabel(): string {
+  try {
+    const count = loadAllLevels().length
+    return `${count} mission${count === 1 ? '' : 's'}`
+  } catch {
+    return 'missions unavailable'
+  }
+}
+
 export function showBanner(): void {
+  const missionLabel = getMissionLabel()
+
   console.log()
   for (let i = 0; i < LOGO_LINES.length; i++) {
     console.log(`  ${GRAYS[i]}${LOGO_LINES[i]}${RESET}`)
   }
   console.log()
-  p.intro(pc.bgCyan(pc.black(' Investec Dev Quest ')))
+  p.intro(
+    pc.bgCyan(pc.black(' Investec Dev Community ')) +
+      pc.dim(` · local sim · ${missionLabel} · v${CLI_VERSION}`)
+  )
 }
 
 export function showOutro(message: string): void {

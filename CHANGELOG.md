@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- CLI banner metadata is now source-driven: version is read from `packages/cli/package.json`, and mission count is derived from the current level catalog.
+
+### Fixed
+- Repaired `showBanner` syntax in `packages/cli/src/ui/theme.ts`, restoring stable CLI startup/output after banner text updates.
+
 ## [1.0.0] - 2026-05-15
 
 ### Added

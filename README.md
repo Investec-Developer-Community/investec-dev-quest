@@ -114,6 +114,8 @@ pnpm game journal --all-evidence   # Show full evidence history
 pnpm game explain                  # Convert failing tests into non-spoiler next-step coaching
 ```
 
+The CLI header now auto-reflects your current mission count and CLI version from the repo state.
+
 Your progress is saved to `~/.investec-game/progress.json`. To reset all progress and start fresh, delete that file:
 
 ```bash
