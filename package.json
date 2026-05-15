@@ -1,7 +1,7 @@
 {
   "name": "investec-developer-game",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "A local-first developer learning game for the Investec developer community",
   "license": "MIT",
   "repository": {

@@ -21,7 +21,7 @@ runPreflightChecks()
 program
   .name('investec-game')
   .description('A local-first developer game for the Investec developer community')
-  .version('0.1.0')
+  .version('1.0.0')
   .showHelpAfterError('(run with --help for usage examples)')
 
 registerLevelCommand(program)
