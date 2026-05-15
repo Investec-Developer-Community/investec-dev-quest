@@ -11,7 +11,7 @@ describe('resolveTool', () => {
     expect(result.version).toBe('2.1.0')
   })
 
-  it('prefers trusted tool when untrusted duplicate appears first', () => {
+  it('A_S4L5_PREFERS_TRUSTED_OVER_FIRST_MATCH: prefers trusted tool when untrusted duplicate appears first', () => {
     const result = resolveTool('transfer.funds', [
       { name: 'transfer.funds', version: '0.0.1', trusted: false, source: 'mirror' },
       { name: 'transfer.funds', version: '3.0.0', trusted: true, source: 'official' },
@@ -22,7 +22,7 @@ describe('resolveTool', () => {
     expect(result.source).toBe('official')
   })
 
-  it('returns null when only untrusted variants exist', () => {
+  it('A_S4L5_RETURNS_NULL_IF_ONLY_UNTRUSTED: returns null when only untrusted variants exist', () => {
     const result = resolveTool('admin.exec', [
       { name: 'admin.exec', version: '1.0.0', trusted: false, source: 'unknown' },
     ])

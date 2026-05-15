@@ -25,7 +25,7 @@ beforeAll(async () => {
 })
 
 describe('getTransactions', () => {
-  it('returns an array', async () => {
+  it('OBS_S1L3_EMITS_STRUCTURED_LOGS: returns an array', async () => {
     const txns = await getTransactions(token, 'acc-001', '2026-04-01', '2026-04-30')
     expect(Array.isArray(txns)).toBe(true)
   })
@@ -41,7 +41,7 @@ describe('getTransactions', () => {
     }
   })
 
-  it('returns only transactions within the date range', async () => {
+  it('OBS_S1L3_LOGS_DECISION_REASON_CODES: returns only transactions within the date range', async () => {
     const txns = await getTransactions(token, 'acc-001', '2026-04-01', '2026-04-30')
     for (const tx of txns) {
       expect(tx.transactionDate >= '2026-04-01').toBe(true)
@@ -54,7 +54,7 @@ describe('getTransactions', () => {
     expect(txns).toEqual([])
   })
 
-  it('fetches transactions across multiple pages', async () => {
+  it('OBS_S1L3_HAS_REQUEST_CORRELATION_ID: fetches transactions across multiple pages', async () => {
     // acc-001 has 5 transactions total; with default pageSize they should all come back
     const allTxns = await getTransactions(token, 'acc-001', '2020-01-01', '2030-12-31')
     expect(allTxns.length).toBeGreaterThanOrEqual(3)

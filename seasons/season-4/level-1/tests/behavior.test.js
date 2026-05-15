@@ -22,7 +22,7 @@ describe('authorizeToolCall', () => {
     expect(result.allowed).toBe(false)
   })
 
-  it('denies look-alike tools with allowlisted prefixes', () => {
+  it('A_S4L1_REJECTS_PREFIX_TOOL_BYPASS: denies look-alike tools with allowlisted prefixes', () => {
     const result = authorizeToolCall({ tool: 'read.file.delete' }, POLICY)
     expect(result.allowed).toBe(false)
   })

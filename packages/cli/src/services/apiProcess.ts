@@ -24,49 +24,55 @@ export async function isApiRunning(): Promise<boolean> {
 export async function ensureApiRunning(): Promise<void> {
   if (await isApiRunning()) return
 
-  const mockApiEntry = join(REPO_ROOT, 'packages', 'mock-api', 'src', 'index.ts')
-  const useShell = process.platform === 'win32'
-  let spawnError: Error | null = null
-  let earlyExitCode: number | null = null
+  const launchAttempts = buildLaunchAttempts()
+  const launchFailures: string[] = []
 
-  const child = spawn('npx', ['tsx', mockApiEntry], {
-    detached: false,
-    stdio: 'ignore',
-    shell: useShell,
-    env: {
-      ...process.env,
-      GAME_API_PORT: String(MOCK_API_PORT),
-    },
-  })
+  for (const attempt of launchAttempts) {
+    let spawnError: Error | null = null
+    let earlyExitCode: number | null = null
 
-  child.once('error', (err) => {
-    spawnError = err
-  })
+    const child = spawn(attempt.command, attempt.args, {
+      detached: false,
+      stdio: 'ignore',
+      shell: process.platform === 'win32',
+      cwd: REPO_ROOT,
+      env: {
+        ...process.env,
+        GAME_API_PORT: String(MOCK_API_PORT),
+      },
+    })
 
-  child.once('exit', (code) => {
-    earlyExitCode = code
-  })
+    child.once('error', (err) => {
+      spawnError = err
+    })
 
-  child.unref()
+    child.once('exit', (code) => {
+      earlyExitCode = code
+    })
 
-  // Wait up to 5s for the API to become available
-  for (let i = 0; i < 25; i++) {
-    const launchErr = spawnError
-    if (launchErr !== null) {
-      throw new Error(
-        `Mock API failed to launch: ${String(launchErr)}\n` +
-          `Try running it manually: npx tsx packages/mock-api/src/index.ts`
-      )
+    child.unref()
+
+    // Wait up to 5s for this attempt to become available
+    for (let i = 0; i < 25; i++) {
+      if (await isApiRunning()) return
+
+      if (spawnError !== null) {
+        launchFailures.push(
+          `${attempt.label}: failed to launch (${String(spawnError)})`
+        )
+        break
+      }
+
+      if (earlyExitCode !== null) {
+        launchFailures.push(
+          `${attempt.label}: exited before healthy (exit code ${earlyExitCode})`
+        )
+        break
+      }
+
+      await sleep(200)
     }
 
-    if (earlyExitCode !== null) {
-      throw new Error(
-        `Mock API exited before becoming healthy (exit code ${earlyExitCode}).\n` +
-          `Try running it manually: npx tsx packages/mock-api/src/index.ts`
-      )
-    }
-
-    await sleep(200)
     if (await isApiRunning()) return
   }
 
@@ -75,12 +81,40 @@ export async function ensureApiRunning(): Promise<void> {
       ? `\nWindows note: if PowerShell blocks scripts, run: Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
       : ''
 
+  const failureDetails =
+    launchFailures.length > 0
+      ? `\nLaunch attempts:\n- ${launchFailures.join('\n- ')}`
+      : ''
+
   throw new Error(
     `Mock API did not start on port ${MOCK_API_PORT} within 5 seconds.\n` +
       `Health check failed: ${HEALTH_URL}\n` +
-      `Try running it manually: npx tsx packages/mock-api/src/index.ts` +
+      `Try running it manually: pnpm --filter @investec-game/mock-api start` +
+      failureDetails +
       windowsHint
   )
+}
+
+function buildLaunchAttempts(): Array<{ label: string; command: string; args: string[] }> {
+  const pnpmCommand = process.platform === 'win32' ? 'pnpm.cmd' : 'pnpm'
+  const tsxBinary =
+    process.platform === 'win32'
+      ? join(REPO_ROOT, 'packages', 'mock-api', 'node_modules', '.bin', 'tsx.cmd')
+      : join(REPO_ROOT, 'packages', 'mock-api', 'node_modules', '.bin', 'tsx')
+  const mockApiEntry = join(REPO_ROOT, 'packages', 'mock-api', 'src', 'index.ts')
+
+  return [
+    {
+      label: 'pnpm filtered start',
+      command: pnpmCommand,
+      args: ['--filter', '@investec-game/mock-api', 'start'],
+    },
+    {
+      label: 'package-local tsx',
+      command: tsxBinary,
+      args: [mockApiEntry],
+    },
+  ]
 }
 
 function sleep(ms: number): Promise<void> {

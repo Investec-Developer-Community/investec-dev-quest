@@ -127,6 +127,20 @@ Use these after participants complete a level and run `pnpm game reference`:
 4. Did your fix reject anything legitimate?
 5. What additional edge case would you add to the tests?
 
+## Carry-forward visibility branches
+
+When participants run [game reference](../README.md) on Season 2+ levels, the CLI now renders an **Incident Visibility** addendum derived from their earlier logging quality in Season 1 Level 3.
+
+Expected branches:
+
+| Logging maturity (`s1_logging_maturity`) | Visibility quality | Facilitation cue |
+|------|------|------|
+| `none` | `opaque` | Ask what incident evidence was unavailable and how that changed response speed. |
+| `basic` | `partial` | Ask which fields helped and which blind spots still forced guesswork. |
+| `forensic` | `forensic` | Ask how complete traceability changed triage confidence and ownership clarity. |
+
+Use this to reinforce that observability choices are not local optimizations; they materially change downstream investigative outcomes.
+
 ## Common stuck points
 
 | Symptom | Facilitation nudge |

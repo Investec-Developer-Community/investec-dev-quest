@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import { join } from 'path'
-import type { LevelProgress } from '@investec-game/shared'
+import type { ArcFlagEvidence, ArcFlagKey, ArcFlags, LevelProgress } from '@investec-game/shared'
+import { ARC_DEFAULT_FLAGS } from '../services/arcModel.js'
 
 const DB_DIR = join(homedir(), '.investec-game')
 const DB_PATH = join(DB_DIR, 'progress.json')
@@ -10,12 +11,22 @@ interface ProgressStore {
   progress: Record<string, LevelProgress>
   hintUnlocks: Record<string, number[]>
   currentLevelId: string | null
+  arcFlags: ArcFlags
+  flagEvidence: ArcFlagEvidence[]
 }
+
+const DEFAULT_ARC_FLAGS: ArcFlags = { ...ARC_DEFAULT_FLAGS }
 
 function readStore(): ProgressStore {
   mkdirSync(DB_DIR, { recursive: true })
   if (!existsSync(DB_PATH)) {
-    return { progress: {}, hintUnlocks: {}, currentLevelId: null }
+    return {
+      progress: {},
+      hintUnlocks: {},
+      currentLevelId: null,
+      arcFlags: { ...DEFAULT_ARC_FLAGS },
+      flagEvidence: [],
+    }
   }
   try {
     const parsed = JSON.parse(readFileSync(DB_PATH, 'utf-8')) as Partial<ProgressStore>
@@ -23,9 +34,20 @@ function readStore(): ProgressStore {
       progress: parsed.progress ?? {},
       hintUnlocks: parsed.hintUnlocks ?? {},
       currentLevelId: parsed.currentLevelId ?? null,
+      arcFlags: {
+        ...DEFAULT_ARC_FLAGS,
+        ...(parsed.arcFlags ?? {}),
+      },
+      flagEvidence: parsed.flagEvidence ?? [],
     }
   } catch {
-    return { progress: {}, hintUnlocks: {}, currentLevelId: null }
+    return {
+      progress: {},
+      hintUnlocks: {},
+      currentLevelId: null,
+      arcFlags: { ...DEFAULT_ARC_FLAGS },
+      flagEvidence: [],
+    }
   }
 }
 
@@ -112,4 +134,42 @@ export function getCurrentLevelCoordinates(): LevelCoordinates | null {
   const levelId = getCurrentLevelId()
   if (!levelId) return null
   return parseLevelId(levelId)
+}
+
+export function getArcFlags(): ArcFlags {
+  const store = readStore()
+  return { ...store.arcFlags }
+}
+
+export function getArcFlagEvidence(): ArcFlagEvidence[] {
+  const store = readStore()
+  return [...store.flagEvidence]
+}
+
+export interface ArcFlagWriteInput {
+  flag: ArcFlagKey
+  value: ArcFlags[ArcFlagKey]
+  testSignals: string[]
+}
+
+export function applyArcFlagWrites(levelId: string, writes: ArcFlagWriteInput[]): void {
+  if (writes.length === 0) return
+
+  const store = readStore()
+  const now = new Date().toISOString()
+  const arcFlags = store.arcFlags as Record<ArcFlagKey, ArcFlags[ArcFlagKey]>
+
+  for (const write of writes) {
+    arcFlags[write.flag] = write.value
+    store.flagEvidence.push({
+      flag: write.flag,
+      value: String(write.value),
+      levelId,
+      writtenAt: now,
+      testSignals: [...write.testSignals],
+      rubricVersion: 'v1',
+    })
+  }
+
+  writeStore(store)
 }

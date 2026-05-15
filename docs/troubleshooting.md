@@ -123,6 +123,58 @@ pnpm game test --season 1 --level 1   # ✓ records completion
 npx vitest run ...     # ✗ doesn't update progress
 ```
 
+### Failing tests are still unclear
+
+Use the coaching and visibility commands:
+
+```bash
+pnpm game explain   # next-step coaching based on failing tests (non-spoiler)
+pnpm game journal   # recorded choices, evidence trail, downstream consequences
+```
+
+If you need full raw traces:
+
+```bash
+pnpm game test --verbose
+```
+
+### Carry-forward consequence sections are missing from `pnpm game reference`
+
+Possible causes:
+
+1. The level/season doesn't render that section yet (for example some sections appear only on later seasons).
+2. Relevant rubric signals were never written because tests were run outside the CLI flow.
+3. Your progress file predates the latest arc flag schema.
+
+Fix:
+
+```bash
+pnpm game test --season <n> --level <n>
+pnpm game reference --season <n> --level <n>
+```
+
+If the section is still missing and you want a clean slate:
+
+```bash
+rm ~/.investec-game/progress.json
+pnpm game status
+```
+
+### `pnpm game status` shows an unexpected operational risk band
+
+The risk band is derived from two carry-forward flags:
+
+- `s1_token_fix_depth`
+- `s2_state_discipline`
+
+On a fresh profile (before both flags have evidence), status shows:
+
+```text
+Carry-forward operational risk: not assessed yet
+```
+
+Re-run the source levels via CLI (`pnpm game test ...`) so fresh evidence writes update the profile.
+
 ### Season 3 webhook tests failing with signature mismatch
 
 Common causes:
@@ -185,6 +237,17 @@ The starter code is too correct — it doesn't leave anything to fix. Edit `star
 ### A level fails: `Reference: attack script fails`
 
 The reference solution doesn't actually block the exploit. Review `attack/exploit.test.js` and `reference/solution.js` together.
+
+### Validator skips API-required levels
+
+`scripts/validate-levels.mjs` skips API levels when the mock API health endpoint is offline.
+
+For full validation:
+
+```bash
+npx tsx packages/mock-api/src/index.ts
+node scripts/validate-levels.mjs
+```
 
 ---
 

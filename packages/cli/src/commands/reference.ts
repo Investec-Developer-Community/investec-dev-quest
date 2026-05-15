@@ -6,6 +6,15 @@ import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress } from '../db/progress.js'
 import { resolveLevelSelection } from './levelSelection.js'
+import { buildArcPostmortemAddendum } from '../services/arcPostmortem.js'
+import { buildIncidentVisibilityAddendumForSeason } from '../services/incidentVisibility.js'
+import { buildBeneficiaryIncidentChainAddendumForLevel } from '../services/beneficiaryIncidentChain.js'
+import { buildOperationalRiskAddendumForSeason } from '../services/operationalRisk.js'
+
+interface AddendumBlock {
+  title: string
+  content: string | null
+}
 
 export function registerReferenceCommand(program: Command): void {
   program
@@ -56,11 +65,29 @@ export function registerReferenceCommand(program: Command): void {
       p.log.step(pc.bold('reference/solution.js'))
       console.log(readFileSync(referencePath, 'utf-8'))
 
-      if (opts.debrief !== false && existsSync(debriefPath)) {
-        p.log.step(pc.bold('Debrief'))
-        console.log(renderMarkdown(readFileSync(debriefPath, 'utf-8')))
-      } else if (opts.debrief !== false) {
-        p.log.message(pc.dim('No debrief.md exists for this level yet.'))
+      if (opts.debrief !== false) {
+        if (existsSync(debriefPath)) {
+          p.log.step(pc.bold('Debrief'))
+          console.log(renderMarkdown(readFileSync(debriefPath, 'utf-8')))
+        } else {
+          p.log.message(pc.dim('No debrief.md exists for this level yet.'))
+        }
+
+        const addenda: AddendumBlock[] = [
+          { title: 'Arc Postmortem', content: buildArcPostmortemAddendum() },
+          { title: 'Incident Visibility', content: buildIncidentVisibilityAddendumForSeason(manifest.season) },
+          {
+            title: 'Beneficiary Incident Chain',
+            content: buildBeneficiaryIncidentChainAddendumForLevel(manifest.season, manifest.boss === true),
+          },
+          { title: 'Operational Risk', content: buildOperationalRiskAddendumForSeason(manifest.season) },
+        ]
+
+        for (const addendum of addenda) {
+          if (!addendum.content) continue
+          p.log.step(pc.bold(addendum.title))
+          console.log(renderMarkdown(addendum.content))
+        }
       }
     })
 }

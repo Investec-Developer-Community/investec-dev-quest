@@ -20,7 +20,6 @@ docs/media/raw/
 # Internal/local authoring artifacts (do not publish)
 .agent/
 docs/terminal-demo-gif.md
-PLAN.md
 
 # macOS
 .DS_Store

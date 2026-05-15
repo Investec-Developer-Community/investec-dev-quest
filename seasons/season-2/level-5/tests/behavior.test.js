@@ -49,7 +49,7 @@ describe('beforeTransaction — balance tracking', () => {
     expect(kv.get('daily_spend')).toBe(1000)
   })
 
-  it('does NOT update daily_spend when a transaction is declined', () => {
+  it('A_S2L5_DECLINED_DOES_NOT_MUTATE_STATE: does NOT update daily_spend when a transaction is declined', () => {
     const kv = createKv()
     kv.set('daily_spend', 1800)
     beforeTransaction(makeEvent(30000), kv) // R300 — declined

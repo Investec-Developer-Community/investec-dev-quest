@@ -10,8 +10,9 @@ import {
   renderWinBanner,
   renderBeginnerGuidance,
 } from '../runner/feedback.js'
-import { getProgress, upsertProgress, incrementAttempts } from '../db/progress.js'
+import { getArcFlagEvidence, getProgress, upsertProgress, incrementAttempts } from '../db/progress.js'
 import { ensureApiRunning } from '../services/apiProcess.js'
+import { applyFlagWritesFromResults } from '../services/arcFlags.js'
 import type { ResolvedLevel } from '../levels/loader.js'
 import { resolveLevelSelection } from './levelSelection.js'
 
@@ -19,6 +20,7 @@ interface RunLevelEvaluationOptions {
   countAttempt?: boolean
   showWinBanner?: boolean
   nextLevelCommand?: string
+  verbose?: boolean
 }
 
 function getNextLevelCommand(currentLevelId: string): string | undefined {
@@ -47,13 +49,14 @@ export async function runLevelEvaluation(
   const countAttempt = options.countAttempt ?? true
   const showBanner = options.showWinBanner ?? true
   const nextLevelCommand = options.nextLevelCommand
+  const verbose = options.verbose ?? false
 
   // Run behaviour tests
   const testSpinner = p.spinner()
   testSpinner.start('Running behavior tests…')
   const testResults = await runTests(testsDir, manifest.id)
   testSpinner.stop('Behavior tests complete')
-  renderTestResults(testResults, 'Behavior Tests')
+  renderTestResults(testResults, 'Behavior Tests', { verbose })
 
   // Run attack script
   const attackSpinner = p.spinner()
@@ -64,7 +67,7 @@ export async function runLevelEvaluation(
   // The attack script is written so that it PASSES when the exploit is blocked.
   // If attack tests all pass -> exploit is blocked -> good.
   const exploitBlocked = attackResults.passed && !attackResults.error
-  renderAttackResult(attackResults, exploitBlocked)
+  renderAttackResult(attackResults, exploitBlocked, { verbose })
 
   // Update progress
   const progress = getProgress(manifest.id) ?? {
@@ -83,6 +86,10 @@ export async function runLevelEvaluation(
   const attempts = progress.attempts + (countAttempt ? 1 : 0)
 
   const levelComplete = testResults.passed && exploitBlocked
+
+  // Deterministic consequence tracking: write arc flags only from explicit test signals.
+  applyFlagWritesFromResults(manifest.id, testResults, attackResults, levelComplete)
+
   if (levelComplete) {
     upsertProgress({
       ...progress,
@@ -109,7 +116,8 @@ export function registerTestCommand(program: Command): void {
     .description('Run tests and attack script for the active level')
     .option('-s, --season <n>', 'Season number')
     .option('-l, --level <n>', 'Level number')
-    .action(async (opts: { season?: string; level?: string }) => {
+    .option('-v, --verbose', 'Show full test failure traces')
+    .action(async (opts: { season?: string; level?: string; verbose?: boolean }) => {
       const { season, level } = resolveLevelSelection(program, opts)
 
       const levelDir = findLevelDir(season, level)
@@ -146,11 +154,12 @@ export function registerTestCommand(program: Command): void {
 
       const nextLevelCommand = getNextLevelCommand(manifest.id)
       const evaluationOptions: RunLevelEvaluationOptions = nextLevelCommand
-        ? { nextLevelCommand }
-        : {}
+        ? { nextLevelCommand, verbose: opts.verbose === true }
+        : { verbose: opts.verbose === true }
       const complete = await runLevelEvaluation(resolved, evaluationOptions)
       if (!complete) {
-        renderBeginnerGuidance()
+        const hasArcEvidence = getArcFlagEvidence().length > 0
+        renderBeginnerGuidance({ includeJournal: hasArcEvidence })
         process.exitCode = EXIT_CODES.EXPECTED_TEST_FAILURE
       } else {
         p.outro(pc.green('Done!'))

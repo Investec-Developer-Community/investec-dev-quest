@@ -18,16 +18,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Season 4 Level 5 added: `s4-l5` "Registry Verifier" (tool poisoning defense via trusted registry resolution).
 - Season 4 Level 6 added: `s4-l6` "Loop Detector" (runaway agent loop detection on repeated tool calls).
 - Boss-level metadata support added with optional `boss` field in level manifests and a status UI boss badge.
+- Carry-forward consequence services for dynamic debrief/reference context: arc postmortem, incident visibility, beneficiary incident chain, and operational risk summary.
+- Beneficiary incident chain projection with boss-level wrap-up context in `game reference` output for later seasons.
+- Operational risk matrix derived from `s1_token_fix_depth` + `s2_state_discipline`, including non-blocking review notes in later-season reference output.
+- Authoring checklist for adding arc flags and rubric evidence IDs (`docs/authoring-guide.md`).
+- Regression coverage for consequence projection logic in season context tests.
+- New `pnpm game journal` command to surface recorded arc choices, evidence trail, and downstream consequence summaries.
+- New `pnpm game explain` command to convert failing behavior/attack tests into non-spoiler next-step coaching.
 
 ### Changed
 - README first-run flow now explicitly points Windows players to `docs/windows-setup.md` before running game commands.
 - Troubleshooting docs now include a dedicated Windows PowerShell execution-policy fix path (`docs/troubleshooting.md`).
 - Player/facilitator docs now reflect 19 total levels and updated completion targets (`README.md`, `docs/facilitator-guide.md`, `PLAN.md`).
+- `pnpm game status` now surfaces `Carry-forward operational risk: not assessed yet` on fresh profiles and only shows a risk band (`elevated`/`guarded`/`resilient`) after relevant carry-forward evidence exists.
+- README and troubleshooting docs now document the carry-forward consequence model, expected rendering, and recovery steps for stale progress/evidence state.
+- Default failed-test feedback is now beginner-friendly (one-line failure reasons by default), with `--verbose` for fuller trace output.
+- `watch` mode now supports `--verbose` failure output parity with `test` mode.
+- Season 1 Level 1 Hint 1 is now diagnostic-first; implementation-shape guidance remains in Hint 2.
+- README first-run guidance now points players to `pnpm game explain` and `pnpm game journal` when failures are unclear.
 
 ### Fixed
 - CLI mock API startup now uses `shell: true` on Windows only in `packages/cli/src/services/apiProcess.ts` to prevent platform-specific `npx` launch failures.
 - CLI mock API startup now surfaces spawn/early-exit failures immediately instead of failing silently behind health-check timeouts.
 - Preflight now performs a Windows-only PowerShell execution policy check and exits early with a friendly remediation command when policy blocks script execution (`packages/cli/src/preflight.ts`).
+- `scripts/validate-levels.mjs` now preserves/restores existing `solution.js` files during contract checks instead of clobbering contributor work.
+- Validator now prints explicit mock API startup guidance when API-required levels are skipped and summarizes skipped API levels.
 
 ## [1.1.0] – 2026-05-04
 

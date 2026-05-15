@@ -39,7 +39,7 @@ describe('apiFetch — normal path', () => {
 })
 
 describe('apiFetch — token refresh', () => {
-  it('automatically refreshes an expired token and returns data', async () => {
+  it('A_S1L2_RETRY_ON_401_ONCE: automatically refreshes an expired token and returns data', async () => {
     const tokenStore = { token: 'stale_or_missing_token' }
 
     // apiFetch must recover transparently
@@ -50,7 +50,14 @@ describe('apiFetch — token refresh', () => {
     expect(tokenStore.token).not.toBe('stale_or_missing_token')
   })
 
-  it('throws "Token refresh failed" when credentials are removed from env', async () => {
+  it('A_S1L2_UPDATES_TOKEN_STORE: updates tokenStore.token after a successful refresh', async () => {
+    const tokenStore = { token: 'stale_or_missing_token' }
+    await apiFetch(`${BASE_URL}/za/pb/v1/accounts`, tokenStore)
+    expect(typeof tokenStore.token).toBe('string')
+    expect(tokenStore.token).not.toBe('stale_or_missing_token')
+  })
+
+  it('A_S1L2_BOUNDED_RETRY: throws "Token refresh failed" when credentials are removed from env', async () => {
     // Temporarily corrupt credentials so refresh fails
     const orig = process.env.GAME_API_CLIENT_ID
     process.env.GAME_API_CLIENT_ID = 'invalid_id'

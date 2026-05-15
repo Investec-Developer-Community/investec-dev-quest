@@ -16,7 +16,8 @@ export function registerWatchCommand(program: Command): void {
     .option('-s, --season <n>', 'Season number')
     .option('-l, --level <n>', 'Level number')
     .option('-d, --debounce <ms>', 'Debounce delay in ms', '300')
-    .action(async (opts: { season?: string; level?: string; debounce: string }) => {
+    .option('-v, --verbose', 'Show full test failure traces')
+    .action(async (opts: { season?: string; level?: string; debounce: string; verbose?: boolean }) => {
       const { season, level } = resolveLevelSelection(program, opts)
       const parsedDebounce = parseInt(opts.debounce, 10)
       const debounceMs = Number.isFinite(parsedDebounce)
@@ -80,6 +81,7 @@ export function registerWatchCommand(program: Command): void {
           await runLevelEvaluation(resolved, {
             countAttempt: false,
             showWinBanner: true,
+            verbose: opts.verbose === true,
           })
         } finally {
           inFlight = false
