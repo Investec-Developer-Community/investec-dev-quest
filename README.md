@@ -1,29 +1,36 @@
-## ⚠️ Playground Project
+## Playground Project
 
 This is **not an official Investec product**.
 
-It's a community experiment --- a playground to test a fun, API game idea for developers in the [Investec Developer community](https://investec.gitbook.io/programmable-banking-community-wiki).
+This repo is a community playground for learning Investec API and secure fintech engineering by solving code challenges.
 
-If you'd like to improve it, simplify it, or make it more ridiculous (in
-a good way):
+# Investec Developer Quest
 
-PRs welcome.
+A local-first, level-based developer game for the Investec developer community.
 
-------------------------------------------------------------------------
+Learn real-world Investec API patterns, Programmable Banking card logic, and secure engineering by fixing bugs and breaking exploits in code.
 
-# 🛡️ Investec Developer Quest
+Current content: **19 playable levels** across Seasons 1 to 4.
 
-A **local-first, level-based developer game** for the Investec developer community.
+![homepage image](docs/devquest_hp.png)
 
-Learn real-world Investec API patterns, Programmable Banking card logic, and secure fintech engineering — by solving problems in code, not reading slides.
+## Start Here (5 minutes)
 
-Current content: **19 playable levels** across Seasons 1–4.
+### 1) Prerequisites
 
-![homepage iamge](docs/devquest_hp.png)
+- Node.js 20+
+- pnpm 9+
 
----
+Quick check:
 
-## Quickstart
+```bash
+node -v
+pnpm -v
+```
+
+Windows players should read [Windows Setup](docs/windows-setup.md) first (PowerShell policy can block scripts).
+
+### 2) Install and load the first level
 
 ```bash
 git clone https://github.com/Investec-Developer-Community/investec-dev-quest.git
@@ -33,59 +40,64 @@ cp .env.example .env
 pnpm game level 1 --season 1
 ```
 
-Windows players: read [Windows Setup](docs/windows-setup.md) before first run (PowerShell execution policy can block pnpm/npm scripts).
-
-Then to test your solution:
+### 3) Run once, then edit once
 
 ```bash
 pnpm game test
 ```
 
-Your editable file for this first level is:
+Edit this file:
 
 ```text
 seasons/season-1/level-1/solution.js
 ```
 
----
+### 4) Tight feedback loop
 
-## First Run (Beginner Path)
+```bash
+pnpm game test
+# or
+pnpm game watch
+```
 
-If you are on Windows, complete [Windows Setup](docs/windows-setup.md) first.
+- Stuck? Use `pnpm game hint`
+- Failures unclear? Use `pnpm game explain`
+- Journal becomes useful after choices/evidence are recorded: `pnpm game journal`
 
-1. Load level: run `pnpm game level 1 --season 1` to read the story and copy starter code.
-2. Run test: execute `pnpm game test` to see the first failing checks.
-3. Make one small edit in `seasons/season-1/level-1/solution.js`.
-4. Re-run `pnpm game test`, or use `pnpm game watch` for automatic feedback while editing.
-5. Use hint: if stuck, run `pnpm game hint` to reveal guidance.
-6. If failures are confusing, run `pnpm game explain` for non-spoiler coaching and `pnpm game journal` to see recorded choices/consequences.
-7. After completion, run `pnpm game reference` to compare with the reference solution and read any debrief.
-8. Check status: run `pnpm game status` to track your progress.
+### 5) Confirm you are on track
 
-Behavior tests prove the feature works. Attack tests prove the vulnerability is blocked. A level is only complete when both pass.
+```bash
+pnpm game status
+```
 
----
-
+Behavior tests prove the feature works. Attack tests prove the exploit is blocked. A level is complete only when both pass.
 
 ## Player Paths
 
-**Note:** The paths below are just suggested learning orders for different interests or workshop tracks. To claim swag, you must complete *all 19 levels* (see the claim instructions below).
-
-Pick a path based on the session you want to run.
+These are suggested learning tracks. To claim swag, you must complete **all 19 levels**.
 
 | Path | Recommended levels | Best for |
 |---|---|---|
-| Beginner path | Season 1 Level 1, then Season 2 Level 1 | New players learning the edit-test-hint loop |
+| Beginner path | Season 1 Level 1, then Season 2 Level 1 | First-time players learning the edit-test-hint loop |
 | API foundations path | Season 1 Levels 1-6 | OAuth2, pagination, token refresh, beneficiaries, idempotent payments |
-| Card code path | Season 2 Levels 1-6 | Programmable Banking `beforeTransaction` rules, MCCs, budgets, velocity limits |
-| Security path | Season 2 Level 1, Season 3 Level 1, Season 4 Level 1 | Defensive validation, HMAC verification, exact allowlists |
-| AI automation path | Season 4 Levels 1-6 | Tool boundaries, human approval gates, citation integrity, prompt-injection defenses, tool supply-chain safety, loop controls |
+| Card code path | Season 2 Levels 1-6 | `beforeTransaction` rules, MCCs, budgets, velocity limits |
+| Security path | Season 2 Level 1, Season 3 Level 1, Season 4 Level 1 | Validation, HMAC verification, exact allowlists |
+| AI automation path | Season 4 Levels 1-6 | Tool boundaries, approval gates, citation integrity, injection defenses |
 
-Peeps new to the API should start with the beginner path and use hints early. Senior peeps can skip straight to the security or AI automation path and treat each level as a code-review and threat-modeling exercise.
+## Commands
 
----
+### Most-used commands
 
-## CLI Commands
+```bash
+pnpm game level 1 --season 1
+pnpm game test
+pnpm game watch
+pnpm game hint
+pnpm game explain
+pnpm game status
+```
+
+### Full command reference
 
 ```bash
 pnpm game level <n>               # Load a level (copies starter code, prints story)
@@ -114,189 +126,134 @@ pnpm game journal --all-evidence   # Show full evidence history
 pnpm game explain                  # Convert failing tests into non-spoiler next-step coaching
 ```
 
-The CLI header now auto-reflects your current mission count and CLI version from the repo state.
+The CLI header auto-reflects mission count and CLI version from current repo state.
 
-Your progress is saved to `~/.investec-game/progress.json`. To reset all progress and start fresh, delete that file:
+Progress is stored at `~/.investec-game/progress.json`.
+
+Reset all progress:
 
 ```bash
 rm ~/.investec-game/progress.json
 ```
 
-## Finished The Quest? Claim Your Prize
-
-
-**Swag eligibility:** You must complete *all 19 levels* to claim swag, regardless of which path you followed. Partial completion (even if you finish a path) does not qualify.
-
-To reduce spam and bot submissions, the claim form link is not posted publicly in this repo.
-
-Claim flow:
-1. Run `pnpm game status` and confirm it shows `19/19 levels complete`.
-2. Open a GitHub issue using the **Swag claim request** template.
-3. Include your `pnpm game status` screenshot in the issue.
-4. A maintainer will share the claim form link with you directly.
-
-We still run this on a community honor system and review claims in good faith.
-
-## How it works
+## How the Game Works
 
 ### Level structure
 
-Each level lives in `seasons/season-N/level-N/` and contains:
+Each level lives in `seasons/season-N/level-N/`.
 
 | File | Purpose |
 |---|---|
-| `story.md` | The scenario — read this first |
-| `starter/solution.js` | Starter template (copied into `solution.js` on first load) |
-| `solution.js` | Your working solution — **you edit this** |
-| `tests/behavior.test.js` | Behavior tests — must pass |
-| `attack/exploit.test.js` | Attack script — must pass after your fix |
-| `hints/hint-1.md` | First hint (revealed on demand) |
+| `story.md` | Scenario and context |
+| `starter/solution.js` | Starter template copied to working file |
+| `solution.js` | Your working solution |
+| `tests/behavior.test.js` | Behavior checks |
+| `attack/exploit.test.js` | Exploit checks |
+| `hints/hint-1.md` | First hint |
 | `hints/hint-2.md` | Second hint |
-| `reference/solution.js` | Reference solution (revealed after completion) |
-| `debrief.md` | Optional post-solve explanation shown by `pnpm game reference` |
+| `reference/solution.js` | Reference implementation after completion |
+| `debrief.md` | Optional post-solve explanation |
 
 ### Win condition
 
-A level is complete when **both** test suites pass:
+Both suites must pass:
 
-1. **Behavior tests** — your implementation handles all the right cases
-2. **Attack script** — the vulnerability is fixed (the exploit is blocked)
+1. Behavior tests
+2. Attack script
 
-The attack script is written so that it **passes** when the exploit is blocked. This is the dual-validation mechanic: you can't over-restrict (breaks behavior tests) and can't under-fix (attack script still fails).
+This enforces dual validation: no over-restricting and no under-fixing.
 
-### Carry-forward consequences model
+### Carry-forward consequences
 
-The game now tracks objective implementation quality signals and carries them forward into later reference/debrief context.
+Implementation quality can carry forward into later narrative/debrief context.
 
-How it works:
-1. Behavior/attack tests emit explicit rubric signal IDs.
-2. The CLI maps those signals into deterministic arc flags.
-3. Later levels surface consequence summaries (postmortem, visibility, beneficiary chain, operational risk) without changing level pass/fail contracts.
+Flow:
 
-Current consequence lenses:
-- Arc Postmortem: broad remediation consequences from unlocked flags.
-- Incident Visibility: derived from `s1_logging_maturity`.
-- Beneficiary Incident Chain: derived from `s1_beneficiary_risk` with boss-level wrap-up context.
-- Operational Risk Summary: derived from `s1_token_fix_depth` + `s2_state_discipline`.
+1. Tests emit explicit rubric signal IDs.
+2. CLI maps signals to deterministic arc flags.
+3. Later levels surface consequence summaries without changing pass/fail contracts.
 
-If a consequence section is missing, see troubleshooting guidance in [docs/troubleshooting.md](docs/troubleshooting.md).
+Current lenses:
 
-When test output still feels ambiguous, use `explain` for a guided next step:
+- Arc Postmortem
+- Incident Visibility (`s1_logging_maturity`)
+- Beneficiary Incident Chain (`s1_beneficiary_risk`)
+- Operational Risk Summary (`s1_token_fix_depth` + `s2_state_discipline`)
 
-```bash
-pnpm game explain
-```
-
-Example output:
-
-```text
-What likely failed
-• Behavior: missing ownership check before exposing account data.
-• Attack path still succeeds with a forged accountId.
-
-Suggested next step
-• Add a server-side account ownership guard before returning balances.
-• Re-run `pnpm game test` to confirm behavior + attack both pass.
-```
-
-### Flow diagram
-
-```mermaid
-flowchart LR
-    Player[Player edits solution.js] --> CLI[pnpm game test]
-    CLI --> API[Mock Investec API]
-    CLI --> Behavior[Behavior tests]
-    CLI --> Attack[Attack tests]
-    Behavior --> Result{Both pass?}
-    Attack --> Result
-    Result -->|Yes| Complete[Level complete]
-    Result -->|No| Iterate[Edit, hint, test again]
-    Complete --> Reference[pnpm game reference]
-```
-
-### Dual-validation diagram
-
-```mermaid
-flowchart TB
-    Solution[Player solution] --> Feature[Behavior tests: expected functionality]
-    Solution --> Defense[Attack tests: exploit blocked]
-    Feature --> Win[Win condition]
-    Defense --> Win
-```
-
----
+If a consequence section is missing, see [docs/troubleshooting.md](docs/troubleshooting.md).
 
 ## Seasons
 
 | Season | Theme |
 |---|---|
-| 1 | API Foundations — OAuth2, accounts, transactions, pagination |
-| 2 | Card Code & Rules Engine — `beforeTransaction`, MCC filters, velocity limits |
-| 3 | Secure Fintech Workflows — Webhook signatures, replay protection, secrets |
-| 4 | Intelligent Banking Automation — Agent tool boundaries, approval gates, citation integrity |
-
-```mermaid
-flowchart LR
-    S1[Season 1: API Foundations] --> S2[Season 2: Card Code]
-    S2 --> S3[Season 3: Secure Workflows]
-    S3 --> S4[Season 4: AI Automation]
-```
-
----
+| 1 | API Foundations: OAuth2, accounts, transactions, pagination |
+| 2 | Card Code and Rules Engine |
+| 3 | Secure Fintech Workflows |
+| 4 | Intelligent Banking Automation |
 
 ## Mock API
 
-The game includes a mock Investec API that simulates:
+Included endpoints:
 
-- `POST /identity/v2/oauth2/token` — OAuth2 client credentials (`Authorization: Basic`, `x-api-key`, `grant_type=client_credentials`)
-- `GET /za/pb/v1/accounts` — Paginated accounts list
-- `GET /za/pb/v1/accounts/:id/balance` — Account balance
-- `GET /za/pb/v1/accounts/:id/transactions` — Transaction history
-- `GET /za/pb/v1/accounts/:id/pending-transactions` — Pending transactions
-- `GET /za/pb/v1/accounts/beneficiaries` — Beneficiaries list
-- `POST /za/pb/v1/accounts/:id/paymultiple` — Payments with idempotency support
+- `POST /identity/v2/oauth2/token`
+- `GET /za/pb/v1/accounts`
+- `GET /za/pb/v1/accounts/:id/balance`
+- `GET /za/pb/v1/accounts/:id/transactions`
+- `GET /za/pb/v1/accounts/:id/pending-transactions`
+- `GET /za/pb/v1/accounts/beneficiaries`
+- `POST /za/pb/v1/accounts/:id/paymultiple`
 
-The CLI auto-starts it when a level requires it. No Docker needed.
+The CLI auto-starts mock API for levels that require it.
 
-Base URL: `http://localhost:3001`  
-Credentials (from `.env`): `game_client_id` / `game_client_secret` + `game_api_key`
+Base URL: `http://localhost:3001`
 
----
+Credentials from `.env`: `game_client_id`, `game_client_secret`, `game_api_key`
 
-## Contributing a level
+## Claim Your Prize
 
-See [docs/authoring-guide.md](docs/authoring-guide.md) for the full guide.
+Swag eligibility requires **19/19 levels complete**.
+
+Claim flow:
+
+1. Run `pnpm game status` and confirm `19/19 levels complete`.
+2. Open a GitHub issue using the Swag claim request template.
+3. Include your `pnpm game status` screenshot.
+4. A maintainer shares the claim form link directly.
+
+## Contributing a Level
+
+See [docs/authoring-guide.md](docs/authoring-guide.md).
 
 Quick checklist:
-1. Copy `templates/level-template/` into the right season folder
-2. Write a realistic scenario in `story.md`
-3. Implement a buggy/incomplete `starter/solution.js`
-4. Write behavior tests and an attack script
-5. Verify the starter fails and your reference solution passes both suites
-6. Open a PR
 
----
+1. Copy `templates/level-template/` into the target season folder.
+2. Write scenario in `story.md`.
+3. Implement buggy/incomplete `starter/solution.js`.
+4. Add behavior tests and attack script.
+5. Verify starter fails and reference passes.
+6. Open a PR.
 
-## Project structure
+## Project Structure
 
-```
+```text
 investec-developer-game/
 ├── packages/
-│   ├── cli/          # investec-game CLI
-│   ├── mock-api/     # Mock Investec API (Hono)
-│   ├── webhook-emitter/ # Signed webhook sender utilities for Season 3
-│   └── shared/       # Shared types and Zod schemas
+│   ├── cli/
+│   ├── mock-api/
+│   ├── webhook-emitter/
+│   └── shared/
 ├── seasons/
-│   ├── season-1/     # API Foundations
-│   ├── season-2/     # Card Code & Rules Engine
-│   ├── season-3/     # Secure Fintech Workflows
-│   └── season-4/     # Intelligent Banking Automation
+│   ├── season-1/
+│   ├── season-2/
+│   ├── season-3/
+│   └── season-4/
 ├── templates/
 │   └── level-template/
 └── docs/
     └── authoring-guide.md
 ```
 
-## Inspired By
+## Inspired by
 
-Inspired by GitHub's [Secure Code Game](https://securitylab.github.com/secure-code-game/).
+Inspired by GitHub Secure Code Game:
+https://securitylab.github.com/secure-code-game/
