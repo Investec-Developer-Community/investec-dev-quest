@@ -10,11 +10,20 @@ import {
   renderWinBanner,
   renderBeginnerGuidance,
 } from '../runner/feedback.js'
-import { getArcFlagEvidence, getProgress, upsertProgress, incrementAttempts } from '../db/progress.js'
+import {
+  getArcFlagEvidence,
+  getArcFlags,
+  getCaseFile,
+  getProgress,
+  incrementAttempts,
+  upsertCaseFile,
+  upsertProgress,
+} from '../db/progress.js'
 import { ensureApiRunning } from '../services/apiProcess.js'
 import { applyFlagWritesFromResults } from '../services/arcFlags.js'
 import type { ResolvedLevel } from '../levels/loader.js'
 import { resolveLevelSelection } from './levelSelection.js'
+import { deriveCaseFileEntry } from '../services/caseFiles.js'
 
 interface RunLevelEvaluationOptions {
   countAttempt?: boolean
@@ -94,6 +103,18 @@ export async function runLevelEvaluation(
   applyFlagWritesFromResults(manifest.id, testResults, attackResults, levelComplete)
 
   if (levelComplete) {
+    const arcFlags = getArcFlags()
+    const arcEvidence = getArcFlagEvidence()
+    const existingCaseFile = getCaseFile(manifest.id)
+    const caseFile = deriveCaseFileEntry(
+      manifest,
+      arcFlags,
+      arcEvidence,
+      existingCaseFile?.createdAt
+    )
+
+    upsertCaseFile(caseFile)
+
     upsertProgress({
       ...progress,
       status: 'complete',
@@ -106,6 +127,7 @@ export async function runLevelEvaluation(
         hintsUsed: progress.hintsUsed,
         referenceCommand: `pnpm game reference --season ${manifest.season} --level ${manifest.level}`,
         boss: manifest.boss === true,
+        caseFile,
         ...(nextLevelCommand ? { nextLevelCommand } : {}),
       })
     }

@@ -71,7 +71,7 @@ pnpm game watch
 
 - Stuck? Use `pnpm game hint`
 - Failures unclear? Use `pnpm game explain`
-- Journal becomes useful after choices/evidence are recorded: `pnpm game journal`
+- Journal and case files become richer after solved levels record evidence: `pnpm game journal`
 
 ### ✅ 5) Confirm you are on track
 
@@ -128,16 +128,16 @@ pnpm game hint                     # Reveal next hint
 pnpm game hint --all               # Show all unlocked hints
 pnpm game hint --topic auth        # Focus hints using level tags + current failure signals
 
-pnpm game reference                # Show reference code for a completed level
+pnpm game reference                # Show reference code and case file summary for a completed level
 pnpm game reference --season 2 --level 1 --no-debrief
 
 pnpm game reset                    # Restore starter code (with confirmation)
 pnpm game reset --yes              # Skip confirmation
 
-pnpm game status                   # Show progress across all levels
+pnpm game status                   # Show progress and recent case files
 pnpm game map                      # Show recommended quest paths and next missions
 pnpm game certificate              # Print completion certificate after all 19 levels
-pnpm game journal                  # Show recorded arc choices, evidence trail, and consequences
+pnpm game journal                  # Show arc choices, evidence trail, case files, and consequences
 pnpm game journal --all-evidence   # Show full evidence history
 pnpm game explain                  # Convert failing tests into non-spoiler next-step coaching
 ```
@@ -188,6 +188,14 @@ Flow:
 1. Tests emit explicit rubric signal IDs.
 2. CLI maps signals to deterministic arc flags.
 3. Later levels surface consequence summaries without changing pass/fail contracts.
+
+When a level is completed, the CLI writes a persistent case file entry with:
+
+- adversary blocked
+- production habit learned
+- downstream consequence change
+
+Case files are derived from existing arc/evidence signals and shown in `status`, `journal`, and `reference`.
 
 Current lenses:
 

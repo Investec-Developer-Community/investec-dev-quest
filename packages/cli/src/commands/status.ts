@@ -1,7 +1,7 @@
 import type { Command } from 'commander'
 import { p, pc, showBanner } from '../ui/theme.js'
 import { loadAllLevels } from '../levels/loader.js'
-import { getAllProgress } from '../db/progress.js'
+import { getAllCaseFiles, getAllProgress } from '../db/progress.js'
 import { getOperationalRiskProfile, hasOperationalRiskEvidence } from '../services/operationalRisk.js'
 import { buildCompletionSummary, playerTitle } from '../services/certificate.js'
 
@@ -104,6 +104,21 @@ export function registerStatusCommand(program: Command): void {
 
       if (complete > 0) {
         p.log.message(pc.dim('Review completed level references with `pnpm game reference --season <n> --level <n>`.'))
+      }
+
+      const caseFiles = getAllCaseFiles()
+      if (caseFiles.length > 0) {
+        const latest = caseFiles.slice(0, 3)
+        const lines = [pc.yellow(pc.bold('Recent case files')), '']
+        for (const entry of latest) {
+          lines.push(`- S${entry.season}L${entry.level} ${entry.levelName}: ${entry.adversaryBlocked}`)
+          lines.push(pc.dim(`  ${entry.downstreamConsequence}`))
+        }
+        if (caseFiles.length > latest.length) {
+          lines.push('')
+          lines.push(pc.dim(`Showing ${latest.length}/${caseFiles.length} case files.`))
+        }
+        p.note(lines.join('\n'), pc.yellow('Case Files'))
       }
 
       if (complete === levels.length) {

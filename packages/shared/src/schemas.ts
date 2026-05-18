@@ -53,6 +53,21 @@ export const LevelProgressSchema = z.object({
 
 export type LevelProgress = z.infer<typeof LevelProgressSchema>
 
+export const CaseFileEntrySchema = z.object({
+  levelId: z.string(),
+  levelName: z.string(),
+  season: z.number().int().min(1),
+  level: z.number().int().min(1),
+  createdAt: z.string().datetime(),
+  adversaryBlocked: z.string(),
+  productionHabit: z.string(),
+  downstreamConsequence: z.string(),
+  signalLabels: z.array(z.string()),
+  flagChanges: z.array(z.string()),
+})
+
+export type CaseFileEntry = z.infer<typeof CaseFileEntrySchema>
+
 // ─── Arc flag tracking ───────────────────────────────────────────────────────
 
 export const ArcFlagsSchema = z.object({

@@ -7,6 +7,8 @@ export default tseslint.config(
     ignores: [
       '**/node_modules/**',
       '**/dist/**',
+      '**/*.d.ts',
+      'packages/*/dist/**',
       '**/.agent/**',
       'docs/**',
       'seasons/**',
@@ -15,8 +17,13 @@ export default tseslint.config(
     ],
   },
   {
+    linterOptions: {
+      reportUnusedDisableDirectives: 'warn',
+    },
+  },
+  {
     files: ['**/*.{js,mjs,cjs}'],
-    extends: [js.configs.recommended],
+    extends: [js.configs.recommended, tseslint.configs.disableTypeChecked],
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',

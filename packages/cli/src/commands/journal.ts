@@ -1,7 +1,7 @@
 import type { Command } from 'commander'
 import { p, pc, showBanner } from '../ui/theme.js'
 import { renderMarkdown } from '../ui/markdown.js'
-import { getArcFlagEvidence, getArcFlags, getCurrentLevelId, parseLevelId } from '../db/progress.js'
+import { getAllCaseFiles, getArcFlagEvidence, getArcFlags, getCurrentLevelId, parseLevelId } from '../db/progress.js'
 import type { ArcFlagKey } from '@investec-game/shared'
 import { ARC_DEFAULT_FLAGS } from '../services/arcModel.js'
 import { buildArcPostmortemAddendum } from '../services/arcPostmortem.js'
@@ -80,6 +80,24 @@ export function registerJournalCommand(program: Command): void {
       }
 
       p.note(evidenceLines.join('\n'), pc.yellow('Evidence'))
+
+      const caseFiles = getAllCaseFiles()
+      if (caseFiles.length === 0) {
+        p.note('No case files recorded yet. Complete a level to generate one.', pc.green('Case Files'))
+      } else {
+        const lines = [pc.green(pc.bold('Case file summaries')), '']
+        for (const entry of caseFiles.slice(0, 8)) {
+          lines.push(`- S${entry.season}L${entry.level} ${entry.levelName}`)
+          lines.push(pc.dim(`  adversary: ${entry.adversaryBlocked}`))
+          lines.push(pc.dim(`  habit: ${entry.productionHabit}`))
+          lines.push(pc.dim(`  consequence: ${entry.downstreamConsequence}`))
+        }
+        if (caseFiles.length > 8) {
+          lines.push('')
+          lines.push(pc.dim(`Showing 8/${caseFiles.length} case files.`))
+        }
+        p.note(lines.join('\n'), pc.green('Case Files'))
+      }
 
       const addenda = [
         buildArcPostmortemAddendum(),
