@@ -20,6 +20,8 @@ docs/media/raw/
 # Internal/local authoring artifacts (do not publish)
 .agent/
 docs/terminal-demo-gif.md
+PLAN.md
+docs/world-bible.md
 docs/SA Card Code.json
 docs/SA CIB Account, Shipment, Transaction Information and Payment Initiation.json
 docs/SA CIB Investec for Intermediaries API.json
