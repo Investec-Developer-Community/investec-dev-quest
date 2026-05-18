@@ -17,7 +17,7 @@ You will:
 
 Current content: **19 playable levels** across Seasons 1 to 4.
 
-![Investec Developer Quest CLI screenshot](docs/dev-quest-cli-screenshot.png)
+![Investec Developer Quest CLI screenshot](docs/dev_quest_hp_v2.png)
 
 ## 🚀 Start Here (5 minutes)
 
