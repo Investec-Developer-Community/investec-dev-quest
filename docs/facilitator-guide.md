@@ -133,6 +133,12 @@ Use these after participants complete a level and run `pnpm game reference`:
 4. Did your fix reject anything legitimate?
 5. What additional edge case would you add to the tests?
 
+Then ask participants to inspect the generated case file (via `pnpm game reference`, `pnpm game journal`, or `pnpm game status`) and discuss:
+
+1. Which adversary was blocked?
+2. Which production habit should carry to the next mission?
+3. How did downstream consequence posture change?
+
 ## Carry-forward visibility branches
 
 When participants run [game reference](../README.md) on Season 2+ levels, the CLI now renders an **Incident Visibility** addendum derived from their earlier logging quality in Season 1 Level 3.

@@ -1,7 +1,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs'
 import { homedir } from 'os'
 import { join } from 'path'
-import type { ArcFlagEvidence, ArcFlagKey, ArcFlags, LevelProgress } from '@investec-game/shared'
+import type { ArcFlagEvidence, ArcFlagKey, ArcFlags, CaseFileEntry, LevelProgress } from '@investec-game/shared'
 import { ARC_DEFAULT_FLAGS } from '../services/arcModel.js'
 
 const DB_DIR = join(homedir(), '.investec-game')
@@ -13,6 +13,7 @@ interface ProgressStore {
   currentLevelId: string | null
   arcFlags: ArcFlags
   flagEvidence: ArcFlagEvidence[]
+  caseFiles: Record<string, CaseFileEntry>
 }
 
 const DEFAULT_ARC_FLAGS: ArcFlags = { ...ARC_DEFAULT_FLAGS }
@@ -26,6 +27,7 @@ function readStore(): ProgressStore {
       currentLevelId: null,
       arcFlags: { ...DEFAULT_ARC_FLAGS },
       flagEvidence: [],
+      caseFiles: {},
     }
   }
   try {
@@ -39,6 +41,7 @@ function readStore(): ProgressStore {
         ...(parsed.arcFlags ?? {}),
       },
       flagEvidence: parsed.flagEvidence ?? [],
+      caseFiles: parsed.caseFiles ?? {},
     }
   } catch {
     return {
@@ -47,6 +50,7 @@ function readStore(): ProgressStore {
       currentLevelId: null,
       arcFlags: { ...DEFAULT_ARC_FLAGS },
       flagEvidence: [],
+      caseFiles: {},
     }
   }
 }
@@ -144,6 +148,22 @@ export function getArcFlags(): ArcFlags {
 export function getArcFlagEvidence(): ArcFlagEvidence[] {
   const store = readStore()
   return [...store.flagEvidence]
+}
+
+export function getCaseFile(levelId: string): CaseFileEntry | null {
+  const store = readStore()
+  return store.caseFiles[levelId] ?? null
+}
+
+export function getAllCaseFiles(): CaseFileEntry[] {
+  const store = readStore()
+  return Object.values(store.caseFiles).sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+}
+
+export function upsertCaseFile(caseFile: CaseFileEntry): void {
+  const store = readStore()
+  store.caseFiles[caseFile.levelId] = caseFile
+  writeStore(store)
 }
 
 export interface ArcFlagWriteInput {

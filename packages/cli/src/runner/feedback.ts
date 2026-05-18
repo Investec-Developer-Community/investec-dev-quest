@@ -1,5 +1,5 @@
 import { p, pc } from '../ui/theme.js'
-import type { TestRunResult } from '@investec-game/shared'
+import type { CaseFileEntry, TestRunResult } from '@investec-game/shared'
 import { summarizeFailureMessage } from './failureSummary.js'
 
 interface RenderOptions {
@@ -59,6 +59,7 @@ interface WinBannerOptions {
   referenceCommand?: string
   nextLevelCommand?: string
   boss?: boolean
+  caseFile?: CaseFileEntry
 }
 
 export function renderWinBanner(levelName: string, options: WinBannerOptions = {}): void {
@@ -87,6 +88,14 @@ export function renderWinBanner(levelName: string, options: WinBannerOptions = {
 
   if (options.referenceCommand) {
     lines.push(pc.cyan(`Review reference: ${options.referenceCommand}`))
+  }
+
+  if (options.caseFile) {
+    lines.push('')
+    lines.push(pc.yellow(pc.bold('Case file recorded')))
+    lines.push(pc.dim(`Adversary blocked: ${options.caseFile.adversaryBlocked}`))
+    lines.push(pc.dim(`Production habit: ${options.caseFile.productionHabit}`))
+    lines.push(pc.dim(`Downstream consequence: ${options.caseFile.downstreamConsequence}`))
   }
 
   if (options.nextLevelCommand) {

@@ -4,7 +4,7 @@ import { p, pc } from '../ui/theme.js'
 import { renderMarkdown } from '../ui/markdown.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
-import { getProgress } from '../db/progress.js'
+import { getCaseFile, getProgress } from '../db/progress.js'
 import { resolveLevelSelection } from './levelSelection.js'
 import { buildArcPostmortemAddendum } from '../services/arcPostmortem.js'
 import { buildIncidentVisibilityAddendumForSeason } from '../services/incidentVisibility.js'
@@ -64,6 +64,18 @@ export function registerReferenceCommand(program: Command): void {
 
       p.log.step(pc.bold('reference/solution.js'))
       console.log(readFileSync(referencePath, 'utf-8'))
+
+      const caseFile = getCaseFile(manifest.id)
+      if (caseFile) {
+        p.note(
+          [
+            `- Adversary blocked: ${caseFile.adversaryBlocked}`,
+            `- Production habit learned: ${caseFile.productionHabit}`,
+            `- Downstream consequence change: ${caseFile.downstreamConsequence}`,
+          ].join('\n'),
+          pc.green('Case File')
+        )
+      }
 
       if (opts.debrief !== false) {
         if (existsSync(debriefPath)) {
