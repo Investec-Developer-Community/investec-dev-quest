@@ -13,7 +13,15 @@
  */
 import pc from 'picocolors'
 
-export function renderMarkdown(source: string): string {
+interface RenderMarkdownOptions {
+  compact?: boolean
+}
+
+export function renderMarkdown(source: string, options: RenderMarkdownOptions = {}): string {
+  if (options.compact) {
+    source = compactStoryMarkdown(source)
+  }
+
   const lines = source.split('\n')
   const output: string[] = []
   let inCodeBlock = false
@@ -88,6 +96,45 @@ export function renderMarkdown(source: string): string {
   }
 
   return output.join('\n')
+}
+
+function compactStoryMarkdown(source: string): string {
+  const preferredSections = ['Mission Brief', 'Your Task', 'Win Condition']
+  const lines = source.split('\n')
+
+  const sections = new Map<string, string[]>()
+  let currentSection: string | null = null
+
+  for (const line of lines) {
+    const match = line.match(/^##\s+(.*)$/)
+    if (match) {
+      currentSection = match[1]?.trim() ?? null
+      if (currentSection && !sections.has(currentSection)) {
+        sections.set(currentSection, [])
+      }
+      continue
+    }
+
+    if (currentSection && sections.has(currentSection)) {
+      sections.get(currentSection)?.push(line)
+    }
+  }
+
+  const picked: string[] = []
+  for (const sectionName of preferredSections) {
+    const sectionLines = sections.get(sectionName)
+    if (!sectionLines) continue
+    picked.push(`## ${sectionName}`)
+    picked.push(...sectionLines)
+    picked.push('')
+  }
+
+  if (picked.length > 0) {
+    return picked.join('\n').trim()
+  }
+
+  const fallbackLines = lines.filter((line) => line.trim().length > 0).slice(0, 24)
+  return fallbackLines.join('\n')
 }
 
 function applyInline(text: string): string {

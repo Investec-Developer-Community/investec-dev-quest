@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readdirSync, statSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
@@ -15,9 +15,64 @@ function runPnpm(pnpmArgs) {
   })
 }
 
-const build = runPnpm(['--filter', '@investec-game/shared', 'build'])
-if ((build.status ?? 1) !== 0) {
-  process.exit(build.status ?? 1)
+function runPnpmQuiet(pnpmArgs) {
+  return spawnSync('pnpm', pnpmArgs, {
+    stdio: 'pipe',
+    shell: false,
+    encoding: 'utf8',
+  })
+}
+
+function newestMtimeMs(path) {
+  if (!existsSync(path)) return 0
+
+  const stats = statSync(path)
+  if (!stats.isDirectory()) return stats.mtimeMs
+
+  let newest = stats.mtimeMs
+  for (const entry of readdirSync(path)) {
+    const childPath = resolve(path, entry)
+    const childNewest = newestMtimeMs(childPath)
+    if (childNewest > newest) newest = childNewest
+  }
+  return newest
+}
+
+function sharedBuildRequired() {
+  const sharedSrc = resolve('packages/shared/src')
+  const sharedDist = resolve('packages/shared/dist')
+  const sharedPkg = resolve('packages/shared/package.json')
+  const sharedTsconfig = resolve('packages/shared/tsconfig.json')
+  const distIndex = resolve('packages/shared/dist/index.js')
+
+  if (!existsSync(distIndex)) return true
+
+  const sourceNewest = Math.max(
+    newestMtimeMs(sharedSrc),
+    newestMtimeMs(sharedPkg),
+    newestMtimeMs(sharedTsconfig)
+  )
+  const distNewest = newestMtimeMs(sharedDist)
+
+  return sourceNewest > distNewest
+}
+
+function ensureSharedBuild() {
+  if (!sharedBuildRequired()) return 0
+
+  const build = runPnpmQuiet(['--filter', '@investec-game/shared', 'build'])
+  if ((build.status ?? 1) !== 0) {
+    if (build.stdout) process.stdout.write(build.stdout)
+    if (build.stderr) process.stderr.write(build.stderr)
+    return build.status ?? 1
+  }
+
+  return 0
+}
+
+const buildCode = ensureSharedBuild()
+if (buildCode !== 0) {
+  process.exit(buildCode)
 }
 
 const sharedDistModuleUrl = pathToFileURL(resolve('packages/shared/dist/index.js')).href

@@ -114,6 +114,7 @@ pnpm game map
 ```bash
 pnpm game level <n>               # Load a level (copies starter code, prints story)
 pnpm game level <n> --season 2    # Load from a specific season (default: 1)
+pnpm game level <n> --full        # Show full mission narrative (default is compact brief)
 
 pnpm game test                     # Run tests + attack script on active level
 pnpm game test --season 2 --level 1

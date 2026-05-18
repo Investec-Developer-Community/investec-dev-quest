@@ -8,10 +8,11 @@ import { buildArcPostmortemAddendum } from '../services/arcPostmortem.js'
 import { buildIncidentVisibilityAddendumForSeason } from '../services/incidentVisibility.js'
 import { buildBeneficiaryIncidentChainAddendumForLevel } from '../services/beneficiaryIncidentChain.js'
 import { buildOperationalRiskAddendumForSeason } from '../services/operationalRisk.js'
+import { formatFlagLabel, formatSignalList } from '../services/arcEvidence.js'
 
 function formatChoiceLine(flag: ArcFlagKey, value: string, changed: boolean): string {
   const marker = changed ? pc.cyan('recorded') : pc.dim('baseline')
-  return `- ${flag}: ${pc.bold(value)} ${marker}`
+  return `- ${formatFlagLabel(flag)}: ${pc.bold(value)} ${marker}`
 }
 
 export function registerJournalCommand(program: Command): void {
@@ -20,7 +21,8 @@ export function registerJournalCommand(program: Command): void {
     .description('Show recorded arc choices, evidence, and downstream consequence summaries')
     .option('-r, --recent <n>', 'Number of recent evidence entries to show', '12')
     .option('-a, --all-evidence', 'Show all evidence entries instead of a recent subset')
-    .action((opts: { recent: string; allEvidence?: boolean }) => {
+    .option('--raw-signals', 'Show raw internal signal IDs (maintainer/debug mode)')
+    .action((opts: { recent: string; allEvidence?: boolean; rawSignals?: boolean }) => {
       const parsedRecent = Number.parseInt(opts.recent, 10)
       const recentLimit = Number.isFinite(parsedRecent) && parsedRecent > 0 ? parsedRecent : 12
 
@@ -63,8 +65,11 @@ export function registerJournalCommand(program: Command): void {
         evidenceLines.push('- No evidence written yet. Signals are written after running pnpm game test.')
       } else {
         for (const row of evidenceRows) {
-          const signals = row.testSignals.length > 0 ? row.testSignals.join(', ') : 'none'
-          evidenceLines.push(`- ${row.writtenAt} | ${row.levelId} | ${row.flag}=${row.value}`)
+          const signals = formatSignalList(
+            row.testSignals,
+            opts.rawSignals === true ? { raw: true } : undefined
+          )
+          evidenceLines.push(`- ${row.writtenAt} | ${row.levelId} | ${formatFlagLabel(row.flag)}=${row.value}`)
           evidenceLines.push(pc.dim(`  signals: ${signals}`))
         }
       }

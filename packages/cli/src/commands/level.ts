@@ -11,7 +11,8 @@ export function registerLevelCommand(program: Command): void {
     .command('level <number>')
     .description('Load a level — prints the story and initialises your solution file')
     .option('-s, --season <n>', 'Season number (defaults to 1)', '1')
-    .action((levelNum: string, opts: { season: string }) => {
+    .option('--full', 'Show full mission story instead of the compact brief')
+    .action((levelNum: string, opts: { season: string; full?: boolean }) => {
       const season = parseInt(opts.season, 10)
       const level = parseInt(levelNum, 10)
 
@@ -29,8 +30,12 @@ export function registerLevelCommand(program: Command): void {
 
       // Print story
       if (existsSync(storyPath)) {
-        const story = renderMarkdown(readFileSync(storyPath, 'utf-8'))
-        p.note(story, pc.bold(manifest.name))
+        const story = renderMarkdown(readFileSync(storyPath, 'utf-8'), { compact: !opts.full })
+        const storyTitle = opts.full ? manifest.name : `${manifest.name} (Quick Brief)`
+        p.note(story, pc.bold(storyTitle))
+        if (!opts.full) {
+          p.log.message(pc.dim(`Need full context? Run: pnpm game level ${level} --season ${season} --full`))
+        }
       }
 
       // Initialise solution.js from starter only if not already started
