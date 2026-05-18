@@ -1,14 +1,19 @@
-## ⚠️ Playground Project
-
-This is **not an official Investec product**.
-
-This repo is a community playground for learning Investec API and secure fintech engineering by solving code challenges.
-
 # 🛡️ Investec Developer Quest
 
-A local-first, level-based developer game for the Investec developer community.
+A local-first CLI game for learning Investec API patterns, Programmable Banking card logic, and secure fintech engineering.
 
-Learn real-world Investec API patterns, Programmable Banking card logic, and secure engineering by fixing bugs and breaking exploits in code.
+> This is a community playground, not an official Investec product.
+
+[![CI](https://github.com/Investec-Developer-Community/investec-dev-quest/actions/workflows/ci.yml/badge.svg)](https://github.com/Investec-Developer-Community/investec-dev-quest/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Node >=20](https://img.shields.io/badge/node-%3E%3D20-339933.svg)](https://nodejs.org)
+[![pnpm 9](https://img.shields.io/badge/pnpm-9-F69220.svg)](https://pnpm.io)
+
+You will:
+- fix intentionally flawed integration code
+- run behavior tests to prove the feature works
+- run attack tests to prove the exploit is blocked
+- unlock references, debriefs, case files, and a completion certificate
 
 Current content: **19 playable levels** across Seasons 1 to 4.
 
@@ -109,37 +114,22 @@ pnpm game status
 pnpm game map
 ```
 
-### Full command reference
+### More command examples
 
 ```bash
-pnpm game level <n>               # Load a level (copies starter code, prints story)
-pnpm game level <n> --season 2    # Load from a specific season (default: 1)
-pnpm game level <n> --full        # Show full mission narrative (default is compact brief)
+pnpm game level <n> --season <n>   # load a level
+pnpm game test --verbose            # full failure traces
+pnpm game hint --topic auth         # topic-focused hint mode
+pnpm game reference --season 2 --level 1
+pnpm game reset --yes
+pnpm game journal --all-evidence
+```
 
-pnpm game test                     # Run tests + attack script on active level
-pnpm game test --season 2 --level 1
-pnpm game test --verbose           # Show full Vitest failure traces
+For complete CLI options, run:
 
-pnpm game watch                    # Re-run test + attack on file changes
-pnpm game watch --season 2 --level 3 --debounce 300
-pnpm game watch --verbose          # Watch mode with full failure traces
-
-pnpm game hint                     # Reveal next hint
-pnpm game hint --all               # Show all unlocked hints
-pnpm game hint --topic auth        # Focus hints using level tags + current failure signals
-
-pnpm game reference                # Show reference code and case file summary for a completed level
-pnpm game reference --season 2 --level 1 --no-debrief
-
-pnpm game reset                    # Restore starter code (with confirmation)
-pnpm game reset --yes              # Skip confirmation
-
-pnpm game status                   # Show progress and recent case files
-pnpm game map                      # Show recommended quest paths and next missions
-pnpm game certificate              # Print completion certificate after all 19 levels
-pnpm game journal                  # Show arc choices, evidence trail, case files, and consequences
-pnpm game journal --all-evidence   # Show full evidence history
-pnpm game explain                  # Convert failing tests into non-spoiler next-step coaching
+```bash
+pnpm game --help
+pnpm game <command> --help
 ```
 
 The CLI header auto-reflects mission count and CLI version from current repo state.
@@ -181,30 +171,16 @@ This enforces dual validation: no over-restricting and no under-fixing.
 
 ### 📓 Carry-forward consequences
 
-Implementation quality can carry forward into later narrative/debrief context.
+Quality of earlier fixes carries into later narrative and debrief output.
 
-Flow:
-
-1. Tests emit explicit rubric signal IDs.
-2. CLI maps signals to deterministic arc flags.
-3. Later levels surface consequence summaries without changing pass/fail contracts.
-
-When a level is completed, the CLI writes a persistent case file entry with:
-
+On completion, each level writes a case file entry with:
 - adversary blocked
 - production habit learned
 - downstream consequence change
 
-Case files are derived from existing arc/evidence signals and shown in `status`, `journal`, and `reference`.
+Case files and consequence context are surfaced via `status`, `journal`, and `reference`.
 
-Current lenses:
-
-- Arc Postmortem
-- Incident Visibility (`s1_logging_maturity`)
-- Beneficiary Incident Chain (`s1_beneficiary_risk`)
-- Operational Risk Summary (`s1_token_fix_depth` + `s2_state_discipline`)
-
-If a consequence section is missing, see [docs/troubleshooting.md](docs/troubleshooting.md).
+For architecture and consequence internals, see [docs/architecture-overview.md](docs/architecture-overview.md).
 
 ## 📚 Seasons
 
@@ -217,21 +193,12 @@ If a consequence section is missing, see [docs/troubleshooting.md](docs/troubles
 
 ## 🔌 Mock API
 
-Included endpoints:
+The local mock API is auto-started by the CLI for API-required levels.
 
-- `POST /identity/v2/oauth2/token`
-- `GET /za/pb/v1/accounts`
-- `GET /za/pb/v1/accounts/:id/balance`
-- `GET /za/pb/v1/accounts/:id/transactions`
-- `GET /za/pb/v1/accounts/:id/pending-transactions`
-- `GET /za/pb/v1/accounts/beneficiaries`
-- `POST /za/pb/v1/accounts/:id/paymultiple`
+- Base URL: `http://localhost:3001`
+- Credentials from `.env`: `game_client_id`, `game_client_secret`, `game_api_key`
 
-The CLI auto-starts mock API for levels that require it.
-
-Base URL: `http://localhost:3001`
-
-Credentials from `.env`: `game_client_id`, `game_client_secret`, `game_api_key`
+Troubleshooting and health-check steps are in [docs/troubleshooting.md](docs/troubleshooting.md).
 
 ## 🎁 Claim Your Prize
 
@@ -241,7 +208,7 @@ Claim flow:
 
 1. Run `pnpm game status` and confirm `19/19 levels complete`.
 2. Run `pnpm game certificate`.
-3. Open a GitHub issue using the Swag claim request template.
+3. Open the swag claim issue directly: [Swag claim template](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/new?template=swag_claim.yml).
 4. Include your `pnpm game status` screenshot and certificate text.
 5. A maintainer shares the claim form link directly.
 
@@ -249,16 +216,22 @@ Claim flow:
 
 See [docs/authoring-guide.md](docs/authoring-guide.md).
 
+Architecture guide: [docs/architecture-overview.md](docs/architecture-overview.md).
+
 Quick checklist:
 
-1. Copy `templates/level-template/` into the target season folder.
+1. Scaffold a level:
+
+```bash
+pnpm create-level -- --season <n> --level <n> --name "<Level Name>" --difficulty beginner --attackName "Exploit Name"
+```
+
 2. Write scenario in `story.md`.
 3. Implement buggy/incomplete `starter/solution.js`.
 4. Add behavior tests and attack script.
 5. Add two hints and a `debrief.md`.
-6. Add `attackName` to `manifest.json`.
-7. Verify starter fails and reference passes.
-8. Open a PR.
+6. Verify starter fails and reference passes.
+7. Open a PR.
 
 For full validation parity (including API-required levels), run:
 
@@ -283,7 +256,8 @@ investec-developer-game/
 ├── templates/
 │   └── level-template/
 └── docs/
-    └── authoring-guide.md
+    ├── authoring-guide.md
+    └── architecture-overview.md
 ```
 
 ## 🙌 Inspired by
