@@ -87,6 +87,16 @@ function formatTopics(topics: string[]): string {
   return topics.map((topic) => topic.replace(/-/g, ' ')).join(', ')
 }
 
+function detectTopicsInText(text: string): string[] {
+  const topics: string[] = []
+  for (const topic of Object.keys(TOPIC_ALIASES)) {
+    if (topicInText(text, topic)) {
+      topics.push(topic)
+    }
+  }
+  return topics
+}
+
 async function inferFailureTopics(
   opts: { requiresApi: boolean; solutionPath: string; testsDir: string; attackDir: string }
 ): Promise<string[]> {
@@ -215,9 +225,42 @@ export function registerHintCommand(program: Command): void {
       const nextContent = readFileSync(join(hintsDir, file), 'utf-8')
 
       if (requestedTopic && !topicInText(nextContent, requestedTopic)) {
-        p.log.message(
-          pc.dim(`No exact "${requestedTopic}" match in the next unlockable hint; showing next hint to preserve unlock order.`)
-        )
+        let previewIndex: number | null = null
+        for (let idx = nextIndex + 1; idx < hintFiles.length; idx += 1) {
+          const previewFile = hintFiles[idx]
+          if (!previewFile) continue
+          const previewContent = readFileSync(join(hintsDir, previewFile), 'utf-8')
+          if (topicInText(previewContent, requestedTopic)) {
+            previewIndex = idx
+            break
+          }
+        }
+
+        const nextTopics = detectTopicsInText(nextContent)
+        if (nextTopics.length > 0) {
+          p.log.message(
+            pc.dim(`Next unlockable hint appears focused on: ${formatTopics(nextTopics)}.`)
+          )
+        }
+
+        if (previewIndex !== null) {
+          const previewFile = hintFiles[previewIndex]
+          if (!previewFile) return
+          const previewContent = readFileSync(join(hintsDir, previewFile), 'utf-8')
+          p.log.message(
+            pc.dim(`Showing topic preview for hint ${previewIndex + 1}; unlock order is unchanged.`)
+          )
+          p.note(
+            renderMarkdown(previewContent),
+            `Topic preview: Hint ${previewIndex + 1} of ${hintFiles.length} (focus: ${requestedTopic})`
+          )
+          p.log.message(pc.dim('Run `pnpm game hint` to unlock the next sequential hint.'))
+          return
+        }
+
+        p.log.message(pc.dim(`No hint currently matches topic "${requestedTopic}" for this level.`))
+        p.log.message(pc.dim('Run `pnpm game hint` to continue sequential unlocks.'))
+        return
       }
 
       recordHintUnlock(manifest.id, nextIndex)
