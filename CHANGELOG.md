@@ -15,8 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Display-only completion ranks and XP in level win banners.
 - Red Team `attackName` metadata in every level manifest and named attack result panels in the CLI.
 - Required `debrief.md` coverage for all 19 levels.
-- `docs/world-bible.md` to define the campaign premise, recurring voices, and copy rules.
 - Pure helper coverage for path progress and certificate summary logic.
+- New architecture overview doc: `docs/architecture-overview.md`.
 
 ### Changed
 - CLI banner metadata is now source-driven: version is read from `packages/cli/package.json`, and mission count is derived from the current level catalog.
@@ -29,6 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Repaired `showBanner` syntax in `packages/cli/src/ui/theme.ts`, restoring stable CLI startup/output after banner text updates.
 - `pnpm game explain` now routes MCC/string/coercion attack failures to the card-code normalization hint before generic state-mutation advice.
+- Scaffold generator now includes `attackName` in generated level manifests.
+- Authoring guide validation step now points to the supported strict validator command.
 
 ## [1.0.0] - 2026-05-15
 

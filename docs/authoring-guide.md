@@ -227,7 +227,7 @@ Guidelines:
 
 Before submitting a new level, verify:
 
-- [ ] `manifest.json` is valid (run `npx zod-cli validate manifest.json` against the schema)
+- [ ] `manifest.json` is valid (run `node scripts/validate-levels.mjs <level-id> --strict` from repo root)
 - [ ] Starter code fails `tests/` (run `vitest run tests/`)
 - [ ] Starter code causes `attack/` to fail (run `vitest run attack/`) — exploit succeeds
 - [ ] Reference code passes `tests/` (copy reference to solution.js, run `vitest run tests/`)

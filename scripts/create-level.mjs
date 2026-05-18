@@ -5,7 +5,7 @@
  * Scaffold a new level from the template.
  *
  * Usage:
- *   node scripts/create-level.mjs --season 3 --level 1 --name "Webhook Whiplash" --difficulty intermediate
+ *   node scripts/create-level.mjs --season 3 --level 1 --name "Webhook Whiplash" --difficulty intermediate --attackName "Signature Shard"
  */
 import { cpSync, existsSync, readFileSync, writeFileSync } from 'fs'
 import { join, dirname } from 'path'
@@ -25,13 +25,14 @@ function parseArgs() {
     level: get('--level'),
     name: get('--name'),
     difficulty: get('--difficulty') ?? 'beginner',
+    attackName: get('--attackName') ?? 'Exploit Name',
   }
 }
 
-const { season, level, name, difficulty } = parseArgs()
+const { season, level, name, difficulty, attackName } = parseArgs()
 
 if (!season || !level || !name) {
-  console.error('Usage: node scripts/create-level.mjs --season <n> --level <n> --name "<name>" [--difficulty beginner|intermediate|advanced]')
+  console.error('Usage: node scripts/create-level.mjs --season <n> --level <n> --name "<name>" [--difficulty beginner|intermediate|advanced] [--attackName "<name>"]')
   process.exit(1)
 }
 
@@ -67,6 +68,7 @@ const manifest = {
   difficulty,
   boss: false,
   apiRequired: false,
+  attackName,
   tags: [],
 }
 
@@ -89,6 +91,7 @@ console.log(`
     3. Write tests/behavior.test.js
     4. Write attack/exploit.test.js (assertions that pass when exploit is BLOCKED)
     5. Implement the correct reference/solution.js
-    6. Add hints in hints/hint-1.md and hints/hint-2.md
-    7. Validate: node scripts/validate-levels.mjs ${levelId}
+    6. Set a descriptive manifest attackName (default scaffold value is "Exploit Name")
+    7. Add hints in hints/hint-1.md and hints/hint-2.md
+    8. Validate: node scripts/validate-levels.mjs ${levelId} --strict
 `)
