@@ -56,6 +56,22 @@ function shouldIncludePending(includePending: string | undefined): boolean {
   return includePending === 'true' || includePending === '1'
 }
 
+interface PaymentItem {
+  beneficiaryId: string
+  amount: string | number
+}
+
+function isPaymentItem(value: unknown): value is PaymentItem {
+  if (typeof value !== 'object' || value === null) return false
+
+  const candidate = value as Record<string, unknown>
+  return (
+    typeof candidate['beneficiaryId'] === 'string' &&
+    candidate['beneficiaryId'].length > 0 &&
+    (typeof candidate['amount'] === 'string' || typeof candidate['amount'] === 'number')
+  )
+}
+
 // GET /za/pb/v1/accounts/:accountId/transactions
 // Defined directly on the app so :accountId is in scope and fully typed.
 app.get('/za/pb/v1/accounts/:accountId/transactions', (c) => {
@@ -127,25 +143,23 @@ app.post('/za/pb/v1/accounts/:accountId/paymultiple', async (c) => {
     return c.json(PAYMENT_CACHE.get(cacheKey))
   }
 
-  const body = await c.req.json().catch(() => null)
-  const paymentList = body?.paymentList
+  const body: unknown = await c.req.json().catch((): unknown => null)
+  const paymentList =
+    typeof body === 'object' &&
+    body !== null &&
+    Array.isArray((body as Record<string, unknown>)['paymentList'])
+      ? (body as Record<string, unknown>)['paymentList']
+      : null
+
   if (!Array.isArray(paymentList) || paymentList.length === 0) {
     return c.json({ error: 'Invalid payment request' }, 400)
   }
 
-  const invalidPayment = paymentList.find(
-    (payment) =>
-      !payment ||
-      typeof payment.beneficiaryId !== 'string' ||
-      !payment.beneficiaryId ||
-      !['string', 'number'].includes(typeof payment.amount)
-  )
-
-  if (invalidPayment) {
+  if (!paymentList.every(isPaymentItem)) {
     return c.json({ error: 'Invalid payment request' }, 400)
   }
 
-  const transferResponses = paymentList.map((payment: { amount: string | number; beneficiaryId: string }) => ({
+  const transferResponses = paymentList.map((payment) => ({
     PaymentReferenceNumber: randomUUID(),
     beneficiaryId: payment.beneficiaryId,
     amount: Number(payment.amount),

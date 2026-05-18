@@ -85,6 +85,7 @@ describe('Attack: type-coercion bypass', () => {
 | `difficulty` | string | ✅ | `"beginner"`, `"intermediate"`, or `"advanced"` |
 | `boss` | boolean | optional | Set to `true` for season capstone levels |
 | `apiRequired` | boolean | ✅ | `true` if the mock API must run (Season 1) |
+| `attackName` | string | ✅ | Short Red Team name for the exploit, e.g. `"Prefix Phantom"` |
 | `tags` | string[] | ✅ | Searchable tags, e.g. `["oauth2", "pagination"]` |
 
 ---
@@ -152,6 +153,8 @@ Use this structure for new levels:
 
 Move root-cause explanations into hints or post-solve debriefs. Players should read the story and know what to investigate; they should not read the story and already know the exact line to change.
 
+The default playable brief shown in the terminal should target **120-180 words**. If a level needs more domain context, put that material under an optional `## Field Notes` section after the win condition. Stories must not reveal the exact implementation fix.
+
 Good story copy:
 
 > A QA tester noticed that some blocked merchant transactions are still being approved. The event payload comes from a platform boundary, so inspect the input shape before making authorization decisions.
@@ -183,9 +186,15 @@ Hint 1 should help the player choose what to inspect. Hint 2 can show a small im
 
 ---
 
+## Attack names
+
+Every level manifest must include `attackName`. Keep it short, memorable, and tied to the exploit the Red Team is using. Good examples: `Prefix Phantom`, `Duplicate Payment Echo`, `Signature Shard`.
+
+---
+
 ## Debriefs
 
-Debriefs are optional per level, but recommended for levels with security or production engineering lessons. If present, `pnpm game reference` shows them after completion.
+Debriefs are required for every level. `pnpm game reference` shows them after completion.
 
 Use this structure:
 

@@ -10,6 +10,7 @@ export const LevelManifestSchema = z.object({
   difficulty: z.enum(['beginner', 'intermediate', 'advanced']),
   boss: z.boolean().default(false),
   apiRequired: z.boolean(),    // whether mock-api must be running
+  attackName: z.string().optional(),
   tags: z.array(z.string()).default([]),
 })
 

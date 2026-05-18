@@ -2,57 +2,33 @@
 
 ## Mission Brief
 
-FinFlow has shipped a "Pay a Beneficiary" feature. It's been running for two weeks when the support team starts getting reports of failed payments — but the UI shows success.
+**The Briefing Desk:** A payment screen is showing success while invalid beneficiary IDs slip through the validation layer. In a real South African payments flow, that is not a cosmetic bug. It is a trust failure before money moves.
 
 ## Bug Report
 
-Support logs show failed payment attempts that the UI treated as successful. A tester can also construct a call with an arbitrary beneficiary ID, so the validation layer needs to prove the ID belongs to the profile before payment code continues.
+The starter fetches beneficiaries, but `validateBeneficiary` approves the path without proving the supplied ID belongs to the profile.
 
 ## Your Task
 
-Implement two functions that form the validation layer:
+Edit `solution.js` and implement:
 
 ```js
-// Fetch all beneficiaries on the profile
 export async function getBeneficiaries(token)
-
-// Validate that beneficiaryId exists in the beneficiaries list
-// Returns true if found
-// Throws Error('Beneficiary not found') if not
 export async function validateBeneficiary(token, beneficiaryId)
 ```
 
-### API endpoint
+Rules:
 
-```
-GET /za/pb/v1/accounts/beneficiaries
-```
-
-Response shape:
-```json
-{
-  "data": [
-    {
-      "beneficiaryId": "ben-001",
-      "beneficiaryName": "Alice Nkosi",
-      ...
-    }
-  ]
-}
-```
-
-### Rules
-
-- `getBeneficiaries` must return the array from `data`
-- `validateBeneficiary` must call `getBeneficiaries` and check if the ID exists
-- If the ID is not found, throw `Error('Beneficiary not found')`
+- `getBeneficiaries` calls `GET /za/pb/v1/accounts/beneficiaries`.
+- Return the response `data` array.
+- `validateBeneficiary` must call `getBeneficiaries`.
+- Return `true` when `beneficiaryId` exists.
+- Throw `Error('Beneficiary not found')` when it does not.
 
 ## Threat
 
-The attack tries to validate a beneficiary ID that is not present in the profile's beneficiary list.
+**The Red Team:** Phantom Beneficiary presents an ID that is not in the profile and tries to continue toward payment.
 
 ## Win Condition
 
-Both test suites must pass.
-
-The attack script will attempt to validate a beneficiary ID that does **not** exist.
+Behavior tests and the Red Team pass when known beneficiaries validate and unknown beneficiaries stop the flow.

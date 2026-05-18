@@ -2,54 +2,35 @@
 
 ## Mission Brief
 
-FinFlow's API client has been running in production for a week. Everything looks fine during business hours — but every morning the support team finds a wave of errors in the overnight logs:
+**The Briefing Desk:** Overnight jobs for a Cape Town SME dashboard are waking up to `401 Unauthorized` errors. The first token works, then stale credentials turn a quiet batch run into a support queue.
 
-```
-Error: Request failed with status 401
-  at fetchAccounts (client.js:24)
-  ...
-```
+FinFlow needs a client that refreshes once, recovers cleanly, and never spins forever.
 
 ## Bug Report
 
-Logs show the client works at startup, then begins returning `401 Unauthorized` after it has been running for a while. The starter already performs authenticated requests, but it does not recover from that failure mode.
+The starter performs authenticated requests but treats every non-OK response the same. A stale token kills the call instead of triggering a bounded refresh.
 
 ## Your Task
 
-Fix the `apiFetch` function so it **automatically retries** with a fresh token when it receives a `401`.
-
-The retry must happen **exactly once** — if a fresh token also gets a 401, propagate the error. Don't retry indefinitely.
-
-### Exports required
+Edit `solution.js` and implement:
 
 ```js
-// Fetch a new access token using client credentials
 export async function getToken(clientId, clientSecret)
-
-// Make an authenticated API call. If 401, refresh token once and retry.
 export async function apiFetch(url, tokenStore)
 ```
 
-The `tokenStore` object is a simple mutable container for the current token:
-```js
-{ token: '<current access token>' }
-```
+Rules:
 
-After a successful refresh, update `tokenStore.token` with the new value so callers can observe it.
-
-### Rules
-
-- Credentials must come from `process.env` — never hardcode them
-- On first `401`: call `getToken`, update `tokenStore.token`, retry the request once
-- On second `401`: throw `Error('Token refresh failed')`
-- Any non-401 non-ok response: throw `Error('Request failed: <status>')`
+- `getToken` uses OAuth2 client credentials from arguments and API key from `process.env`.
+- `apiFetch` makes one authenticated request with `tokenStore.token`.
+- On the first `401`, fetch a new token, update `tokenStore.token`, and retry once.
+- On a second `401`, throw `Error('Token refresh failed')`.
+- For other non-OK responses, throw `Error('Request failed: <status>')`.
 
 ## Threat
 
-The attack uses a stale token against a protected endpoint and expects the client to recover without pushing refresh logic onto every caller.
+**The Red Team:** Expired Token Loop starts with a stale token and expects recovery without asking the caller to handle refresh logic.
 
 ## Win Condition
 
-Both the behavior tests and the attack script must pass.
-
-The attack will call a protected endpoint with an intentionally **stale token**, then check that `apiFetch` transparently recovers and returns the data without the caller needing to handle the refresh manually.
+Behavior tests and the Red Team pass when one refresh succeeds, token state updates, and retry loops stay bounded.

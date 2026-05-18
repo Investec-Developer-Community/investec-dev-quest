@@ -3,7 +3,7 @@ import { join } from 'path'
 import { REPO_ROOT } from '../paths.js'
 
 const MOCK_API_PORT = parseInt(process.env['GAME_API_PORT'] ?? '3001', 10)
-const HEALTH_URL = `http://127.0.0.1:${MOCK_API_PORT}/health`
+const HEALTH_URL = `http://127.0.0.1:${String(MOCK_API_PORT)}/health`
 
 export async function isApiRunning(): Promise<boolean> {
   const controller = new AbortController()
@@ -28,7 +28,7 @@ export async function ensureApiRunning(): Promise<void> {
   const launchFailures: string[] = []
 
   for (const attempt of launchAttempts) {
-    let spawnError: Error | null = null
+    let spawnFailed = false
     let earlyExitCode: number | null = null
 
     const child = spawn(attempt.command, attempt.args, {
@@ -43,7 +43,9 @@ export async function ensureApiRunning(): Promise<void> {
     })
 
     child.once('error', (err) => {
-      spawnError = err
+      spawnFailed = true
+      const errorMessage = err instanceof Error ? err.message : String(err)
+      launchFailures.push(`${attempt.label}: failed to launch (${errorMessage})`)
     })
 
     child.once('exit', (code) => {
@@ -56,16 +58,13 @@ export async function ensureApiRunning(): Promise<void> {
     for (let i = 0; i < 25; i++) {
       if (await isApiRunning()) return
 
-      if (spawnError !== null) {
-        launchFailures.push(
-          `${attempt.label}: failed to launch (${String(spawnError)})`
-        )
+      if (spawnFailed) {
         break
       }
 
       if (earlyExitCode !== null) {
         launchFailures.push(
-          `${attempt.label}: exited before healthy (exit code ${earlyExitCode})`
+          `${attempt.label}: exited before healthy (exit code ${String(earlyExitCode)})`
         )
         break
       }
@@ -87,7 +86,7 @@ export async function ensureApiRunning(): Promise<void> {
       : ''
 
   throw new Error(
-    `Mock API did not start on port ${MOCK_API_PORT} within 5 seconds.\n` +
+    `Mock API did not start on port ${String(MOCK_API_PORT)} within 5 seconds.\n` +
       `Health check failed: ${HEALTH_URL}\n` +
       `Try running it manually: pnpm --filter @investec-game/mock-api start` +
       failureDetails +

@@ -2,32 +2,32 @@
 
 ## Mission Brief
 
-FinFlow enforces a **R2,000 daily spend limit** on their prepaid cards. After a month in production, a few customers have complained about confusing declines after attempted over-limit purchases.
+**The Briefing Desk:** FinFlow enforces a R2,000 daily card limit. Customers are seeing confusing declines after attempted over-limit purchases because declined activity is contaminating stored spend.
 
 ## Bug Report
 
-The tricky part is not only the comparison. Look at when state is written, and ask whether a transaction that is not approved should still change the stored daily spend.
-
-Fix the implementation so the store is only updated for **approved** transactions.
+The starter writes the projected spend before it knows whether the transaction is approved.
 
 ## Your Task
+
+Edit `solution.js` and implement:
 
 ```js
 export function beforeTransaction(event, kv)
 ```
 
 Rules:
-- Daily limit is **R2,000**
-- Check BEFORE updating: if `totalSpent + amount > DAILY_LIMIT` → decline without updating
-- Only update `daily_spend` when the transaction is approved
-- Use `event.centsAmount / 100` for the amount in rands
+
+- Daily limit is R2,000.
+- Convert `event.centsAmount` to Rands.
+- Read current spend from `daily_spend`.
+- If `totalSpent + amount > 2000`, decline without updating state.
+- Only update `daily_spend` for approved transactions.
 
 ## Threat
 
-The attack sends an over-limit transaction and checks that declined activity does not corrupt the stored spend total.
+**The Red Team:** Decline Poison sends an over-limit transaction and checks whether rejected activity corrupts future decisions.
 
 ## Win Condition
 
-Both test suites must pass.
-
-The attack sets `daily_spend` close to the limit, fires an over-limit transaction, and then checks that declined activity did not corrupt the stored spend total.
+Behavior tests and the Red Team pass when declined transactions do not mutate daily spend.

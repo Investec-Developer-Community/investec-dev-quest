@@ -2,44 +2,33 @@
 
 ## Mission Brief
 
-FinFlow's security team has flagged a pattern on one of their business cards: rapid small transactions from multiple merchants in quick succession. This is a classic **carding attack** — a compromised card is being tested with tiny amounts to verify it works before larger fraudulent charges are made.
-
-The rule they want: **no more than 3 transactions within any 60-second window**. If a 4th transaction arrives within 60 seconds of the first, it should be declined.
+**The Briefing Desk:** A business card is seeing rapid small transactions across merchants, the kind of pattern fraud teams watch before larger charges arrive. FinFlow needs a rolling-window throttle.
 
 ## Bug Report
 
-The current `beforeTransaction` implementation approves everything, so it has no effective rate limiting for rapid-fire card activity.
+The starter records activity but approves every event. It does not enforce the 60-second transaction limit.
 
 ## Your Task
 
-Implement velocity limiting in `beforeTransaction`:
+Edit `solution.js` and implement:
 
 ```js
 export function beforeTransaction(event, kv)
 ```
 
-### Rules
+Rules:
 
-- Track a rolling log of transaction timestamps under the key `'tx_timestamps'` in `kv`
-- The timestamp to use is `event.dateTime` — an ISO 8601 string (`'2026-04-18T10:00:00'`)
-- Convert to milliseconds with `new Date(event.dateTime).getTime()`
-- Before deciding: remove timestamps older than 60 seconds from the log
-- If 3 or more timestamps remain in the log (within the last 60s), **decline** the transaction
-- Otherwise, **add** the current timestamp to the log and **approve**
-- The rule applies to **all transaction types** — MCC is irrelevant here
-
-### The kv store
-
-Same as Level 2 — use `kv.get('tx_timestamps')` / `kv.set('tx_timestamps', array)`.
-
-Store timestamps as an array of numbers (milliseconds since epoch).
+- Store timestamps under `tx_timestamps`.
+- Use `event.dateTime` and convert it with `new Date(...).getTime()`.
+- Before deciding, remove timestamps older than 60 seconds.
+- If 3 or more timestamps remain, decline the transaction.
+- Otherwise add the current timestamp and approve.
+- Apply this to all transaction types.
 
 ## Threat
 
-The attack fires four transactions in a tight window and expects the fourth to be declined while earlier transactions remain valid.
+**The Red Team:** Velocity Burst fires four transactions one second apart.
 
 ## Win Condition
 
-Both test suites must pass.
-
-The attack fires 4 transactions with timestamps 1 second apart. The 4th must be **declined**.
+Behavior tests and the Red Team pass when the fourth transaction in the window is declined and earlier valid transactions remain approved.

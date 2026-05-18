@@ -2,35 +2,31 @@
 
 ## Mission Brief
 
-FinFlow runs an AI operations assistant with tool access. The policy is simple:
-
-- Allow only explicitly permitted tools
-- Deny everything else by default
+**The Briefing Desk:** FinFlow's AI operations assistant can call tools. A read-only tool and a more powerful tool share a tempting prefix. The policy must make exact decisions, not vibes.
 
 ## Bug Report
 
-A production incident occurred when a permitted read-only tool name also matched a more powerful tool name. The policy needs exact tool decisions, not look-alike matches.
+The starter allows look-alike tool names when they start with an allowed name.
 
 ## Your Task
 
-Implement:
+Edit `solution.js` and implement:
 
 ```js
 export function authorizeToolCall(call, policy)
 ```
 
 Rules:
-- `policy.allowedTools` is an exact allowlist
-- Only exact tool names are allowed
-- Unknown tools must be denied
-- Return shape: `{ allowed: boolean, reason?: string }`
+
+- `policy.allowedTools` is an exact allowlist.
+- Only exact tool names are allowed.
+- Unknown tools are denied.
+- Return `{ allowed: boolean, reason?: string }`.
 
 ## Threat
 
-The attack uses a crafted tool name that starts with an allowed tool but is not itself allowed.
+**The Red Team:** Prefix Phantom crafts a tool name that starts with an allowed tool but is not itself allowed.
 
 ## Win Condition
 
-Both test suites pass.
-
-The attack tries a crafted tool name with an allowed prefix. Your fix must block it.
+Behavior tests and the Red Team pass when exact allowed tools work and look-alike tools are denied.

@@ -9,11 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- New `pnpm game map` command with Quickstart, API Foundations, Card Code, Security, and Grandmaster paths plus next-mission prompts.
+- New `pnpm game certificate` command for shareable 19/19 completion output.
+- Display-only completion ranks and XP in level win banners.
+- Red Team `attackName` metadata in every level manifest and named attack result panels in the CLI.
+- Required `debrief.md` coverage for all 19 levels.
+- `docs/world-bible.md` to define the campaign premise, recurring voices, and copy rules.
+- Pure helper coverage for path progress and certificate summary logic.
+
 ### Changed
 - CLI banner metadata is now source-driven: version is read from `packages/cli/package.json`, and mission count is derived from the current level catalog.
+- README quickstart now starts with the Quickstart Path in campaign order: S1L1 `First Contact`, S2L1 `Merchant Mirage`, then S4L1 `Tool Gatekeeper`.
+- `pnpm game status` now recommends `pnpm game map`, points fresh players to Season 1 Level 1, and shows a campaign-complete banner after 19/19.
+- All level stories were tightened into playable briefs using the Briefing Desk / Red Team voice while preserving existing solution contracts.
+- Authoring guidance now requires `attackName` and `debrief.md`, and documents the short-brief plus optional field-notes story pattern.
+- `scripts/validate-levels.mjs` now validates `attackName`, required debriefs, exact hint count, and story structure while preserving the starter/reference contract checks.
 
 ### Fixed
 - Repaired `showBanner` syntax in `packages/cli/src/ui/theme.ts`, restoring stable CLI startup/output after banner text updates.
+- `pnpm game explain` now routes MCC/string/coercion attack failures to the card-code normalization hint before generic state-mutation advice.
 
 ## [1.0.0] - 2026-05-15
 

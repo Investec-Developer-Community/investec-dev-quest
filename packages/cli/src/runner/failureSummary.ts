@@ -1,4 +1,5 @@
 function stripAnsi(text: string): string {
+  // eslint-disable-next-line no-control-regex -- Strip ANSI escape sequences from terminal output.
   return text.replace(/\u001b\[[0-9;]*m/g, '')
 }
 

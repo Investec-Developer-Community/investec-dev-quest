@@ -1,4 +1,3 @@
-import type { ArcFlagEvidence } from '@investec-game/shared'
 import { getArcFlagEvidence, getArcFlags } from '../db/progress.js'
 import { formatEvidenceLine, latestEvidenceForFlag } from './arcEvidence.js'
 

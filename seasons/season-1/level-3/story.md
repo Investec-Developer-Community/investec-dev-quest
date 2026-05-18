@@ -2,56 +2,33 @@
 
 ## Mission Brief
 
-FinFlow's compliance team needs to generate monthly statements. They've built a report that calls your transaction API client and filters transactions by date range.
+**The Briefing Desk:** Compliance needs an April transaction pack for a simulated Johannesburg business account. The current report drags in older history and misses paginated records, which would make an audit trail unreliable.
 
 ## Bug Report
 
-The report is showing transactions from **every month**, not just the requested one. It also misses records when the API returns more than one page. An audit is coming up, and sending regulators the wrong data is a serious problem.
+The transaction client calls the endpoint, but it does not send the requested date window and stops after the first page.
 
 ## Your Task
 
-Fix `getTransactions` so it:
-
-1. Passes `fromDate` and `toDate` as query parameters to the API
-2. **Follows pagination** — keeps fetching until `meta.nextCursor` is `null`
-3. Returns **all** matching transactions as a flat array
-
-### Export required
+Edit `solution.js` and implement:
 
 ```js
 export async function getTransactions(token, accountId, fromDate, toDate)
 ```
 
-- `token` — Bearer token string
-- `accountId` — e.g. `'acc-001'`
-- `fromDate` — `'YYYY-MM-DD'` string (inclusive)
-- `toDate` — `'YYYY-MM-DD'` string (inclusive)
+Rules:
 
-Returns an array of transaction objects.
-
-### API endpoint
-
-```
-GET /za/pb/v1/accounts/:accountId/transactions
-  ?fromDate=YYYY-MM-DD
-  &toDate=YYYY-MM-DD
-  &cursor=<cursor>
-```
-
-Follow `meta.nextCursor` for subsequent pages.
-
-### Rules
-
-- If there are no transactions in the range, return an empty array `[]`
-- Do not client-side filter — trust the API's date filtering
-- All pages must be fetched before returning
+- Call `GET /za/pb/v1/accounts/:accountId/transactions`.
+- Send `fromDate` and `toDate` as query parameters.
+- Follow `meta.nextCursor` until it is `null`.
+- Return all matching transactions as a flat array.
+- Return `[]` when the API has no records for the range.
+- Do not client-side filter; send the date window to the API.
 
 ## Threat
 
-The attack requests a narrow date window and verifies the client does not return unrelated history or silently stop at the first page.
+**The Red Team:** Statement Flood asks for a narrow date range and checks that unrelated months do not leak into the report.
 
 ## Win Condition
 
-Both the behavior tests and the attack script must pass.
-
-The attack will request a narrow date window and verify that **only transactions in that window are returned**.
+Behavior tests and the Red Team pass when the result contains every page in the requested range and nothing outside it.

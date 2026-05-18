@@ -5,5 +5,6 @@
   "level": 2,
   "difficulty": "beginner",
   "apiRequired": false,
+  "attackName": "Budget Drift",
   "tags": ["card-code", "budget", "afterTransaction", "stateful-rules"]
 }

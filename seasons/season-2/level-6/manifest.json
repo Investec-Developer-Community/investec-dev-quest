@@ -6,6 +6,7 @@
   "difficulty": "advanced",
   "boss": true,
   "apiRequired": false,
+  "attackName": "Rule Reactor Breach",
   "tags": [
     "boss",
     "card-code",

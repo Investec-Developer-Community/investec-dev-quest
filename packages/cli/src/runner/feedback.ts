@@ -4,6 +4,7 @@ import { summarizeFailureMessage } from './failureSummary.js'
 
 interface RenderOptions {
   verbose?: boolean
+  attackName?: string
 }
 
 export function renderTestResults(
@@ -57,16 +58,28 @@ interface WinBannerOptions {
   hintsUsed?: number
   referenceCommand?: string
   nextLevelCommand?: string
+  boss?: boolean
 }
 
 export function renderWinBanner(levelName: string, options: WinBannerOptions = {}): void {
   const attempts = options.attempts ?? 0
   const hintsUsed = options.hintsUsed ?? 0
+  const rank = hintsUsed === 0 && attempts <= 2
+    ? 'Clean Solve'
+    : hintsUsed <= 2
+      ? 'Field Repair'
+      : 'Incident Resolved'
+  const xp = 100
+    + (hintsUsed === 0 ? 50 : 0)
+    + (attempts <= 2 ? 25 : 0)
+    + (options.boss ? 100 : 0)
   const lines = [
     pc.yellow(pc.bold('🎉  Level Complete!')),
     '',
     `"${levelName}" is solved.`,
     '',
+    pc.cyan(`Rank: ${rank}`),
+    pc.cyan(`XP: ${xp}`),
     pc.dim('Both behavior tests and the attack script pass.'),
     pc.dim(`Attempts: ${attempts}  Hints used: ${hintsUsed}`),
     pc.dim('Run `pnpm game status` to see your progress.'),
@@ -90,6 +103,8 @@ export function renderAttackResult(
   options: RenderOptions = {}
 ): void {
   const verbose = options.verbose === true
+  const attackName = options.attackName
+  const attackLabel = attackName ? `Red Team: ${attackName}` : 'Attack Script'
   const lines: string[] = []
 
   if (results.error) {
@@ -115,15 +130,15 @@ export function renderAttackResult(
   lines.push('')
 
   if (exploitBlocked) {
-    lines.push(pc.green(pc.bold('Exploit blocked ✓')))
+    lines.push(pc.green(pc.bold(attackName ? `${attackName} blocked ✓` : 'Exploit blocked ✓')))
   } else {
-    lines.push(pc.red(pc.bold('Exploit succeeds — vulnerability not yet fixed')))
+    lines.push(pc.red(pc.bold(attackName ? `${attackName} still succeeds — vulnerability not yet fixed` : 'Exploit succeeds — vulnerability not yet fixed')))
     if (!verbose) {
       lines.push(pc.dim('Tip: run with --verbose to see full attack trace output.'))
     }
   }
 
-  const title = exploitBlocked ? pc.green('Attack Script') : pc.red('Attack Script')
+  const title = exploitBlocked ? pc.green(attackLabel) : pc.red(attackLabel)
   p.note(lines.join('\n'), title)
 }
 

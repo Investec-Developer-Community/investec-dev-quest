@@ -64,11 +64,12 @@ const API_ONLINE = isApiReachable()
 // ─── Schema validation ────────────────────────────────────────────────────────
 
 const REQUIRED_MANIFEST_FIELDS = [
-  'id', 'name', 'season', 'level', 'difficulty', 'apiRequired', 'tags',
+  'id', 'name', 'season', 'level', 'difficulty', 'apiRequired', 'attackName', 'tags',
 ]
 const VALID_DIFFICULTIES = ['beginner', 'intermediate', 'advanced']
+const STORY_WORD_WARN_LIMIT = 220
 
-function validateManifest(manifestPath, levelDir) {
+function validateManifest(manifestPath) {
   const raw = JSON.parse(readFileSync(manifestPath, 'utf-8'))
 
   for (const field of REQUIRED_MANIFEST_FIELDS) {
@@ -78,6 +79,9 @@ function validateManifest(manifestPath, levelDir) {
     throw new Error(`Invalid difficulty "${raw.difficulty}". Must be one of: ${VALID_DIFFICULTIES.join(', ')}`)
   }
   if (typeof raw.apiRequired !== 'boolean') throw new Error('apiRequired must be a boolean')
+  if (typeof raw.attackName !== 'string' || raw.attackName.trim().length === 0) {
+    throw new Error('attackName must be a non-empty string')
+  }
   if (!Array.isArray(raw.tags)) throw new Error('tags must be an array')
 
   return raw
@@ -95,6 +99,13 @@ function validateStorySections(storyPath) {
   if (missing.length > 0) {
     throw new Error(`story.md missing standard section(s): ${missing.join(', ')}`)
   }
+
+  const wordCount = story.trim().split(/\s+/).filter(Boolean).length
+  if (wordCount > STORY_WORD_WARN_LIMIT) {
+    return [`story.md is ${wordCount} words; target ${STORY_WORD_WARN_LIMIT} or fewer for terminal pacing`]
+  }
+
+  return []
 }
 
 function validateHints(hintsDir) {
@@ -129,6 +140,12 @@ function validateTemplate() {
 
   for (const [label, path] of requiredTemplatePaths) {
     if (!existsSync(path)) errors.push(`Template missing required file: ${label}`)
+  }
+
+  try {
+    validateManifest(join(TEMPLATE_DIR, 'manifest.json'))
+  } catch (err) {
+    errors.push(`Template ${err.message}`)
   }
 
   try {
@@ -189,7 +206,7 @@ function validateLevel(levelDir) {
   const manifestPath = join(levelDir, 'manifest.json')
   if (!existsSync(manifestPath)) throw new Error('No manifest.json')
 
-  const manifest = validateManifest(manifestPath, levelDir)
+  const manifest = validateManifest(manifestPath)
   const solutionPath = join(levelDir, 'solution.js')
   const starterPath = join(levelDir, 'starter', 'solution.js')
   const referencePath = join(levelDir, 'reference', 'solution.js')
@@ -197,6 +214,7 @@ function validateLevel(levelDir) {
   const attackDir = join(levelDir, 'attack')
   const storyPath = join(levelDir, 'story.md')
   const hintsDir = join(levelDir, 'hints')
+  const debriefPath = join(levelDir, 'debrief.md')
 
   // Required files
   for (const [label, p] of [
@@ -208,12 +226,13 @@ function validateLevel(levelDir) {
     ['hints/', hintsDir],
     ['hints/hint-1.md', join(hintsDir, 'hint-1.md')],
     ['hints/hint-2.md', join(hintsDir, 'hint-2.md')],
+    ['debrief.md', debriefPath],
     ['vitest.config.js', join(levelDir, 'vitest.config.js')],
   ]) {
     if (!existsSync(p)) throw new Error(`Missing required file: ${label}`)
   }
 
-  validateStorySections(storyPath)
+  const warnings = validateStorySections(storyPath)
   validateHints(hintsDir)
 
   const errors = []
@@ -269,7 +288,7 @@ function validateLevel(levelDir) {
     restoreSolution()
   }
 
-  return { manifest, errors }
+  return { manifest, errors, warnings }
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -323,9 +342,10 @@ for (const seasonEntry of readdirSync(SEASONS_DIR).sort()) {
     }
 
     try {
-      const { errors } = validateLevel(levelDir)
+      const { errors, warnings } = validateLevel(levelDir)
       if (errors.length === 0) {
         console.log('✓')
+        for (const warning of warnings) console.warn(`    ⚠ ${warning}`)
       } else {
         console.log('✗')
         for (const e of errors) console.error(`    ✗ ${e}`)

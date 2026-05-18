@@ -2,62 +2,34 @@
 
 ## Mission Brief
 
-FinFlow is closing out month-end and needs one final cross-check before releasing payouts.
-
-The payout engine must authenticate correctly, locate the target account across paginated account data, validate the beneficiary, summarize recent debit exposure from transactions, and submit an idempotent payment so retries cannot double-charge users.
+**The Briefing Desk:** Season 1 closes with a payout control room. FinFlow must authenticate, locate the right account, trace recent debit exposure, validate the beneficiary, and submit a retry-safe payment. Every earlier lesson is now part of one production path.
 
 ## Bug Report
 
-The incident review found duplicate payouts and invalid beneficiaries slipping through in retry scenarios. In some cases, the wrong account was selected because only the first page of accounts was inspected.
-
-Your team needs one hardened orchestration function that combines all core Season 1 skills into one workflow.
+The starter inspects only the first account page, skips beneficiary validation, and computes an idempotency key without sending it where the API expects it.
 
 ## Your Task
 
-Edit `solution.js` to implement:
+Edit `solution.js` and implement:
 
 ```js
 export async function runSeasonOneBoss(clientId, clientSecret, accountId, payment, fromDate, toDate)
 ```
 
-Where `payment` has this shape:
+Required behavior:
 
-```js
-{
-  beneficiaryId: 'ben-001',
-  amount: 500.0,
-  myReference: 'Month-end payout',
-  theirReference: 'Settlement'
-}
-```
-
-### Required behavior
-
-1. Authenticate with OAuth2 client credentials and return a usable access token.
-2. Fetch all accounts with cursor-based pagination and verify `accountId` exists.
-3. Fetch transactions for the account with cursor pagination and date filtering.
-4. Compute `recentDebitTotal` from the filtered transactions as the sum of absolute values of negative amounts.
-5. Validate that `payment.beneficiaryId` exists in the beneficiaries list.
-6. Submit payment to `/paymultiple` using a deterministic `Idempotency-Key` derived from account + payment payload.
-7. Return:
-
-```js
-{
-  paymentReference: '<PaymentReferenceNumber>',
-  recentDebitTotal: <number>,
-  accountId: '<accountId>'
-}
-```
+1. Authenticate with OAuth2 client credentials.
+2. Fetch all account pages and verify `accountId` exists.
+3. Fetch transactions with date filtering and pagination.
+4. Compute `recentDebitTotal` from absolute values of negative amounts.
+5. Validate `payment.beneficiaryId`.
+6. Submit payment with a deterministic `Idempotency-Key` derived from account and payment payload.
+7. Return `{ paymentReference, recentDebitTotal, accountId }`.
 
 ## Threat
 
-The attack script retries the same payment and also tries a non-existent beneficiary.
-
-If your workflow is not idempotent or skips beneficiary validation, the attack passes through and the level fails.
+**The Red Team:** Settlement Rift retries the same payment and also attempts a non-existent beneficiary.
 
 ## Win Condition
 
-Both test suites must pass:
-
-- behavior tests prove the end-to-end workflow is correct
-- attack tests prove retries and invalid beneficiaries are blocked
+Behavior tests and the Red Team pass when the orchestration is complete, retry-safe, and beneficiary-aware.

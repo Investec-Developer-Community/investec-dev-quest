@@ -67,7 +67,10 @@ export async function runLevelEvaluation(
   // The attack script is written so that it PASSES when the exploit is blocked.
   // If attack tests all pass -> exploit is blocked -> good.
   const exploitBlocked = attackResults.passed && !attackResults.error
-  renderAttackResult(attackResults, exploitBlocked, { verbose })
+  renderAttackResult(attackResults, exploitBlocked, {
+    verbose,
+    ...(manifest.attackName ? { attackName: manifest.attackName } : {}),
+  })
 
   // Update progress
   const progress = getProgress(manifest.id) ?? {
@@ -102,6 +105,7 @@ export async function runLevelEvaluation(
         attempts,
         hintsUsed: progress.hintsUsed,
         referenceCommand: `pnpm game reference --season ${manifest.season} --level ${manifest.level}`,
+        boss: manifest.boss === true,
         ...(nextLevelCommand ? { nextLevelCommand } : {}),
       })
     }

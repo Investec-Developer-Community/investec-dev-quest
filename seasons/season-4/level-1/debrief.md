@@ -2,12 +2,13 @@
 
 ## What changed
 
-The fixed implementation treats allowed tools as exact names instead of trusting prefix matches.
+The authorizer now treats allowed tools as exact names instead of accepting prefix matches.
 
 ## Why it matters
 
-Agent tools often have very different risk levels even when their names look similar. Prefix authorization can accidentally allow a more powerful tool than the policy intended.
+Look-alike tool names can hide very different permissions.
 
 ## Production habit
 
-Use explicit allowlists for tool execution, keep permissions narrow, and treat look-alike names as untrusted until proven exact.
+Use explicit allowlists for agent tools and treat near matches as untrusted.
+

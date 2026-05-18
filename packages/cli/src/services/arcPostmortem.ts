@@ -144,7 +144,7 @@ export function deriveArcPostmortemSections(
     .filter((flag) => flags[flag] !== BASELINE_ARC_FLAGS[flag])
 
   return unlocked.map((flag) => {
-    const value = flags[flag] as ArcFlagValue
+    const value = flags[flag]
     const note = getFlagNote(flag, value)
     return {
       flag,

@@ -2,71 +2,30 @@
 
 ## Mission Brief
 
-You've just joined the team at **FinFlow**, a startup building on top of the Investec Programmable Banking API.
+**The Briefing Desk:** Welcome to the Investec Developer Response Cell. Your first FinFlow simulation is deliberately small but mission-critical: prove that a client can authenticate, page through account data, and total balances without smuggling fixed credentials into the code.
 
-Your first task is to finish the account data client. This is the foundation everything else depends on: budgeting dashboards, spend tracking, and the card control features coming in Season 2.
+Run `pnpm game test` once before editing. Let the failing tests show you the shape of the incident.
 
 ## Bug Report
 
-The current client only works as a sketch. It needs to authenticate with the mock API, collect every paginated account, and calculate a reliable total balance without relying on embedded credentials.
-
-## Background
-
-The mock API is already running. The client must:
-
-1. **Authenticates** using OAuth 2.0 client credentials
-2. **Fetches all accounts** (handling pagination correctly)
-3. **Returns the total balance** across all accounts
+The account client works only on the easiest path. It authenticates with the wrong credential source, fetches only the first account page, and reports an incomplete balance total.
 
 ## Your Task
 
-Edit `solution.js` to implement three exports:
+Edit `solution.js` and implement three exports:
 
-### `getToken(clientId, clientSecret)`
-
-Request an access token from the OAuth2 endpoint.
-
-- `POST /identity/v2/oauth2/token`
-- Header: `Authorization: Basic <base64(clientId:clientSecret)>`
-- Header: `x-api-key: <GAME_API_KEY>`
-- Body (form-encoded): `grant_type=client_credentials`
-- Returns: `{ access_token, expires_in }`
-- If the credentials are wrong, throw an error with the message `"Authentication failed"`
-
-### `getAccounts(token)`
-
-Fetch all accounts from the API, handling pagination.
-
-- `GET /za/pb/v1/accounts`
-- Use the `Authorization: Bearer <token>` header
-- Follow `meta.nextCursor` until there are no more pages
-- Returns: an array of all account objects
-
-### `getTotalBalance(token)`
-
-Return the **sum of `currentBalance`** across all accounts.
-
-- `GET /za/pb/v1/accounts/:accountId/balance` (one request per account)
-- Returns: the total as a number
-
-## Credentials
-
-Read credentials from environment variables — **never hardcode them**:
-
-```js
-const clientId = process.env.GAME_API_CLIENT_ID
-const clientSecret = process.env.GAME_API_CLIENT_SECRET
-const apiKey = process.env.GAME_API_KEY
-const baseUrl = process.env.GAME_API_BASE_URL
-```
+- `getToken(clientId, clientSecret)`: call `POST /identity/v2/oauth2/token` with Basic auth from the function arguments, `x-api-key` from `GAME_API_KEY`, and `grant_type=client_credentials`. Throw `Error('Authentication failed')` on bad credentials.
+- `getAccounts(token)`: call `GET /za/pb/v1/accounts`, follow `meta.nextCursor`, and return all account objects.
+- `getTotalBalance(token)`: fetch each account balance and return the sum of `currentBalance`.
 
 ## Threat
 
-The attack script checks whether the implementation secretly uses hardcoded credentials instead of the values supplied by the caller and environment.
+**The Red Team:** Credential Ghost checks whether the client secretly trusts embedded credentials instead of the caller and environment.
 
 ## Win Condition
 
-- All behavior tests pass: authentication, pagination, balance aggregation
-- The attack script confirms credentials are not hardcoded
+Behavior tests prove authentication, pagination, and balance aggregation. The Red Team is blocked when hardcoded credentials are gone.
 
-Run `pnpm game test` to check your progress.
+## Field Notes
+
+Use `GAME_API_BASE_URL`, `GAME_API_KEY`, `GAME_API_CLIENT_ID`, and `GAME_API_CLIENT_SECRET` from the environment. The mock API auto-starts when the level needs it.

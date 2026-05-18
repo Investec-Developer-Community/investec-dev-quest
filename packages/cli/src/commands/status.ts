@@ -3,6 +3,7 @@ import { p, pc, showBanner } from '../ui/theme.js'
 import { loadAllLevels } from '../levels/loader.js'
 import { getAllProgress } from '../db/progress.js'
 import { getOperationalRiskProfile, hasOperationalRiskEvidence } from '../services/operationalRisk.js'
+import { buildCompletionSummary, playerTitle } from '../services/certificate.js'
 
 const STATUS_ICON: Record<string, string> = {
   locked: pc.dim('○'),
@@ -84,6 +85,11 @@ export function registerStatusCommand(program: Command): void {
       const complete = allProgress.filter((pr) => pr.status === 'complete').length
       p.log.message(pc.dim(`\n${complete}/${levels.length} levels complete`))
 
+      if (complete === 0) {
+        p.log.message(pc.cyan('Start here: pnpm game level 1 --season 1'))
+      }
+      p.log.message(pc.dim('Recommended next: pnpm game map'))
+
       if (hasOperationalRiskEvidence()) {
         const riskProfile = getOperationalRiskProfile()
         const riskTone = riskProfile.band === 'elevated'
@@ -98,6 +104,21 @@ export function registerStatusCommand(program: Command): void {
 
       if (complete > 0) {
         p.log.message(pc.dim('Review completed level references with `pnpm game reference --season <n> --level <n>`.'))
+      }
+
+      if (complete === levels.length) {
+        const summary = buildCompletionSummary(levels, allProgress)
+        p.note(
+          [
+            pc.green(pc.bold('19/19 missions complete')),
+            `Title: ${playerTitle(summary)}`,
+            `No-hint solves: ${summary.noHintSolves}`,
+            `Low-attempt solves: ${summary.lowAttemptSolves}`,
+            '',
+            pc.cyan('Run `pnpm game certificate` and open the swag claim issue.'),
+          ].join('\n'),
+          pc.green('Campaign Complete')
+        )
       }
     })
 }

@@ -13,6 +13,8 @@ import { registerWatchCommand } from './commands/watch.js'
 import { registerReferenceCommand } from './commands/reference.js'
 import { registerJournalCommand } from './commands/journal.js'
 import { registerExplainCommand } from './commands/explain.js'
+import { registerMapCommand } from './commands/map.js'
+import { registerCertificateCommand } from './commands/certificate.js'
 import { CLI_VERSION } from './version.js'
 
 loadEnv({ path: join(REPO_ROOT, '.env') })
@@ -34,5 +36,7 @@ registerWatchCommand(program)
 registerReferenceCommand(program)
 registerJournalCommand(program)
 registerExplainCommand(program)
+registerMapCommand(program)
+registerCertificateCommand(program)
 
 await program.parseAsync()

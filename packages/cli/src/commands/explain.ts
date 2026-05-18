@@ -26,11 +26,11 @@ function nextStepFor(testName: string, failureSummary: string, isAttack: boolean
   if (/(idempot|retry key)/.test(text)) {
     return 'Check how idempotency keys are derived and ensure retried-equivalent requests produce the same key.'
   }
-  if (/(daily_spend|declined|state|mutate|approve-then-write)/.test(text)) {
-    return 'Review write timing: only persist state after approval outcomes, not during declined or pre-check paths.'
-  }
   if (/(mcc|merchant|category|string|number|coerc)/.test(text)) {
     return 'Normalize boundary input types before policy checks so allow/deny logic compares like-for-like values.'
+  }
+  if (/(daily_spend|declined|state|mutate|approve-then-write)/.test(text)) {
+    return 'Review write timing: only persist state after approval outcomes, not during declined or pre-check paths.'
   }
   if (/(tool|allowlist|trusted|registry|prefix)/.test(text)) {
     return 'Re-check tool resolution/authorization rules for exact matching and trust requirements before execution.'

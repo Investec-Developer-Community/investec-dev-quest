@@ -28,6 +28,12 @@ pnpm game status
 
 If `status` shows available levels and no errors, they're ready.
 
+For first-time rooms, run `pnpm game map` and start the Quickstart Path in campaign order:
+
+1. Season 1 Level 1 `First Contact`
+2. Season 2 Level 1 `Merchant Mirage`
+3. Season 4 Level 1 `Tool Gatekeeper`
+
 ---
 
 ## Suggested session formats
@@ -67,7 +73,7 @@ Facilitation style: ask participants to describe the exploit before coding, then
 | Time | Activity |
 |------|----------|
 | 0–10 min | Introduction to the game, concept of dual-validation testing |
-| 10–20 min | Setup verification (everyone runs `pnpm game status`) |
+| 10–20 min | Setup verification (everyone runs `pnpm game status` and `pnpm game map`) |
 | 20–50 min | Season 1, Level 1 "First Contact" — pair programming recommended |
 | 50–80 min | Season 2, Level 1 "Merchant Mirage" — solo attempt |
 | 80–90 min | Debrief: what patterns did you notice? |
@@ -166,9 +172,11 @@ Players win a level only when **both suites pass**. This is the dual-validation 
 
 ```
 pnpm game level 1 --season 1          # read the brief and story
+pnpm game map                         # see paths and next missions
 pnpm game hint --season 1 --level 1   # optional: unlock a hint
 pnpm game test --season 1 --level 1   # run tests (real-time feedback)
 pnpm game reference --season 1 --level 1 # after completion, review reference/debrief
+pnpm game certificate                 # after 19/19 completion
 ```
 
 The game auto-starts the mock API if it isn't running.

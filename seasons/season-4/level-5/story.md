@@ -2,31 +2,32 @@
 
 ## Mission Brief
 
-FinFlow's agent loads tools from a shared registry before executing user requests.
+**The Briefing Desk:** FinFlow's agent loads tools from a shared registry. A poisoned duplicate appears before the legitimate tool. Order is not trust.
 
 ## Bug Report
 
-A poisoned registry entry was inserted ahead of a legitimate tool. The resolver trusted ordering and executed the attacker-controlled tool.
+The starter returns the first matching tool name even when that entry is untrusted.
 
 ## Your Task
 
-Implement:
+Edit `solution.js` and implement:
 
 ```js
 export function resolveTool(toolName, registry)
 ```
 
 Rules:
-- Tool entries have `{ name, version, trusted, source }`
-- Resolve by exact name
-- Only trusted entries are allowed
-- If multiple matching names exist, return a trusted one
-- Return `null` when no trusted match exists
+
+- Registry entries have `{ name, version, trusted, source }`.
+- Match by exact tool name.
+- Only trusted entries are allowed.
+- If several entries match, return a trusted one.
+- Return `null` when no trusted match exists.
 
 ## Threat
 
-The attack provides a duplicate tool where the first entry is untrusted and malicious.
+**The Red Team:** Registry Poison inserts an untrusted duplicate ahead of a legitimate tool.
 
 ## Win Condition
 
-Both test suites pass.
+Behavior tests and the Red Team pass when only trusted exact matches resolve.

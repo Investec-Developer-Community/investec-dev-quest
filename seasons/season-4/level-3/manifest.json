@@ -5,5 +5,6 @@
   "level": 3,
   "difficulty": "advanced",
   "apiRequired": false,
+  "attackName": "Citation Mirage",
   "tags": ["ai-agents", "hallucination", "citations", "answer-validation"]
 }

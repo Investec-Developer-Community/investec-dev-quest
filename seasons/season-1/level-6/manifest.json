@@ -6,6 +6,7 @@
   "difficulty": "advanced",
   "boss": true,
   "apiRequired": true,
+  "attackName": "Settlement Rift",
   "tags": [
     "boss",
     "oauth2",

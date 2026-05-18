@@ -30,15 +30,24 @@ pnpm -v
 
 Windows players should read [Windows Setup](docs/windows-setup.md) first (PowerShell policy can block scripts).
 
-### 📦 2) Install and load the first level
+### 📦 2) Install and start the Quickstart Path
 
 ```bash
 git clone https://github.com/Investec-Developer-Community/investec-dev-quest.git
 cd investec-dev-quest
 pnpm install
 cp .env.example .env
+pnpm game map
 pnpm game level 1 --season 1
 ```
+
+The Quickstart Path is the recommended first route:
+
+1. Season 1 Level 1: `First Contact`
+2. Season 2 Level 1: `Merchant Mirage`
+3. Season 4 Level 1: `Tool Gatekeeper`
+
+To claim swag, you still need the Grandmaster Run: **all 19 levels**.
 
 ### 🧪 3) Run once, then edit once
 
@@ -78,11 +87,13 @@ These are suggested learning tracks. To claim swag, you must complete **all 19 l
 
 | Path | Recommended levels | Best for |
 |---|---|---|
-| Beginner path | Season 1 Level 1, then Season 2 Level 1 | First-time players learning the edit-test-hint loop |
+| Quickstart path | Season 1 Level 1, Season 2 Level 1, Season 4 Level 1 | First-time players learning the edit-test-hint loop |
 | API foundations path | Season 1 Levels 1-6 | OAuth2, pagination, token refresh, beneficiaries, idempotent payments |
 | Card code path | Season 2 Levels 1-6 | `beforeTransaction` rules, MCCs, budgets, velocity limits |
-| Security path | Season 2 Level 1, Season 3 Level 1, Season 4 Level 1 | Validation, HMAC verification, exact allowlists |
-| AI automation path | Season 4 Levels 1-6 | Tool boundaries, approval gates, citation integrity, injection defenses |
+| Security path | Season 2 Level 1, Season 3 Level 1, Season 4 Levels 1, 4, 5 | Validation, HMAC verification, exact allowlists, injection defense |
+| Grandmaster Run | All 19 levels | Swag eligibility |
+
+Run `pnpm game map` to see path progress and the next incomplete mission.
 
 ## ⌨️ Commands
 
@@ -95,6 +106,7 @@ pnpm game watch
 pnpm game hint
 pnpm game explain
 pnpm game status
+pnpm game map
 ```
 
 ### Full command reference
@@ -121,6 +133,8 @@ pnpm game reset                    # Restore starter code (with confirmation)
 pnpm game reset --yes              # Skip confirmation
 
 pnpm game status                   # Show progress across all levels
+pnpm game map                      # Show recommended quest paths and next missions
+pnpm game certificate              # Print completion certificate after all 19 levels
 pnpm game journal                  # Show recorded arc choices, evidence trail, and consequences
 pnpm game journal --all-evidence   # Show full evidence history
 pnpm game explain                  # Convert failing tests into non-spoiler next-step coaching
@@ -152,7 +166,7 @@ Each level lives in `seasons/season-N/level-N/`.
 | `hints/hint-1.md` | First hint |
 | `hints/hint-2.md` | Second hint |
 | `reference/solution.js` | Reference implementation after completion |
-| `debrief.md` | Optional post-solve explanation |
+| `debrief.md` | Required post-solve explanation |
 
 ### 🏁 Win condition
 
@@ -216,9 +230,10 @@ Swag eligibility requires **19/19 levels complete**.
 Claim flow:
 
 1. Run `pnpm game status` and confirm `19/19 levels complete`.
-2. Open a GitHub issue using the Swag claim request template.
-3. Include your `pnpm game status` screenshot.
-4. A maintainer shares the claim form link directly.
+2. Run `pnpm game certificate`.
+3. Open a GitHub issue using the Swag claim request template.
+4. Include your `pnpm game status` screenshot and certificate text.
+5. A maintainer shares the claim form link directly.
 
 ## 🤝 Contributing a Level
 
@@ -230,8 +245,10 @@ Quick checklist:
 2. Write scenario in `story.md`.
 3. Implement buggy/incomplete `starter/solution.js`.
 4. Add behavior tests and attack script.
-5. Verify starter fails and reference passes.
-6. Open a PR.
+5. Add two hints and a `debrief.md`.
+6. Add `attackName` to `manifest.json`.
+7. Verify starter fails and reference passes.
+8. Open a PR.
 
 ## 🗂️ Project Structure
 

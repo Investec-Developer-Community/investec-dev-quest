@@ -29,15 +29,20 @@
     "dev": "pnpm -r --parallel dev",
     "test": "pnpm validate",
     "test:watch": "vitest",
-    "lint": "pnpm -r lint",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "game": "node scripts/game.mjs",
     "game:strict": "pnpm --filter @investec-game/shared build && pnpm --filter @investec-game/cli run dev",
     "validate": "node scripts/validate-levels.mjs",
     "create-level": "node scripts/create-level.mjs"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.1",
     "@types/node": "^20.19.41",
+    "eslint": "^9.39.1",
+    "globals": "^16.4.0",
     "typescript": "^5.4.5",
+    "typescript-eslint": "^8.46.2",
     "vitest": "^2.1.0"
   }
 }
