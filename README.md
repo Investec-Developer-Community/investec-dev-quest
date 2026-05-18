@@ -126,6 +126,7 @@ pnpm game watch --verbose          # Watch mode with full failure traces
 
 pnpm game hint                     # Reveal next hint
 pnpm game hint --all               # Show all unlocked hints
+pnpm game hint --topic auth        # Focus hints using level tags + current failure signals
 
 pnpm game reference                # Show reference code for a completed level
 pnpm game reference --season 2 --level 1 --no-debrief
@@ -250,6 +251,12 @@ Quick checklist:
 6. Add `attackName` to `manifest.json`.
 7. Verify starter fails and reference passes.
 8. Open a PR.
+
+For full validation parity (including API-required levels), run:
+
+```bash
+node scripts/validate-levels.mjs --strict
+```
 
 ## 🗂️ Project Structure
 

@@ -240,13 +240,22 @@ The reference solution doesn't actually block the exploit. Review `attack/exploi
 
 ### Validator skips API-required levels
 
-`scripts/validate-levels.mjs` skips API levels when the mock API health endpoint is offline.
+`scripts/validate-levels.mjs` has two modes:
+
+- soft mode (default): skips API-required levels when mock API is offline
+- strict mode: fails when API-required levels cannot be validated
 
 For full validation:
 
 ```bash
 npx tsx packages/mock-api/src/index.ts
-node scripts/validate-levels.mjs
+node scripts/validate-levels.mjs --strict
+```
+
+If you intentionally want partial/offline validation only:
+
+```bash
+node scripts/validate-levels.mjs --soft
 ```
 
 ---

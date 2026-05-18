@@ -12,6 +12,7 @@
  * Usage:
  *   node scripts/validate-levels.mjs           # validate all levels
  *   node scripts/validate-levels.mjs s1-l1     # validate a specific level id
+ *   node scripts/validate-levels.mjs --strict  # fail if any API-required level cannot be validated
  *
  * Exit code:
  *   0 — all levels pass the contract
@@ -293,7 +294,43 @@ function validateLevel(levelDir) {
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
 
-const filterId = process.argv[2] ?? null
+function parseArgs(argv) {
+  let strict = false
+  let filterId = null
+
+  for (const arg of argv) {
+    if (arg === '--strict') {
+      strict = true
+      continue
+    }
+    if (arg === '--soft') {
+      strict = false
+      continue
+    }
+    if (arg.startsWith('-')) {
+      throw new Error(`Unknown option: ${arg}`)
+    }
+    if (filterId !== null) {
+      throw new Error(`Unexpected positional argument: ${arg}`)
+    }
+    filterId = arg
+  }
+
+  return { strict, filterId }
+}
+
+let strictMode = false
+let filterId = null
+try {
+  const parsed = parseArgs(process.argv.slice(2))
+  strictMode = parsed.strict
+  filterId = parsed.filterId
+} catch (err) {
+  const message = err instanceof Error ? err.message : 'Invalid arguments'
+  console.error(`  ${message}`)
+  console.error('  Usage: node scripts/validate-levels.mjs [level-id] [--strict|--soft]')
+  process.exit(1)
+}
 
 let totalLevels = 0
 let failedLevels = 0
@@ -301,8 +338,14 @@ let failedQualityGates = 0
 let skippedApiLevels = 0
 
 if (!API_ONLINE) {
-  console.log('  ⚠ Mock API is offline. API-required levels will be skipped.')
-  console.log('  ▶ Run `npx tsx packages/mock-api/src/index.ts` for full 19/19 validation.\n')
+  if (strictMode) {
+    console.log('  ⚠ Mock API is offline. API-required levels will fail in strict mode.')
+    console.log('  ▶ Run `npx tsx packages/mock-api/src/index.ts` for full strict validation.\n')
+    console.log('  ✗ Strict mode is enabled: API-required levels must be validated, not skipped.\n')
+  } else {
+    console.log('  ⚠ Mock API is offline. API-required levels will be skipped.')
+    console.log('  ▶ Run `npx tsx packages/mock-api/src/index.ts` for full 19/19 validation.\n')
+  }
 }
 
 process.stdout.write('  Validating level template... ')
@@ -333,11 +376,17 @@ for (const seasonEntry of readdirSync(SEASONS_DIR).sort()) {
     totalLevels++
     process.stdout.write(`  Validating ${manifest.id} "${manifest.name}"... `)
 
-    // Skip API-required levels when the mock API is not running
+    // Skip API-required levels when the mock API is not running (soft mode only)
     if (manifest.apiRequired && !API_ONLINE) {
-      console.log('⏭  (skipped — mock API not running)')
-      totalLevels--
-      skippedApiLevels++
+      if (strictMode) {
+        console.log('✗')
+        console.error('    ✗ API-required level could not be validated because mock API is not running (strict mode).')
+        failedLevels++
+      } else {
+        console.log('⏭  (skipped — mock API not running)')
+        totalLevels--
+        skippedApiLevels++
+      }
       continue
     }
 
@@ -368,7 +417,7 @@ console.log(`\n  ${totalLevels - failedLevels}/${totalLevels} levels pass the co
 
 if (skippedApiLevels > 0) {
   console.log(`  ⚠ Skipped ${skippedApiLevels} API-required level${skippedApiLevels === 1 ? '' : 's'}.`)
-  console.log('  ▶ Run `npx tsx packages/mock-api/src/index.ts` and re-run `node scripts/validate-levels.mjs` for full 19/19 validation.')
+  console.log('  ▶ Run `npx tsx packages/mock-api/src/index.ts` and re-run `node scripts/validate-levels.mjs --strict` for full validation parity.')
 }
 
 if (failedLevels > 0 || failedQualityGates > 0) {

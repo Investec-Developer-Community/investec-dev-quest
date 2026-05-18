@@ -86,7 +86,7 @@ describe('Attack: type-coercion bypass', () => {
 | `boss` | boolean | optional | Set to `true` for season capstone levels |
 | `apiRequired` | boolean | ✅ | `true` if the mock API must run (Season 1) |
 | `attackName` | string | ✅ | Short Red Team name for the exploit, e.g. `"Prefix Phantom"` |
-| `tags` | string[] | ✅ | Searchable tags, e.g. `["oauth2", "pagination"]` |
+| `tags` | string[] | ✅ | Searchable tags used by map/hint topic targeting, e.g. `["oauth2", "pagination"]` |
 
 ---
 
@@ -184,6 +184,11 @@ Write exactly 2 hints per level, in increasing specificity:
 
 Hint 1 should help the player choose what to inspect. Hint 2 can show a small implementation pattern, but should still leave the final integration to the player.
 
+Topic-targeted hint retrieval (`pnpm game hint --topic <name>`) uses manifest tags plus failure-topic mapping. To make this useful:
+
+- Keep hint wording aligned to manifest tags and common failure vocabulary (auth, pagination, mcc, allowlist, etc.)
+- Preserve progression: hint content should remain valid in order (`hint-1` then `hint-2`) because topic mode does not bypass unlock sequence
+
 ---
 
 ## Attack names
@@ -231,6 +236,7 @@ Before submitting a new level, verify:
 - [ ] `story.md` includes `Mission Brief`, `Bug Report`, `Your Task`, `Threat`, and `Win Condition`
 - [ ] Exactly two hints exist under `hints/`
 - [ ] Level is completable in ≤ 25 minutes (test on a fresh player)
+- [ ] `node scripts/validate-levels.mjs --strict` passes when mock API is running
 
 ## Carry-forward authoring checklist
 

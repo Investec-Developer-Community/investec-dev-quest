@@ -64,7 +64,7 @@ jobs:
           curl -sf http://localhost:3001/health >/dev/null
 
       - name: Validate all levels
-        run: node scripts/validate-levels.mjs
+        run: node scripts/validate-levels.mjs --strict
         env:
           GAME_API_BASE_URL: http://localhost:3001
           GAME_API_CLIENT_ID: game_client_id
