@@ -85,6 +85,7 @@ pnpm game status
 ```
 
 Behavior tests prove the feature works. Attack tests prove the exploit is blocked. A level is complete only when both pass.
+XP is a bragging-rights score derived from how cleanly you solve completed levels; swag eligibility still requires **19/19 levels complete**.
 
 ## 🧭 Player Paths
 
@@ -93,7 +94,7 @@ These are suggested learning tracks. To claim swag, you must complete **all 19 l
 | Path | Recommended levels | Best for |
 |---|---|---|
 | Quickstart path | Season 1 Level 1, Season 2 Level 1, Season 4 Level 1 | First-time players learning the edit-test-hint loop |
-| API foundations path | Season 1 Levels 1-6 | OAuth2, pagination, token refresh, beneficiaries, idempotent payments |
+| API foundations path | Season 1 Levels 1-6 | OAuth2, pagination, token reuse/refresh, beneficiaries, idempotent payments |
 | Card code path | Season 2 Levels 1-6 | `beforeTransaction` rules, MCCs, budgets, velocity limits |
 | Security path | Season 2 Level 1, Season 3 Level 1, Season 4 Levels 1, 4, 5 | Validation, HMAC verification, exact allowlists, injection defense |
 | Grandmaster Run | All 19 levels | Swag eligibility |
@@ -208,9 +209,10 @@ Claim flow:
 
 1. Run `pnpm game status` and confirm `19/19 levels complete`.
 2. Run `pnpm game certificate`.
-3. Open the swag claim issue directly: [Swag claim template](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/new?template=swag_claim.yml).
-4. Include your `pnpm game status` screenshot and certificate text.
-5. A maintainer shares the claim form link directly.
+3. Check your total XP, no-hint solves, and low-attempt solves for bragging rights.
+4. Open the swag claim issue directly: [Swag claim template](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/new?template=swag_claim.yml).
+5. Include your `pnpm game status` screenshot and certificate text.
+6. A maintainer shares the claim form link directly.
 
 ## 🤝 Contributing a Level
 

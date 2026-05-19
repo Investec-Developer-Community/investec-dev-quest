@@ -1,17 +1,19 @@
-# Hint 1 — What does a 401 response mean?
+# Hint 1 — Token lifetime before token refresh
 
-A `401 Unauthorized` from the Investec API means the Bearer token in the `Authorization` header is invalid or expired.
+The OAuth token response includes `expires_in`, which tells you how long the access token can be reused.
 
-OAuth2 access tokens have a limited lifespan (`expires_in` seconds). After that, any request using the old token returns `401`.
+Do not call `getToken()` before every API request. Store the token and an expiry timestamp in `tokenStore`, then reuse the token while it is still valid.
 
 **The pattern to implement:**
 
 ```
+token missing or expired?
+  yes → getToken() → update tokenStore.token and tokenStore.expiresAt
+  no  → reuse tokenStore.token
+
 request → 401?
-  yes → getToken() → update tokenStore.token → retry request
+  yes → refresh once → retry request
       → 401 again? → throw 'Token refresh failed'
-  no  → non-ok? → throw 'Request failed: <status>'
-      → ok? → return json
 ```
 
-Start with the normal path: make the fetch, check `res.ok`, return `res.json()`. Then add the 401 branch.
+Start by removing the eager token request from the normal path. Then add the expiry check and the bounded 401 branch.

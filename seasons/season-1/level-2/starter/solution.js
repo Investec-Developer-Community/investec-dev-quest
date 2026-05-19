@@ -17,6 +17,12 @@ export async function getToken(clientId, clientSecret) {
 }
 
 export async function apiFetch(url, tokenStore) {
+  const clientId = process.env.GAME_API_CLIENT_ID ?? 'game_client_id'
+  const clientSecret = process.env.GAME_API_CLIENT_SECRET ?? 'game_client_secret'
+  const freshToken = await getToken(clientId, clientSecret)
+  tokenStore.token = freshToken.access_token
+  tokenStore.expiresAt = Date.now() + freshToken.expires_in * 1000
+
   const res = await fetch(url, {
     headers: { Authorization: `Bearer ${tokenStore.token}` },
   })
@@ -24,4 +30,3 @@ export async function apiFetch(url, tokenStore) {
   if (!res.ok) throw new Error(`Request failed: ${res.status}`)
   return res.json()
 }
-

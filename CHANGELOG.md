@@ -2,35 +2,54 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ---
 
-## [Unreleased]
+## [1.7.0] - 2026-05-19
+
+Focused on token-lifecycle correctness in Season 1 and clearer XP scoring feedback.
 
 ### Added
-- New `pnpm game map` command with Quickstart, API Foundations, Card Code, Security, and Grandmaster paths plus next-mission prompts.
-- New `pnpm game certificate` command for shareable 19/19 completion output.
-- Display-only completion ranks and XP in level win banners.
-- Red Team `attackName` metadata in every level manifest and named attack result panels in the CLI.
-- Required `debrief.md` coverage for all 19 levels.
-- Pure helper coverage for path progress and certificate summary logic.
-- New architecture overview doc: `docs/architecture-overview.md`.
+- Added total XP tracking to `pnpm game status` output (derived from existing progress), displayed as `XP: <earned> / <max>`.
+- Added total XP, no-hint solves, and low-attempt solves to `pnpm game certificate`.
 
 ### Changed
-- CLI banner metadata is now source-driven: version is read from `packages/cli/package.json`, and mission count is derived from the current level catalog.
-- README quickstart now starts with the Quickstart Path in campaign order: S1L1 `First Contact`, S2L1 `Merchant Mirage`, then S4L1 `Tool Gatekeeper`.
-- `pnpm game status` now recommends `pnpm game map`, points fresh players to Season 1 Level 1, and shows a campaign-complete banner after 19/19.
-- All level stories were tightened into playable briefs using the Briefing Desk / Red Team voice while preserving existing solution contracts.
-- Authoring guidance now requires `attackName` and `debrief.md`, and documents the short-brief plus optional field-notes story pattern.
-- `scripts/validate-levels.mjs` now validates `attackName`, required debriefs, exact hint count, and story structure while preserving the starter/reference contract checks.
+- Reworked Season 1 Level 2 `Token Trouble` to teach token lifetime management: reuse valid tokens, respect `expires_in`, refresh on expiry or first `401`, and avoid per-request token fetches.
+- Updated level win banner copy from `XP: +<n>` to `XP earned: +<n>` for clarity.
+- Clarified docs and player messaging that campaign completion remains `19/19` levels complete, while XP is a secondary quality/bragging layer.
+- Updated campaign-complete status messaging to use dynamic `<complete>/<total>` mission counts instead of a hardcoded `19/19` string.
 
 ### Fixed
-- Repaired `showBanner` syntax in `packages/cli/src/ui/theme.ts`, restoring stable CLI startup/output after banner text updates.
-- `pnpm game explain` now routes MCC/string/coercion attack failures to the card-code normalization hint before generic state-mutation advice.
-- Scaffold generator now includes `attackName` in generated level manifests.
-- Authoring guide validation step now points to the supported strict validator command.
+- Ensured XP remains derived from existing progress state instead of introducing a separate persisted XP field, preserving compatibility with existing player profiles.
+- Standardized completed-level date rendering in `pnpm game status` for consistent output across environments.
+
+## [1.6.0] - 2026-05-18
+
+Focused on campaign usability, contributor authoring quality, and clearer progression feedback across all 19 levels.
+
+### Added
+- Added `pnpm game map` with guided paths (Quickstart, API Foundations, Card Code, Security, Grandmaster) and next-mission prompts.
+- Added `pnpm game certificate` for shareable 19/19 completion output.
+- Added display-only XP in level win banners.
+- Added Red Team `attackName` metadata to all level manifests and named attack result panels in the CLI.
+- Added required `debrief.md` coverage for all 19 levels.
+- Added helper test coverage for path-progress and certificate-summary logic.
+- Added architecture guide documentation in `docs/architecture-overview.md`.
+
+### Changed
+- Made CLI banner metadata source-driven: version is read from `packages/cli/package.json`, and mission count is derived from the live level catalog.
+- Updated README quickstart ordering to the recommended campaign flow: Season 1 Level 1, Season 2 Level 1, then Season 4 Level 1.
+- Improved `pnpm game status` guidance: now recommends `pnpm game map`, points new players to Season 1 Level 1, and shows a campaign-complete banner at 19/19.
+- Tightened all level stories into shorter playable briefs while keeping existing solution contracts intact.
+- Updated authoring guidance to require `attackName` and `debrief.md`, and to document the short-brief plus optional field-notes story pattern.
+- Strengthened `scripts/validate-levels.mjs` to validate `attackName`, required debriefs, exact hint count, and story structure while preserving starter/reference contract checks.
+
+### Fixed
+- Fixed `showBanner` syntax in `packages/cli/src/ui/theme.ts` to restore stable CLI startup and output.
+- Improved `pnpm game explain` routing so MCC/string/coercion attack failures prefer the card-code normalization hint before generic state-mutation advice.
+- Updated scaffold generation to include `attackName` in new level manifests.
+- Updated authoring guide validation instructions to the supported strict validator command.
 
 ## [1.0.0] - 2026-05-15
 

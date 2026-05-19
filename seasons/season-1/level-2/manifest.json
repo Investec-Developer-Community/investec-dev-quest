@@ -5,6 +5,6 @@
   "level": 2,
   "difficulty": "intermediate",
   "apiRequired": true,
-  "attackName": "Expired Token Loop",
-  "tags": ["oauth2", "token-refresh", "retry", "resilience"]
+  "attackName": "Token Treadmill",
+  "tags": ["oauth2", "token-cache", "token-refresh", "retry", "resilience"]
 }

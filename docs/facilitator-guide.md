@@ -39,6 +39,8 @@ For first-time rooms, run `pnpm game map` and start the Quickstart Path in campa
 ## Suggested session formats
 
 > **Facilitator note:** While the Player Paths and session tracks below are great for learning or workshop pacing, remind participants that *to claim swag, they must complete all 19 levels* (not just a single path or track). Encourage them to use the paths for learning, but check their full progress with `pnpm game status` if they want to claim a prize.
+>
+> XP is intentionally a secondary score for replay quality and bragging rights. Completion unlocks the campaign; clean solves earn more XP.
 
 ### Junior workshop track
 
@@ -106,7 +108,7 @@ Facilitation style: ask participants to describe the exploit before coding, then
 | Level | Outcome | Common stuck point |
 |------|---------|--------------------|
 | S1 L1 First Contact | OAuth2 credentials, pagination, account balance aggregation | Hardcoding credentials or fetching only the first page |
-| S1 L2 Token Trouble | Recovering once from stale OAuth tokens | Retrying forever or forgetting to update the token store |
+| S1 L2 Token Trouble | Reusing OAuth tokens until expiry, then refreshing safely | Fetching a new token for every request or forgetting to update the token store |
 | S1 L3 Transaction Trail | Date filtering and cursor pagination | Client-side filtering instead of sending query parameters |
 | S1 L4 Beneficiary Blueprint | Validating beneficiary IDs before payment flow | Returning truthy results without checking the fetched list |
 | S1 L5 Idempotency Island | Deterministic idempotency keys for payment retries | Generating a random key per retry |

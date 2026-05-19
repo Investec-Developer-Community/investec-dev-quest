@@ -2,13 +2,12 @@
 
 ## What changed
 
-The fetch path now refreshes once on `401`, updates the shared token store, and stops if the refreshed token also fails.
+The fetch path now reuses a valid bearer token, records its expiry from `expires_in`, refreshes only when needed, and stops if the refreshed token also fails.
 
 ## Why it matters
 
-Long-running services need recovery paths, but unbounded retries can hide outages and create noisy failure storms.
+Access tokens are intentionally reusable for their lifetime. Fetching a token for every request adds avoidable latency and auth load, while unbounded retries can still hide outages and create noisy failure storms.
 
 ## Production habit
 
-Make recovery explicit, observable, and bounded.
-
+Cache tokens until expiry, refresh deliberately, and keep recovery explicit, observable, and bounded.

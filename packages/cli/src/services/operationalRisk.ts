@@ -26,7 +26,7 @@ const MATRIX: Record<TokenFixDepth, Record<StateDiscipline, OperationalRiskProfi
     'eager-write': {
       band: 'elevated',
       headline: 'Operational Risk Is Elevated',
-      summary: 'Patchy auth recovery plus eager state writes increase rollback pressure and incident recurrence risk.',
+      summary: 'Patchy token lifecycle handling plus eager state writes increase auth churn, rollback pressure, and incident recurrence risk.',
       reviewNotes: [
         'Apply stricter change review before shipping high-impact automation updates.',
         'Add manual reconciliation checkpoints for decline-path consistency.',
@@ -35,9 +35,9 @@ const MATRIX: Record<TokenFixDepth, Record<StateDiscipline, OperationalRiskProfi
     'approve-then-write': {
       band: 'guarded',
       headline: 'Operational Risk Is Guarded',
-      summary: 'State updates are disciplined, but token remediation depth still creates avoidable auth churn.',
+      summary: 'State updates are disciplined, but token lifecycle gaps still create avoidable auth churn.',
       reviewNotes: [
-        'Prioritize hardening token renewal edge cases in the next sprint.',
+        'Prioritize token caching and renewal edge cases in the next sprint.',
       ],
     },
   },
@@ -53,7 +53,7 @@ const MATRIX: Record<TokenFixDepth, Record<StateDiscipline, OperationalRiskProfi
     'approve-then-write': {
       band: 'resilient',
       headline: 'Operational Risk Is Resilient',
-      summary: 'Robust token handling and disciplined state writes materially reduce downstream operational fragility.',
+      summary: 'Robust token lifecycle handling and disciplined state writes materially reduce downstream operational fragility.',
       reviewNotes: [
         'Maintain the current control posture with periodic regression checks.',
       ],
