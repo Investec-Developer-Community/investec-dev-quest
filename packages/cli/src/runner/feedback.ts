@@ -1,6 +1,7 @@
 import { p, pc } from '../ui/theme.js'
 import type { CaseFileEntry, TestRunResult } from '@investec-game/shared'
 import { summarizeFailureMessage } from './failureSummary.js'
+import { calculateLevelXp } from '../services/certificate.js'
 
 interface RenderOptions {
   verbose?: boolean
@@ -70,17 +71,14 @@ export function renderWinBanner(levelName: string, options: WinBannerOptions = {
     : hintsUsed <= 2
       ? 'Field Repair'
       : 'Incident Resolved'
-  const xp = 100
-    + (hintsUsed === 0 ? 50 : 0)
-    + (attempts <= 2 ? 25 : 0)
-    + (options.boss ? 100 : 0)
+  const xp = calculateLevelXp({ attempts, hintsUsed, boss: options.boss })
   const lines = [
     pc.yellow(pc.bold('🎉  Level Complete!')),
     '',
     `"${levelName}" is solved.`,
     '',
     pc.cyan(`Rank: ${rank}`),
-    pc.cyan(`XP: ${xp}`),
+    pc.cyan(`XP earned: +${xp}`),
     pc.dim('Both behavior tests and the attack script pass.'),
     pc.dim(`Attempts: ${attempts}  Hints used: ${hintsUsed}`),
     pc.dim('Run `pnpm game status` to see your progress.'),

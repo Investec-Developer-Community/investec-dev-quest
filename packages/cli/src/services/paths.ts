@@ -25,7 +25,7 @@ export const GAME_PATHS: GamePathDefinition[] = [
   {
     id: 'api-foundations',
     name: 'API Foundations',
-    description: 'OAuth2, pagination, token refresh, beneficiaries, and safe payments.',
+    description: 'OAuth2, pagination, token reuse, beneficiaries, and safe payments.',
     levelIds: ['s1-l1', 's1-l2', 's1-l3', 's1-l4', 's1-l5', 's1-l6'],
   },
   {

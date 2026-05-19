@@ -26,11 +26,11 @@ const FLAG_NOTES: {
   s1_token_fix_depth: {
     patchy: {
       headline: 'Token fix remained tactical',
-      consequence: 'Later incidents still require careful token-expiry triage.',
+      consequence: 'Later incidents still require careful token-cache and expiry triage.',
     },
     robust: {
-      headline: 'Token fix hardened early',
-      consequence: 'Downstream auth incidents show lower recurrence and cleaner recovery.',
+      headline: 'Token lifecycle hardened early',
+      consequence: 'Downstream auth incidents show lower churn, fewer avoidable token calls, and cleaner recovery.',
     },
   },
   s1_logging_maturity: {

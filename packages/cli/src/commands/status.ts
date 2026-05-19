@@ -18,6 +18,60 @@ const SEASON_NAMES: Record<number, string> = {
   4: 'Intelligent Banking Automation',
 }
 
+const DATE_FORMATTER = new Intl.DateTimeFormat('en-CA', {
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  timeZone: 'UTC',
+})
+
+function buildSeasonTotals(
+  levels: ReturnType<typeof loadAllLevels>,
+  progressMap: Map<string, ReturnType<typeof getAllProgress>[number]>
+): Map<number, { complete: number; total: number }> {
+  const seasonTotals = new Map<number, { complete: number; total: number }>()
+
+  for (const level of levels) {
+    const current = seasonTotals.get(level.manifest.season) ?? { complete: 0, total: 0 }
+    const progress = progressMap.get(level.manifest.id)
+    current.total += 1
+    if (progress?.status === 'complete') current.complete += 1
+    seasonTotals.set(level.manifest.season, current)
+  }
+
+  return seasonTotals
+}
+
+function formatCompletionDate(completedAt?: string | null): string {
+  if (!completedAt) {
+    return ''
+  }
+
+  return pc.dim(` ✓ ${DATE_FORMATTER.format(new Date(completedAt))}`)
+}
+
+function formatLevelLine(
+  level: ReturnType<typeof loadAllLevels>[number],
+  progress: ReturnType<typeof getAllProgress>[number] | undefined
+): string {
+  const status = progress?.status ?? 'locked'
+  const icon = STATUS_ICON[status] ?? pc.dim('?')
+  const attempts = progress ? ` (${progress.attempts} attempt${progress.attempts === 1 ? '' : 's'})` : ''
+  const hints = progress?.hintsUsed ? pc.dim(` [${progress.hintsUsed} hint${progress.hintsUsed === 1 ? '' : 's'}]`) : ''
+  const badges = [
+    status === 'complete' && progress?.hintsUsed === 0 ? pc.green('no-hint') : null,
+    status === 'complete' && progress && progress.attempts <= 2 ? pc.green('low-attempt') : null,
+  ].filter((badge): badge is string => badge !== null)
+  const badge = badges.length > 0 ? ` ${badges.join(' ')}` : ''
+  const completedAt = formatCompletionDate(progress?.completedAt)
+
+  const difficulty = pc.dim(`[${level.manifest.difficulty}]`)
+  const boss = level.manifest.boss ? pc.magenta('[boss]') : ''
+  const name = status === 'complete' ? pc.dim(level.manifest.name) : level.manifest.name
+
+  return `${icon}  L${level.manifest.level} ${name} ${difficulty}${boss ? ` ${boss}` : ''}${attempts}${hints}${badge}${completedAt}`
+}
+
 export function registerStatusCommand(program: Command): void {
   program
     .command('status')
@@ -26,19 +80,11 @@ export function registerStatusCommand(program: Command): void {
       const levels = loadAllLevels()
       const allProgress = getAllProgress()
       const progressMap = new Map(allProgress.map((pr) => [pr.levelId, pr]))
-      const seasonTotals = new Map<number, { complete: number; total: number }>()
+      const seasonTotals = buildSeasonTotals(levels, progressMap)
 
       if (levels.length === 0) {
         p.log.warn(pc.yellow('No levels found. Check the seasons/ directory.'))
         return
-      }
-
-      for (const level of levels) {
-        const current = seasonTotals.get(level.manifest.season) ?? { complete: 0, total: 0 }
-        const progress = progressMap.get(level.manifest.id)
-        current.total += 1
-        if (progress?.status === 'complete') current.complete += 1
-        seasonTotals.set(level.manifest.season, current)
       }
 
       showBanner()
@@ -60,30 +106,13 @@ export function registerStatusCommand(program: Command): void {
         }
 
         const progress = progressMap.get(level.manifest.id)
-        const status = progress?.status ?? 'locked'
-        const icon = STATUS_ICON[status] ?? pc.dim('?')
-        const attempts = progress ? ` (${progress.attempts} attempt${progress.attempts === 1 ? '' : 's'})` : ''
-        const hints = progress?.hintsUsed ? pc.dim(` [${progress.hintsUsed} hint${progress.hintsUsed === 1 ? '' : 's'}]`) : ''
-        const badges = [
-          status === 'complete' && progress?.hintsUsed === 0 ? pc.green('no-hint') : null,
-          status === 'complete' && progress && progress.attempts <= 2 ? pc.green('low-attempt') : null,
-        ].filter((badge): badge is string => badge !== null)
-        const badge = badges.length > 0 ? ` ${badges.join(' ')}` : ''
-        const completedAt = progress?.completedAt
-          ? pc.dim(` ✓ ${new Date(progress.completedAt).toLocaleDateString()}`)
-          : ''
-
-        const difficulty = pc.dim(`[${level.manifest.difficulty}]`)
-        const boss = level.manifest.boss ? pc.magenta('[boss]') : ''
-        const name = status === 'complete' ? pc.dim(level.manifest.name) : level.manifest.name
-
-        p.log.message(
-          `${icon}  L${level.manifest.level} ${name} ${difficulty}${boss ? ` ${boss}` : ''}${attempts}${hints}${badge}${completedAt}`
-        )
+        p.log.message(formatLevelLine(level, progress))
       }
 
-      const complete = allProgress.filter((pr) => pr.status === 'complete').length
+      const summary = buildCompletionSummary(levels, allProgress)
+      const complete = summary.complete
       p.log.message(pc.dim(`\n${complete}/${levels.length} levels complete`))
+      p.log.message(pc.dim(`XP: ${summary.totalXp}/${summary.maxXp}`))
 
       if (complete === 0) {
         p.log.message(pc.cyan('Start here: pnpm game level 1 --season 1'))
@@ -122,11 +151,11 @@ export function registerStatusCommand(program: Command): void {
       }
 
       if (complete === levels.length) {
-        const summary = buildCompletionSummary(levels, allProgress)
         p.note(
           [
-            pc.green(pc.bold('19/19 missions complete')),
+            pc.green(pc.bold(`${complete}/${levels.length} missions complete`)),
             `Title: ${playerTitle(summary)}`,
+            `Total XP: ${summary.totalXp}/${summary.maxXp}`,
             `No-hint solves: ${summary.noHintSolves}`,
             `Low-attempt solves: ${summary.lowAttemptSolves}`,
             '',

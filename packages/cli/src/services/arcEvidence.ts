@@ -11,6 +11,8 @@ const FLAG_LABELS: Record<ArcFlagKey, string> = {
 }
 
 const SIGNAL_LABELS: Record<string, string> = {
+  A_S1L2_REUSES_VALID_TOKEN: 'Reuses valid cached tokens across requests',
+  A_S1L2_REFRESHES_EXPIRED_CACHE: 'Refreshes cached tokens after expiry',
   A_S1L2_RETRY_ON_401_ONCE: 'Retries once after a 401 token expiry',
   A_S1L2_UPDATES_TOKEN_STORE: 'Updates in-memory token after refresh',
   A_S1L2_BOUNDED_RETRY: 'Stops after bounded retry attempts',

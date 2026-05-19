@@ -35,6 +35,13 @@ function buildSignalContext(levelId: string, testResults: TestRunResult, attackR
   const byId: Record<string, boolean> = {}
 
   if (levelId === 's1-l2') {
+    byId['A_S1L2_REUSES_VALID_TOKEN'] = hasSignal(passedNames, 'A_S1L2_REUSES_VALID_TOKEN', [
+      'does not fetch a new token for every request',
+      'repeated requests reuse the cached token',
+    ])
+    byId['A_S1L2_REFRESHES_EXPIRED_CACHE'] = hasSignal(passedNames, 'A_S1L2_REFRESHES_EXPIRED_CACHE', [
+      'refreshes before a request when expiresAt is in the past',
+    ])
     byId['A_S1L2_RETRY_ON_401_ONCE'] = hasSignal(passedNames, 'A_S1L2_RETRY_ON_401_ONCE', [
       'automatically refreshes an expired token and returns data',
     ])
@@ -129,19 +136,24 @@ export function computeFlagWrites(
   const writes: ArcFlagWriteInput[] = []
 
   if (levelId === 's1-l2') {
+    const reusesValidToken = byId['A_S1L2_REUSES_VALID_TOKEN'] === true
+    const refreshesExpiredCache = byId['A_S1L2_REFRESHES_EXPIRED_CACHE'] === true
     const retry = byId['A_S1L2_RETRY_ON_401_ONCE'] === true
     const updatesStore = byId['A_S1L2_UPDATES_TOKEN_STORE'] === true
     const boundedRetry = byId['A_S1L2_BOUNDED_RETRY'] === true
 
-    if (retry && updatesStore && boundedRetry) {
+    if (reusesValidToken && refreshesExpiredCache && retry && updatesStore && boundedRetry) {
       write(writes, 's1_token_fix_depth', 'robust', [
+        'A_S1L2_REUSES_VALID_TOKEN',
+        'A_S1L2_REFRESHES_EXPIRED_CACHE',
         'A_S1L2_RETRY_ON_401_ONCE',
         'A_S1L2_UPDATES_TOKEN_STORE',
         'A_S1L2_BOUNDED_RETRY',
       ])
-    } else if (retry) {
+    } else if (retry || reusesValidToken) {
       write(writes, 's1_token_fix_depth', 'patchy', [
-        'A_S1L2_RETRY_ON_401_ONCE',
+        ...(reusesValidToken ? ['A_S1L2_REUSES_VALID_TOKEN'] : []),
+        ...(retry ? ['A_S1L2_RETRY_ON_401_ONCE'] : []),
       ])
     }
   }
