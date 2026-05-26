@@ -58,8 +58,8 @@ importers:
         specifier: ^20.19.41
         version: 20.19.41
       tsx:
-        specifier: ^4.22.2
-        version: 4.22.2
+        specifier: ^4.22.3
+        version: 4.22.3
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -80,8 +80,8 @@ importers:
         specifier: ^20.19.41
         version: 20.19.41
       tsx:
-        specifier: ^4.22.2
-        version: 4.22.2
+        specifier: ^4.22.3
+        version: 4.22.3
       typescript:
         specifier: ^5.4.5
         version: 5.9.3
@@ -1197,8 +1197,8 @@ packages:
     peerDependencies:
       typescript: '>=4.8.4'
 
-  tsx@4.22.2:
-    resolution: {integrity: sha512-6w9FwtT8WQqRAyTNR+Z+86kghRqpmOLjXUrBlBT6T+CQGDuIMm0VmAqaFUFBIeKDTGobE6/YSigZYLeomzBaRg==}
+  tsx@4.22.3:
+    resolution: {integrity: sha512-mdoNxBC/cSQObGGVQ5Bpn5i+yv7j68gk3Nfm3wFjcJg3Z0Mix9jzAFfP12prmm5eVGmDKtp0yyArrs0Q+8gZHg==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -2262,7 +2262,7 @@ snapshots:
     dependencies:
       typescript: 5.9.3
 
-  tsx@4.22.2:
+  tsx@4.22.3:
     dependencies:
       esbuild: 0.28.0
     optionalDependencies:
