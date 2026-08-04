@@ -18,7 +18,7 @@ jobs:
         with:
           node-version-file: .node-version
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6.0.9
         with:
           version: 9.12.3
           run_install: true
@@ -43,7 +43,7 @@ jobs:
         with:
           node-version-file: .node-version
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6.0.9
         with:
           version: 9.12.3
           run_install: true
