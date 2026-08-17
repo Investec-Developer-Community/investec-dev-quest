@@ -17,6 +17,8 @@ You will:
 
 Current content: **19 playable levels** across Seasons 1 to 4.
 
+🏆 See who has completed the quest so far in the [Community Completion Leaderboard](#-community-completion-leaderboard). Completed the game? Submit your completion through the swag claim process below.
+
 ![Investec Developer Quest CLI screenshot](docs/dev_quest_hp_v3.png)
 
 ## 🚀 Start Here (5 minutes)
@@ -213,6 +215,18 @@ Claim flow:
 4. Open the swag claim issue directly: [Swag claim template](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/new?template=swag_claim.yml).
 5. Include your `pnpm game status` screenshot and certificate text.
 6. A maintainer shares the claim form link directly.
+
+## 🏆 Community Completion Leaderboard
+
+This leaderboard shows publicly submitted completion claims. There may be additional players who completed the game without submitting an issue.
+
+| Rank | Player | Reported time | Feedback | Submission |
+|---:|---|---:|---|---|
+| 1 | [limanindou](https://github.com/limanindou) | 2 hours | — | [Issue #15](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/15) |
+| 2 | [sean-gordon](https://github.com/sean-gordon) | 8 hours | “That was a fun challenge! Thanks!” | [Issue #67](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/67) |
+| 3 | [lungilemooketsi](https://github.com/lungilemooketsi) | ~30 hours | “This was quite the learning experience for me, great fun and an even better challenge.” | [Issue #66](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/66) |
+| — | [EstherSewlall](https://github.com/EstherSewlall) | Not provided | — | [Issue #9](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/9) |
+| — | [Kimmicorn-glitch](https://github.com/Kimmicorn-glitch) | Not provided | — | [Issue #29](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/29) |
 
 ## 🤝 Contributing a Level
 
