@@ -8,17 +8,19 @@ const command = args[0]
 const tsxBin = resolve('packages/cli/node_modules/.bin/tsx')
 const cliEntrypoint = resolve('packages/cli/src/index.ts')
 
+const isWindows = process.platform === 'win32'
+
 function runPnpm(pnpmArgs) {
   return spawnSync('pnpm', pnpmArgs, {
     stdio: 'inherit',
-    shell: false,
+    shell: isWindows,
   })
 }
 
 function runPnpmQuiet(pnpmArgs) {
   return spawnSync('pnpm', pnpmArgs, {
     stdio: 'pipe',
-    shell: false,
+    shell: isWindows,
     encoding: 'utf8',
   })
 }
@@ -79,10 +81,14 @@ const sharedDistModuleUrl = pathToFileURL(resolve('packages/shared/dist/index.js
 const { EXIT_CODES } = await import(sharedDistModuleUrl)
 
 const cli = existsSync(tsxBin)
-  ? spawnSync(tsxBin, [cliEntrypoint, ...args], {
-      stdio: 'inherit',
-      shell: false,
-    })
+  ? spawnSync(
+      isWindows ? `"${tsxBin}.CMD"` : tsxBin,
+      isWindows ? [`"${cliEntrypoint}"`, ...args] : [cliEntrypoint, ...args],
+      {
+        stdio: 'inherit',
+        shell: isWindows,
+      }
+    )
   : runPnpm(['--filter', '@investec-game/cli', 'run', 'dev', ...args])
 const exitCode = cli.status ?? 1
 
