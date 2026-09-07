@@ -28,6 +28,11 @@ import { randomBytes } from 'crypto'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(__dirname, '..')
 const SEASONS_DIR = join(REPO_ROOT, 'seasons')
+
+const isWindows = process.platform === 'win32'
+// cmd.exe (used under shell: true) splits unquoted arguments on spaces, which
+// breaks paths like "...\Downloads\Fun Projects\..." — quote each arg ourselves.
+const quoteArg = (arg) => (isWindows && /\s/.test(arg) ? `"${arg}"` : arg)
 const TEMPLATE_DIR = join(REPO_ROOT, 'templates', 'level-template')
 const REQUIRED_STORY_SECTIONS = ['Mission Brief', 'Bug Report', 'Your Task', 'Threat', 'Win Condition']
 
@@ -172,13 +177,14 @@ function runVitest(dir, vitestConfig, levelDir) {
     execFileSync('npx', [
       'vitest', 'run',
       '--reporter=json',
-      `--outputFile=${outFile}`,
-      '--config', vitestConfig,
-      dir,
+      quoteArg(`--outputFile=${outFile}`),
+      '--config', quoteArg(vitestConfig),
+      quoteArg(dir),
     ], {
       cwd: levelDir,
       env: { ...process.env, FORCE_COLOR: '0' },
       stdio: 'pipe',
+      shell: isWindows,
     })
   } catch {
     // vitest exits non-zero on test failure — that's fine, we read the file
