@@ -44,11 +44,16 @@ What it checks:
 - story/hint/debrief authoring constraints
 - starter contract: behavior fails and attack fails (exploit succeeds pre-fix)
 - reference contract: behavior passes and attack passes (exploit blocked post-fix)
+- curated quality cases for enrolled levels: insecure variants fail a named assertion, while valid alternatives pass both suites
 
 Modes:
 
 - soft (default): API-required levels may be skipped if mock API is offline
 - strict: API-required levels must validate (used by CI)
+
+Quality cases live in `scripts/level-quality.mjs`. Initial coverage is S1L2, S4L2,
+and S4L5; passing validation does not imply mutation coverage for every level.
+`pnpm test:unit` tests the quality gate and CLI helpers without running player solutions.
 
 ## Arc and Case-File Consequences
 

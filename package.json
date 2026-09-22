@@ -28,6 +28,7 @@
     "build": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
     "test": "pnpm validate",
+    "test:unit": "node --test scripts/level-quality.test.mjs && vitest run --config packages/cli/vitest.config.ts",
     "test:watch": "vitest",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --cache --fix",

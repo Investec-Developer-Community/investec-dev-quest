@@ -32,6 +32,9 @@ jobs:
       - name: Build and type-check mock-api
         run: pnpm --filter @investec-game/mock-api build
 
+      - name: Test CLI helpers and level quality gate
+        run: pnpm test:unit
+
   # ─── Level content contract ───────────────────────────────────────────────
   validate-levels:
     name: Validate level content

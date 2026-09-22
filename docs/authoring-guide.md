@@ -238,6 +238,37 @@ Before submitting a new level, verify:
 - [ ] Level is completable in ≤ 25 minutes (test on a fresh player)
 - [ ] `node scripts/validate-levels.mjs --strict` passes when mock API is running
 
+## Mutation and alternative checks
+
+Starter failures and a passing reference are the baseline, not proof of complete coverage.
+The validator also runs curated quality cases from `scripts/level-quality.mjs`.
+Initial coverage is S1L2 (token lifecycle), S4L2 (human approval), and S4L5 (tool trust).
+Other levels still receive the starter/reference checks; they are not mutation-tested by this gate yet.
+
+Each enrolled level includes:
+
+- An insecure near-miss made by changing the reference. A specific named assertion must reject it.
+- A valid alternative that must pass both behavior and attack suites.
+
+Add cases under the level ID in `LEVEL_QUALITY_CASES`. Each case has a `name` and
+`changes`, an array of `[originalText, replacementText]` pairs. Each original text
+must occur exactly once. Insecure cases also set `rejectedBy` to a unique test-title
+prefix. Omit `rejectedBy` for valid alternatives.
+
+Keep transformations small and tied to a documented requirement. A stale source
+anchor, crash, missing tests, skipped checks, or failure in the wrong assertion
+does not prove the mutation was caught. Use assertion-based checks for the expected
+outcome, and keep valid inputs in the suites to guard against deny-all fixes.
+
+Run `pnpm test:unit` for gate/helper tests, then
+`node scripts/validate-levels.mjs <level-id> --strict` for the real level cases.
+The validator restores an existing working solution, or removes its temporary
+solution when none existed. Do not run it alongside a player watch session in the
+same checkout. CI and release run the gate through level validation.
+
+These cases measure test coverage, not player honesty or production certification.
+They do not change the behavior-plus-attack win condition or stored progress.
+
 ## Carry-forward authoring checklist
 
 When adding a new arc consequence branch, use this checklist to keep rubric writes deterministic and auditable:

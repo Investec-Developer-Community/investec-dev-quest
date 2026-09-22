@@ -6,6 +6,19 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ---
 
+## [Unreleased]
+
+### Added
+- Curated mutation and valid-alternative checks in level validation, initially covering token lifecycle, human approval, and trusted tool resolution (S1L2, S4L2, S4L5).
+- `pnpm test:unit` for CLI helpers and quality-gate regression tests, run by CI and release.
+
+### Fixed
+- Token expiry tests now use a still-valid server token so a client cannot pass by ignoring cache expiry and relying on a later 401.
+- The bounded-retry signal now checks a second resource 401 and the exact retry count.
+- Approval and registry attack tests reject truthy non-boolean flags; registry tests also reject tool-name prefixes.
+- Token request counting supports valid URL-object fetch calls.
+- Release level validation now uses strict mode. Existing progress and reference implementations are unchanged.
+
 ## [1.7.0] - 2026-05-19
 
 Focused on token-lifecycle correctness in Season 1 and clearer XP scoring feedback.

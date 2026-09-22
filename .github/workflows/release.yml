@@ -32,6 +32,9 @@ jobs:
           pnpm --filter @investec-game/shared exec tsc -b --force
           pnpm build
 
+      - name: Test CLI helpers and level quality gate
+        run: pnpm test:unit
+
       - name: Validate levels before release
         run: |
           cp .env.example .env
@@ -43,7 +46,7 @@ jobs:
             sleep 1
           done
           curl -sf http://localhost:3001/health >/dev/null
-          node scripts/validate-levels.mjs
+          node scripts/validate-levels.mjs --strict
         env:
           GAME_API_BASE_URL: http://localhost:3001
           GAME_API_CLIENT_ID: game_client_id

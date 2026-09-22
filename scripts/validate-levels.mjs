@@ -24,6 +24,7 @@ import { fileURLToPath } from 'url'
 import { execFileSync } from 'child_process'
 import { tmpdir } from 'os'
 import { randomBytes } from 'crypto'
+import { LEVEL_QUALITY_CASES, buildQualityVariant, checkQualityResult } from './level-quality.mjs'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = join(__dirname, '..')
@@ -173,6 +174,8 @@ function validateTemplate() {
 
 function runVitest(dir, vitestConfig, levelDir) {
   const outFile = join(tmpdir(), `validate-${randomBytes(6).toString('hex')}.json`)
+  let exitCode = 0
+  let executionError
   try {
     execFileSync('npx', [
       'vitest', 'run',
@@ -185,16 +188,19 @@ function runVitest(dir, vitestConfig, levelDir) {
       env: { ...process.env, FORCE_COLOR: '0' },
       stdio: 'pipe',
       shell: isWindows,
+      timeout: 60_000,
+      killSignal: 'SIGKILL',
     })
-  } catch {
-    // vitest exits non-zero on test failure — that's fine, we read the file
+  } catch (error) {
+    exitCode = error.status ?? null
+    if (exitCode !== 1) executionError = `Vitest did not complete normally (exit ${exitCode}, signal ${error.signal ?? 'none'})`
   }
 
-  if (!existsSync(outFile)) return { success: false, numTotalTests: 0, testResults: [] }
+  if (!existsSync(outFile)) return { success: false, numTotalTests: 0, testResults: [], exitCode, executionError: executionError ?? 'Vitest produced no report' }
 
   try {
     const result = JSON.parse(readFileSync(outFile, 'utf-8'))
-    return result
+    return { ...result, exitCode, executionError }
   } finally {
     unlinkSync(outFile)
   }
@@ -244,7 +250,8 @@ function validateLevel(levelDir) {
 
   const errors = []
   const hadOriginalSolution = existsSync(solutionPath)
-  const originalSolution = hadOriginalSolution ? readFileSync(solutionPath, 'utf-8') : null
+  const originalSolution = hadOriginalSolution ? readFileSync(solutionPath) : null
+  let qualityChecks = 0
 
   const restoreSolution = () => {
     if (hadOriginalSolution && originalSolution !== null) {
@@ -291,11 +298,26 @@ function validateLevel(levelDir) {
     } else if (!refAttack.passed) {
       errors.push('Reference: attack script fails (exploit not blocked by reference solution)')
     }
+
+    if (errors.length === 0) {
+      const reference = readFileSync(referencePath, 'utf-8')
+      for (const qualityCase of LEVEL_QUALITY_CASES[manifest.id] ?? []) {
+        writeFileSync(solutionPath, buildQualityVariant(reference, qualityCase), 'utf-8')
+        const configPath = join(levelDir, 'vitest.config.js')
+        const reports = {
+          behavior: runVitest(testsDir, configPath, levelDir),
+          attack: runVitest(attackDir, configPath, levelDir),
+        }
+        const error = checkQualityResult(qualityCase, reports)
+        qualityChecks++
+        if (error) errors.push(`Quality "${qualityCase.name}": ${error}`)
+      }
+    }
   } finally {
     restoreSolution()
   }
 
-  return { manifest, errors, warnings }
+  return { manifest, errors, warnings, qualityChecks }
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
@@ -342,6 +364,7 @@ let totalLevels = 0
 let failedLevels = 0
 let failedQualityGates = 0
 let skippedApiLevels = 0
+let totalQualityChecks = 0
 
 if (!API_ONLINE) {
   if (strictMode) {
@@ -397,9 +420,11 @@ for (const seasonEntry of readdirSync(SEASONS_DIR).sort()) {
     }
 
     try {
-      const { errors, warnings } = validateLevel(levelDir)
+      const { errors, warnings, qualityChecks } = validateLevel(levelDir)
+      totalQualityChecks += qualityChecks
       if (errors.length === 0) {
         console.log('✓')
+        if (qualityChecks > 0) console.log(`    Quality: ${qualityChecks} mutation/alternative checks passed`)
         for (const warning of warnings) console.warn(`    ⚠ ${warning}`)
       } else {
         console.log('✗')
@@ -420,6 +445,7 @@ if (totalLevels === 0) {
 }
 
 console.log(`\n  ${totalLevels - failedLevels}/${totalLevels} levels pass the content contract.`)
+if (totalQualityChecks > 0) console.log(`  ${totalQualityChecks} curated mutation/alternative checks executed (coverage is limited to enrolled levels).`)
 
 if (skippedApiLevels > 0) {
   console.log(`  ⚠ Skipped ${skippedApiLevels} API-required level${skippedApiLevels === 1 ? '' : 's'}.`)

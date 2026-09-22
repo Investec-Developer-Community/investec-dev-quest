@@ -17,7 +17,7 @@ afterEach(() => {
 function countTokenRequests() {
   let count = 0
   vi.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
-    const url = typeof input === 'string' ? input : input?.url ?? ''
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input?.url ?? ''
     if (url.includes('/identity/v2/oauth2/token')) count += 1
     return realFetch(input, init)
   })
@@ -68,8 +68,9 @@ describe('apiFetch — normal path', () => {
 
 describe('apiFetch — token refresh', () => {
   it('A_S1L2_REFRESHES_EXPIRED_CACHE: refreshes before a request when expiresAt is in the past', async () => {
+    const cached = await getToken(CLIENT_ID, CLIENT_SECRET)
     const tokenStore = {
-      token: 'expired_cached_token',
+      token: cached.access_token,
       expiresAt: Date.now() - 1000,
     }
 
@@ -78,7 +79,7 @@ describe('apiFetch — token refresh', () => {
 
     expect(data).toHaveProperty('data')
     expect(tokenRequests()).toBe(1)
-    expect(tokenStore.token).not.toBe('expired_cached_token')
+    expect(tokenStore.token).not.toBe(cached.access_token)
     expect(tokenStore.expiresAt).toBeGreaterThan(Date.now())
   })
 
@@ -102,7 +103,29 @@ describe('apiFetch — token refresh', () => {
     expect(typeof tokenStore.expiresAt).toBe('number')
   })
 
-  it('A_S1L2_BOUNDED_RETRY: throws "Token refresh failed" when credentials are removed from env', async () => {
+  it('A_S1L2_BOUNDED_RETRY: stops after the refreshed token also returns 401', async () => {
+    let tokenRequests = 0
+    let resourceRequests = 0
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (input) => {
+      const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input?.url ?? ''
+      if (url.includes('/identity/v2/oauth2/token')) {
+        tokenRequests += 1
+        return new Response(JSON.stringify({ access_token: 'fresh_test_token', expires_in: 1800 }))
+      }
+      resourceRequests += 1
+      if (resourceRequests > 2) throw new Error('Test request budget exceeded')
+      return new Response(JSON.stringify({ error: 'unauthorized' }), { status: 401 })
+    })
+
+    const outcome = await apiFetch(`${BASE_URL}/za/pb/v1/accounts`, { token: 'stale_test_token' })
+      .then(() => null, error => error.message)
+
+    expect(outcome).toBe('Token refresh failed')
+    expect(resourceRequests).toBe(2)
+    expect(tokenRequests).toBe(1)
+  })
+
+  it('throws "Token refresh failed" when refresh credentials are invalid', async () => {
     // Temporarily corrupt credentials so refresh fails
     const orig = process.env.GAME_API_CLIENT_ID
     process.env.GAME_API_CLIENT_ID = 'invalid_id'
@@ -111,7 +134,7 @@ describe('apiFetch — token refresh', () => {
       const tokenStore = { token: 'stale_or_missing_token' }
       await expect(
         apiFetch(`${BASE_URL}/za/pb/v1/accounts`, tokenStore)
-      ).rejects.toThrow()
+      ).rejects.toThrow('Token refresh failed')
     } finally {
       process.env.GAME_API_CLIENT_ID = orig
     }

@@ -76,6 +76,9 @@ npx tsc -p packages/mock-api/tsconfig.json --noEmit
 # Validate all levels
 node scripts/validate-levels.mjs
 
+# Test CLI helpers and the mutation quality gate
+pnpm test:unit
+
 # Validate a specific level
 node scripts/validate-levels.mjs s1-l1
 ```
@@ -89,6 +92,7 @@ node scripts/validate-levels.mjs s1-l1
 - [ ] No real credentials or PII in any file
 - [ ] New level follows the single-objective-per-level principle
 - [ ] Starter code fails tests, reference passes everything
+- [ ] Enrolled mutation cases fail the intended assertion and valid alternatives pass both suites
 - [ ] Before a public push/release, run one fresh-install Windows smoke test (`pnpm install`, `cp .env.example .env`, `pnpm game level 1 --season 1`, `pnpm game test`)
 
 ---
