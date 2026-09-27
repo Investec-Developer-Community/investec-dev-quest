@@ -8,6 +8,8 @@ body:
       value: |
         Congrats on finishing the quest! Fill in below so we can verify and share the claim form link with you.
 
+        From v2.0.0, the campaign has 23 levels, so your status should show `23/23 levels complete`. Please also paste the output of `pnpm game certificate`.
+
   - type: input
     id: github_username
     attributes:

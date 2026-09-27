@@ -86,6 +86,7 @@ describe('Attack: type-coercion bypass', () => {
 | `boss` | boolean | optional | Set to `true` for season capstone levels |
 | `apiRequired` | boolean | ✅ | `true` if the mock API must run (Season 1) |
 | `attackName` | string | ✅ | Short Red Team name for the exploit, e.g. `"Prefix Phantom"` |
+| `estimatedMinutes` | number | ✅ | Realistic solve time for a first attempt, as a positive integer. Shown in `level`, `status`, and `map`. Rough guide: beginner 10–20, intermediate 20–30, advanced 30–45, boss 45–60. |
 | `tags` | string[] | ✅ | Searchable tags used by map/hint topic targeting, e.g. `["oauth2", "pagination"]` |
 
 ---
@@ -184,6 +185,8 @@ Write exactly 2 hints per level, in increasing specificity:
 
 Hint 1 should help the player choose what to inspect. Hint 2 can show a small implementation pattern, but should still leave the final integration to the player.
 
+You do not write a third hint. After both hints, players can run `pnpm game hint --walkthrough`, which is generated from the first failing test: its name, failure message, the intent from `explain`, and the `it(...)` source block. Descriptive test titles and one clear assertion per test make the walkthrough far more useful.
+
 Topic-targeted hint retrieval (`pnpm game hint --topic <name>`) uses manifest tags plus failure-topic mapping. To make this useful:
 
 - Keep hint wording aligned to manifest tags and common failure vocabulary (auth, pagination, mcc, allowlist, etc.)
@@ -206,8 +209,23 @@ Use this structure:
 1. **What changed** — the essential implementation difference.
 2. **Why it matters** — the risk or failure mode this prevents.
 3. **Production habit** — the durable engineering practice players should remember.
+4. **Try it for real** — one to three bullets linking the real Investec resource where the lesson applies. The validator requires this section.
 
 Keep each section short. The debrief should explain the lesson, not duplicate the reference solution line by line.
+
+Useful links for **Try it for real** (keep them to official or community-owned sources):
+
+| Resource | URL |
+|---|---|
+| Private Bank API reference | https://developer.investec.com/api-reference/SA%20PB%20Account%20Information |
+| Sandbox credentials | https://developer.investec.com/api-reference/SA%20PB%20Account%20Information#description/sandbox |
+| Authorisation API (OAuth) | https://developer.investec.com/api-reference/SA%20Open%20API%20-%20Authorization |
+| Card API | https://developer.investec.com/api-reference/SA%20Card%20Code |
+| Guides (payments, transfers, card IDE, FAQ) | https://developer.investec.com/individuals |
+| Investec Developer Community | https://developer.investec.com/community |
+| Community projects | https://github.com/Investec-Developer-Community/Community-Projects |
+
+When the game's simplified contract differs from the real platform, say so. For example, real `beforeTransaction` returns a boolean and amounts arrive in cents.
 
 ## Boss levels (capstones)
 
@@ -235,6 +253,9 @@ Before submitting a new level, verify:
 - [ ] `story.md` introduces the scenario without giving away the answer
 - [ ] `story.md` includes `Mission Brief`, `Bug Report`, `Your Task`, `Threat`, and `Win Condition`
 - [ ] Exactly two hints exist under `hints/`
+- [ ] `debrief.md` includes `What changed`, `Why it matters`, `Production habit`, and `Try it for real`
+- [ ] `manifest.json` has a realistic `estimatedMinutes`
+- [ ] If the level should count toward a path, add its id to `GAME_PATHS` in `packages/cli/src/services/paths.ts` (always add it to the Grandmaster Run)
 - [ ] Level is completable in ≤ 25 minutes (test on a fresh player)
 - [ ] `node scripts/validate-levels.mjs --strict` passes when mock API is running
 

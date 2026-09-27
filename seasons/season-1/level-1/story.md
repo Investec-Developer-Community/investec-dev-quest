@@ -2,7 +2,7 @@
 
 ## Mission Brief
 
-**The Briefing Desk:** Welcome to the Investec Developer Response Cell. Your first FinFlow simulation is deliberately small but mission-critical: prove that a client can authenticate, page through account data, and total balances without smuggling fixed credentials into the code.
+**The Briefing Desk:** Welcome to the API desk of the Investec Developer Response Cell. This FinFlow simulation is small but mission-critical: prove that a client can authenticate, page through account data, and total balances without smuggling fixed credentials into the code.
 
 Run `pnpm game test` once before editing. Let the failing tests show you the shape of the incident.
 

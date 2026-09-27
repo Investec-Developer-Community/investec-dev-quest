@@ -11,6 +11,7 @@ export const LevelManifestSchema = z.object({
   boss: z.boolean().default(false),
   apiRequired: z.boolean(),    // whether mock-api must be running
   attackName: z.string().optional(),
+  estimatedMinutes: z.number().int().positive().optional(),
   tags: z.array(z.string()).default([]),
 })
 

@@ -19,14 +19,37 @@ export interface LevelXpInput {
   boss?: boolean | undefined
 }
 
-export function calculateLevelXp(input: LevelXpInput): number {
-  const attempts = input.attempts ?? 0
-  const hintsUsed = input.hintsUsed ?? 0
+export interface LevelXpBreakdown {
+  base: number
+  hintBonus: number
+  attemptBonus: number
+  bossBonus: number
+  total: number
+}
 
-  return 100
-    + (hintsUsed === 0 ? 50 : 0)
-    + (attempts <= 2 ? 25 : 0)
-    + (input.boss ? 100 : 0)
+export function hintBonusFor(hintsUsed: number): number {
+  if (hintsUsed <= 0) return 50
+  if (hintsUsed === 1) return 25
+  if (hintsUsed === 2) return 10
+  return 0
+}
+
+export function attemptBonusFor(attempts: number): number {
+  if (attempts <= 2) return 25
+  if (attempts <= 4) return 10
+  return 0
+}
+
+export function calculateLevelXpBreakdown(input: LevelXpInput): LevelXpBreakdown {
+  const base = 100
+  const hintBonus = hintBonusFor(input.hintsUsed ?? 0)
+  const attemptBonus = attemptBonusFor(input.attempts ?? 0)
+  const bossBonus = input.boss ? 100 : 0
+  return { base, hintBonus, attemptBonus, bossBonus, total: base + hintBonus + attemptBonus + bossBonus }
+}
+
+export function calculateLevelXp(input: LevelXpInput): number {
+  return calculateLevelXpBreakdown(input).total
 }
 
 export function buildCompletionSummary(
@@ -65,8 +88,17 @@ export function buildCompletionSummary(
   }
 }
 
+export const RANK_LADDER: Array<{ minComplete: number; title: string }> = [
+  { minComplete: 12, title: 'Response Cell Specialist' },
+  { minComplete: 6, title: 'Response Cell Responder' },
+  { minComplete: 3, title: 'Response Cell Analyst' },
+  { minComplete: 0, title: 'Response Cell Recruit' },
+]
+
 export function playerTitle(summary: CompletionSummary): string {
-  if (summary.complete < summary.total) return 'Response Cell Recruit'
+  if (summary.complete < summary.total) {
+    return RANK_LADDER.find((rank) => summary.complete >= rank.minComplete)?.title ?? 'Response Cell Recruit'
+  }
   if (summary.noHintSolves === summary.total) return 'Silent Systems Grandmaster'
   if (summary.lowAttemptSolves >= Math.ceil(summary.total * 0.75)) return 'Incident Response Architect'
   return 'Investec Developer Quest Finisher'

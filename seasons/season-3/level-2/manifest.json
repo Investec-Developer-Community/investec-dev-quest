@@ -1,0 +1,11 @@
+{
+  "id": "s3-l2",
+  "name": "Replay Rewind",
+  "season": 3,
+  "level": 2,
+  "difficulty": "intermediate",
+  "apiRequired": false,
+  "attackName": "Rewind Replay",
+  "estimatedMinutes": 25,
+  "tags": ["webhooks", "replay", "timestamps", "idempotency"]
+}

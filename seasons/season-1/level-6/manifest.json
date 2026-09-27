@@ -7,6 +7,7 @@
   "boss": true,
   "apiRequired": true,
   "attackName": "Settlement Rift",
+  "estimatedMinutes": 60,
   "tags": [
     "boss",
     "oauth2",

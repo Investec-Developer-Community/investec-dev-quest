@@ -98,6 +98,15 @@ export function buildOperationalRiskAddendumForSeason(season: number): string | 
   const profile = deriveOperationalRiskProfile(flags.s1_token_fix_depth, flags.s2_state_discipline)
   const evidence = getArcFlagEvidence()
 
+  if (!hasOperationalRiskEvidence(evidence)) {
+    return [
+      '## Operational Risk Summary',
+      '',
+      '- Risk band: not assessed yet',
+      '- Season 1 Level 2 `Token Trouble` and Season 2 Level 5 `Limit Loop` set this risk band.',
+    ].join('\n')
+  }
+
   const tokenEvidence = latestEvidenceForFlag(evidence, 's1_token_fix_depth')
   const stateEvidence = latestEvidenceForFlag(evidence, 's2_state_discipline')
 

@@ -1,7 +1,12 @@
 import { p, pc } from '../ui/theme.js'
-import type { CaseFileEntry, TestRunResult } from '@investec-game/shared'
+import type { CaseFileEntry, LevelManifest, TestRunResult } from '@investec-game/shared'
 import { summarizeFailureMessage } from './failureSummary.js'
-import { calculateLevelXp } from '../services/certificate.js'
+import { calculateLevelXpBreakdown } from '../services/certificate.js'
+import type { Milestone } from '../services/milestones.js'
+import type { LastRunSummary } from '../db/progress.js'
+import { REPO_URL, buildLinkedInShareUrl, buildStuckDiscussionUrl, buildXShareUrl } from '../services/community.js'
+import { buildNextForPath } from '../services/realWorld.js'
+import type { SocialMoment } from '../services/social.js'
 
 interface RenderOptions {
   verbose?: boolean
@@ -54,11 +59,20 @@ export function renderTestResults(
   p.note(lines.join('\n'), title)
 }
 
+interface NextMissionInfo {
+  command: string
+  name: string
+  pathName: string
+  complete: number
+  total: number
+}
+
 interface WinBannerOptions {
   attempts?: number
   hintsUsed?: number
   referenceCommand?: string
-  nextLevelCommand?: string
+  /** `null` means every mission is complete; `undefined` omits the section. */
+  nextMission?: NextMissionInfo | null
   boss?: boolean
   caseFile?: CaseFileEntry
 }
@@ -71,14 +85,20 @@ export function renderWinBanner(levelName: string, options: WinBannerOptions = {
     : hintsUsed <= 2
       ? 'Field Repair'
       : 'Incident Resolved'
-  const xp = calculateLevelXp({ attempts, hintsUsed, boss: options.boss })
+  const xp = calculateLevelXpBreakdown({ attempts, hintsUsed, boss: options.boss })
+  const xpParts = [
+    `base ${xp.base}`,
+    `hints +${xp.hintBonus}`,
+    `attempts +${xp.attemptBonus}`,
+    ...(xp.bossBonus > 0 ? [`boss +${xp.bossBonus}`] : []),
+  ]
   const lines = [
     pc.yellow(pc.bold('🎉  Level Complete!')),
     '',
     `"${levelName}" is solved.`,
     '',
     pc.cyan(`Rank: ${rank}`),
-    pc.cyan(`XP earned: +${xp}`),
+    pc.cyan(`XP earned: +${xp.total}`) + pc.dim(` (${xpParts.join(' · ')})`),
     pc.dim('Both behavior tests and the attack script pass.'),
     pc.dim(`Attempts: ${attempts}  Hints used: ${hintsUsed}`),
     pc.dim('Run `pnpm game status` to see your progress.'),
@@ -96,12 +116,118 @@ export function renderWinBanner(levelName: string, options: WinBannerOptions = {
     lines.push(pc.dim(`Downstream consequence: ${options.caseFile.downstreamConsequence}`))
   }
 
-  if (options.nextLevelCommand) {
+  if (options.nextMission) {
+    const next = options.nextMission
     lines.push('')
-    lines.push(pc.cyan(`Next level: ${options.nextLevelCommand}`))
+    lines.push(pc.cyan(pc.bold(`Next mission: ${next.name}`)))
+    lines.push(pc.dim(`${next.pathName}: ${next.complete}/${next.total} complete`))
+    lines.push(pc.cyan(`Run: ${next.command}`))
+  } else if (options.nextMission === null) {
+    lines.push('')
+    lines.push(pc.green(pc.bold('Every mission is complete.')))
+    lines.push(pc.cyan('Run `pnpm game certificate` to claim your completion.'))
   }
 
   p.note(lines.join('\n'), pc.yellow('Level Complete'))
+}
+
+export function renderMilestones(milestones: Milestone[]): void {
+  if (milestones.length === 0) return
+
+  const lines: string[] = []
+  for (const milestone of milestones) {
+    lines.push(pc.magenta(pc.bold(milestone.headline)))
+    lines.push(pc.dim(milestone.detail))
+    lines.push('')
+  }
+  lines.push(pc.cyan('Run `pnpm game badge` to see your badges and share text.'))
+
+  p.note(lines.join('\n'), pc.magenta('Milestone Unlocked'))
+
+  for (const milestone of milestones) {
+    if (milestone.kind !== 'path' || !milestone.badgeId) continue
+    renderBuildNext(milestone.badgeId.replace(/^path:/, ''))
+  }
+}
+
+export function renderBuildNext(pathId: string): void {
+  const suggestion = buildNextForPath(pathId)
+  if (!suggestion) return
+
+  p.note(pc.bold(suggestion.idea), pc.green('What to build next (real Investec APIs)'))
+  for (const link of suggestion.links) {
+    console.log(`   ${link.label}: ${link.url}`)
+  }
+}
+
+export function renderSocialPrompt(moment: SocialMoment): void {
+  p.note(
+    [
+      pc.yellow(pc.bold(moment.headline)),
+      '',
+      moment.shareText,
+      '',
+      pc.dim('If Dev Quest helped you, a GitHub star helps other developers find it.'),
+      pc.dim('Turn these prompts off with GAME_QUIET_SOCIAL=1 in .env or --quiet-social.'),
+    ].join('\n'),
+    pc.yellow('Share the Win')
+  )
+  console.log(`   Star the repo: ${REPO_URL}`)
+  console.log(`   Post on X:     ${buildXShareUrl(moment.shareText)}`)
+  console.log(`   LinkedIn:      ${buildLinkedInShareUrl()}`)
+}
+
+export function renderProgressDelta(previous: LastRunSummary, current: LastRunSummary): void {
+  const arrow = (before: number, after: number) =>
+    after > before ? pc.green('▲') : after < before ? pc.red('▼') : pc.dim('=')
+  const behavior = `Behavior ${previous.behaviorPassed}/${previous.behaviorTotal} → ${current.behaviorPassed}/${current.behaviorTotal} ${arrow(previous.behaviorPassed, current.behaviorPassed)}`
+  const attack = `Red Team ${previous.attackPassed}/${previous.attackTotal} → ${current.attackPassed}/${current.attackTotal} ${arrow(previous.attackPassed, current.attackPassed)}`
+
+  const before = previous.behaviorPassed + previous.attackPassed
+  const after = current.behaviorPassed + current.attackPassed
+  const verdict = after > before
+    ? pc.green('Closer than last run. Keep that change and move to the next failing test.')
+    : after < before
+      ? pc.yellow('Something that passed last run now fails. Check what your last edit touched.')
+      : pc.dim('No change since last run. `pnpm game explain` can point at the next step.')
+
+  p.log.message(`${pc.bold('Progress:')} ${behavior}   ${attack}\n${verdict}`)
+}
+
+interface StuckLadderOptions {
+  manifest: LevelManifest
+  hintsUnlocked: number
+  hintsTotal: number
+  walkthroughUnlocked: boolean
+  intro?: string
+}
+
+export function renderStuckLadder(options: StuckLadderOptions): void {
+  const { manifest, hintsUnlocked, hintsTotal, walkthroughUnlocked } = options
+  const writtenHintsDone = hintsUnlocked >= hintsTotal
+  const lines: string[] = []
+
+  if (options.intro) {
+    lines.push(options.intro)
+    lines.push('')
+  }
+
+  let step = 1
+  if (!writtenHintsDone) {
+    lines.push(`${step++}. ${pc.cyan('pnpm game hint')}  written hints (${hintsUnlocked}/${hintsTotal} unlocked)`)
+  }
+  lines.push(`${step++}. ${pc.cyan('pnpm game explain')}  free, non-spoiler coaching for every failing test`)
+  if (walkthroughUnlocked) {
+    lines.push(`${step++}. ${pc.cyan('pnpm game hint --walkthrough')}  unlocked, re-run any time for the current first failure`)
+  } else if (writtenHintsDone) {
+    lines.push(`${step++}. ${pc.cyan('pnpm game hint --walkthrough')}  pinpoints the first failing assertion and its intent (counts as a hint)`)
+  } else {
+    lines.push(`${step++}. ${pc.dim('pnpm game hint --walkthrough')}  ${pc.dim('unlocks after the written hints')}`)
+  }
+  lines.push(`${step++}. Ask the Response Cell community (link below). Share your approach and failing test, not a full solution.`)
+
+  p.note(lines.join('\n'), pc.cyan('Stuck-Escape Ladder'))
+  console.log(`   ${buildStuckDiscussionUrl(manifest)}`)
 }
 
 export function renderAttackResult(

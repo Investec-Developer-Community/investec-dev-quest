@@ -5,7 +5,7 @@
  * Scaffold a new level from the template.
  *
  * Usage:
- *   node scripts/create-level.mjs --season 3 --level 1 --name "Webhook Whiplash" --difficulty intermediate --attackName "Signature Shard"
+ *   node scripts/create-level.mjs --season 3 --level 1 --name "Webhook Whiplash" --difficulty intermediate --attackName "Signature Shard" --minutes 30
  */
 import { cpSync, existsSync, readFileSync, writeFileSync } from 'fs'
 import { join, dirname } from 'path'
@@ -26,19 +26,28 @@ function parseArgs() {
     name: get('--name'),
     difficulty: get('--difficulty') ?? 'beginner',
     attackName: get('--attackName') ?? 'Exploit Name',
+    minutes: get('--minutes'),
   }
 }
 
-const { season, level, name, difficulty, attackName } = parseArgs()
+const DEFAULT_MINUTES = { beginner: 15, intermediate: 25, advanced: 35 }
+
+const { season, level, name, difficulty, attackName, minutes } = parseArgs()
 
 if (!season || !level || !name) {
-  console.error('Usage: node scripts/create-level.mjs --season <n> --level <n> --name "<name>" [--difficulty beginner|intermediate|advanced] [--attackName "<name>"]')
+  console.error('Usage: node scripts/create-level.mjs --season <n> --level <n> --name "<name>" [--difficulty beginner|intermediate|advanced] [--attackName "<name>"] [--minutes <n>]')
   process.exit(1)
 }
 
 const validDifficulties = ['beginner', 'intermediate', 'advanced']
 if (!validDifficulties.includes(difficulty)) {
   console.error(`--difficulty must be one of: ${validDifficulties.join(', ')}`)
+  process.exit(1)
+}
+
+const estimatedMinutes = minutes ? parseInt(minutes, 10) : DEFAULT_MINUTES[difficulty]
+if (!Number.isInteger(estimatedMinutes) || estimatedMinutes <= 0) {
+  console.error('--minutes must be a positive integer')
   process.exit(1)
 }
 
@@ -69,6 +78,7 @@ const manifest = {
   boss: false,
   apiRequired: false,
   attackName,
+  estimatedMinutes,
   tags: [],
 }
 
@@ -91,7 +101,7 @@ console.log(`
     3. Write tests/behavior.test.js
     4. Write attack/exploit.test.js (assertions that pass when exploit is BLOCKED)
     5. Implement the correct reference/solution.js
-    6. Set a descriptive manifest attackName (default scaffold value is "Exploit Name")
+    6. Set a descriptive manifest attackName (default scaffold value is "Exploit Name") and a realistic estimatedMinutes
     7. Add hints in hints/hint-1.md and hints/hint-2.md
     8. Validate: node scripts/validate-levels.mjs ${levelId} --strict
 `)

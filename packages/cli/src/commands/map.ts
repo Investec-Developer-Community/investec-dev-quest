@@ -2,7 +2,7 @@ import type { Command } from 'commander'
 import { p, pc, showBanner } from '../ui/theme.js'
 import { getAllProgress } from '../db/progress.js'
 import { loadAllLevels } from '../levels/loader.js'
-import { GAME_PATHS, levelCommand, summarizePathProgress } from '../services/paths.js'
+import { GAME_PATHS, formatEstimate, levelCommand, remainingMinutes, summarizePathProgress } from '../services/paths.js'
 
 export function registerMapCommand(program: Command): void {
   program
@@ -23,6 +23,7 @@ export function registerMapCommand(program: Command): void {
           ? pc.green(`${path.name} (${summary.complete}/${summary.total}) complete`)
           : pc.bold(`${path.name} ${pc.dim(`(${summary.complete}/${summary.total})`)}`)
         const levelList = path.levelIds.map((id) => id.toUpperCase().replace('-', '')).join(', ')
+        const estimate = formatEstimate(remainingMinutes(path, levels, progress))
         const next = summary.nextLevel
           ? pc.cyan(`Next: ${levelCommand(summary.nextLevel)}`)
           : pc.green('Path complete')
@@ -32,6 +33,8 @@ export function registerMapCommand(program: Command): void {
             path.description,
             '',
             pc.dim(`Levels: ${levelList}`),
+            pc.dim(`Badge: ${path.badge}`),
+            ...(estimate ? [pc.dim(`Time remaining: ${estimate}`)] : []),
             next,
           ].join('\n'),
           title

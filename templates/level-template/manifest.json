@@ -7,5 +7,6 @@
   "boss": false,
   "apiRequired": false,
   "attackName": "Exploit Name",
+  "estimatedMinutes": 20,
   "tags": ["tag-1", "tag-2"]
 }

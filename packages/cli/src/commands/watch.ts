@@ -17,7 +17,8 @@ export function registerWatchCommand(program: Command): void {
     .option('-l, --level <n>', 'Level number')
     .option('-d, --debounce <ms>', 'Debounce delay in ms', '300')
     .option('-v, --verbose', 'Show full test failure traces')
-    .action(async (opts: { season?: string; level?: string; debounce: string; verbose?: boolean }) => {
+    .option('--quiet-social', 'Skip share/star prompts on milestones (or set GAME_QUIET_SOCIAL=1)')
+    .action(async (opts: { season?: string; level?: string; debounce: string; verbose?: boolean; quietSocial?: boolean }) => {
       const { season, level } = resolveLevelSelection(program, opts)
       const parsedDebounce = parseInt(opts.debounce, 10)
       const debounceMs = Number.isFinite(parsedDebounce)
@@ -82,6 +83,7 @@ export function registerWatchCommand(program: Command): void {
             countAttempt: false,
             showWinBanner: true,
             verbose: opts.verbose === true,
+            quietSocial: opts.quietSocial === true,
           })
         } finally {
           inFlight = false

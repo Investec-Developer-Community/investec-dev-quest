@@ -3,9 +3,18 @@ import { homedir } from 'os'
 import { join } from 'path'
 import type { ArcFlagEvidence, ArcFlagKey, ArcFlags, CaseFileEntry, LevelProgress } from '@investec-game/shared'
 import { ARC_DEFAULT_FLAGS } from '../services/arcModel.js'
+import { advanceStreak, type ActivityState } from '../services/activity.js'
 
 const DB_DIR = join(homedir(), '.investec-game')
 const DB_PATH = join(DB_DIR, 'progress.json')
+
+export interface LastRunSummary {
+  behaviorPassed: number
+  behaviorTotal: number
+  attackPassed: number
+  attackTotal: number
+  at: string
+}
 
 interface ProgressStore {
   progress: Record<string, LevelProgress>
@@ -14,21 +23,31 @@ interface ProgressStore {
   arcFlags: ArcFlags
   flagEvidence: ArcFlagEvidence[]
   caseFiles: Record<string, CaseFileEntry>
+  lastRuns: Record<string, LastRunSummary>
+  activity: ActivityState | null
+  socialPromptsShown: string[]
 }
 
 const DEFAULT_ARC_FLAGS: ArcFlags = { ...ARC_DEFAULT_FLAGS }
 
+function emptyStore(): ProgressStore {
+  return {
+    progress: {},
+    hintUnlocks: {},
+    currentLevelId: null,
+    arcFlags: { ...DEFAULT_ARC_FLAGS },
+    flagEvidence: [],
+    caseFiles: {},
+    lastRuns: {},
+    activity: null,
+    socialPromptsShown: [],
+  }
+}
+
 function readStore(): ProgressStore {
   mkdirSync(DB_DIR, { recursive: true })
   if (!existsSync(DB_PATH)) {
-    return {
-      progress: {},
-      hintUnlocks: {},
-      currentLevelId: null,
-      arcFlags: { ...DEFAULT_ARC_FLAGS },
-      flagEvidence: [],
-      caseFiles: {},
-    }
+    return emptyStore()
   }
   try {
     const parsed = JSON.parse(readFileSync(DB_PATH, 'utf-8')) as Partial<ProgressStore>
@@ -42,16 +61,12 @@ function readStore(): ProgressStore {
       },
       flagEvidence: parsed.flagEvidence ?? [],
       caseFiles: parsed.caseFiles ?? {},
+      lastRuns: parsed.lastRuns ?? {},
+      activity: parsed.activity ?? null,
+      socialPromptsShown: parsed.socialPromptsShown ?? [],
     }
   } catch {
-    return {
-      progress: {},
-      hintUnlocks: {},
-      currentLevelId: null,
-      arcFlags: { ...DEFAULT_ARC_FLAGS },
-      flagEvidence: [],
-      caseFiles: {},
-    }
+    return emptyStore()
   }
 }
 
@@ -104,6 +119,41 @@ export function recordHintUnlock(levelId: string, hintIndex: number): void {
 export function getUnlockedHints(levelId: string): number[] {
   const store = readStore()
   return (store.hintUnlocks[levelId] ?? []).sort((a, b) => a - b)
+}
+
+export function getLastRun(levelId: string): LastRunSummary | null {
+  const store = readStore()
+  return store.lastRuns[levelId] ?? null
+}
+
+export function setLastRun(levelId: string, summary: LastRunSummary): void {
+  const store = readStore()
+  store.lastRuns[levelId] = summary
+  writeStore(store)
+}
+
+export function getActivity(): ActivityState | null {
+  const store = readStore()
+  return store.activity
+}
+
+export function getShownSocialPrompts(): Set<string> {
+  const store = readStore()
+  return new Set(store.socialPromptsShown)
+}
+
+export function markSocialPromptsShown(keys: string[]): void {
+  if (keys.length === 0) return
+  const store = readStore()
+  store.socialPromptsShown = [...new Set([...store.socialPromptsShown, ...keys])]
+  writeStore(store)
+}
+
+export function recordActivity(now: Date = new Date()): ActivityState {
+  const store = readStore()
+  store.activity = advanceStreak(store.activity, now)
+  writeStore(store)
+  return store.activity
 }
 
 export interface LevelCoordinates {

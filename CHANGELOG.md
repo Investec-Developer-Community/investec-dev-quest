@@ -8,17 +8,57 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
+_No unreleased changes._
+
+## [2.0.0] - 2026-09-27
+
+Version 2 of Investec Developer Quest focuses on the whole player journey: a faster first win, help when you're stuck, rewards along the way, a full Season 3, community touchpoints, and a bridge to the real Investec APIs.
+
+### Upgrade notes (breaking)
+- **Campaign size is now 23 levels.** Season 3 grows from 1 to 5 missions, so swag eligibility now requires **23/23**. Existing progress files keep working without migration. A finished v1 profile shows 19/23, and `pnpm game` routes it to the first new mission.
+- **XP is re-scored.** Hint and attempt bonuses are graduated (see Changed). XP is derived from stored attempts and hints, so existing totals may rise. Max XP per level is unchanged.
+- **Stricter authoring contract.** Level manifests must include `estimatedMinutes`, and every `debrief.md` must include `What changed`, `Why it matters`, `Production habit`, and `Try it for real`. `scripts/validate-levels.mjs` enforces both.
+
 ### Added
+- **Season 3 expansion (4 new missions):**
+  - `s3-l2` **Replay Rewind**: webhook freshness windows (past and future) and delivery-ID replay caches.
+  - `s3-l3` **Callback Trap**: SSRF-safe callback URL validation with parsed, exact host allowlists (userinfo, look-alike domain, path-smuggling, and port attacks).
+  - `s3-l4` **Ledger Lock**: tamper-evident hash-chained audit log verification (edit-and-rehash, deletion, and reordering attacks).
+  - `s3-l5` **Season Boss: Settlement Sentinel**: an ordered webhook pipeline combining HMAC, freshness, deduplication, callback validation, and an audited exit for every decision.
+  - The new levels join the Security Path (s3-l2, s3-l3) and the Grandmaster Run. Hint topics (`replay`, `ssrf`, `audit-log`) and `explain` coaching cover them.
+- **"Try it for real" in every debrief:** each of the 23 debriefs links the matching Investec API reference, sandbox, card IDE guide, FAQ tip, or community resource. The debrief template includes the section.
+- **"What to build next" panel:** when you complete a path, and on `pnpm game certificate`, the CLI suggests a real-API project with links.
+- **Share moments:** one-time share and star prompts the first time you block an exploit, beat a season boss, finish a path, or complete the campaign, with GitHub star, X, and LinkedIn links. Each moment appears once per profile. Opt out with `GAME_QUIET_SOCIAL=1` (new in `.env.example`) or `--quiet-social` on `test`/`watch`.
+- **Share your approach:** `pnpm game reference` ends with the five debrief questions and a pre-filled GitHub Discussions **Show and tell** link.
+- Markdown links in stories and debriefs render in the terminal as `label (url)`.
+- `pnpm game start`, also the default when `pnpm game` runs with no arguments. It briefs new players and loads the first Quickstart mission. Returning players resume their active mission or load the next one.
+- GitHub Codespaces / dev container support (`.devcontainer/devcontainer.json`) with Node 20, pnpm 9, dependencies, and `.env` preconfigured, plus an "Open in GitHub Codespaces" README badge.
+- Campaign routing helper (`resolveNextMission`) with unit coverage.
+- Stuck-escape ladder. Once both written hints are used, `pnpm game hint` suggests `explain`, the new `pnpm game hint --walkthrough`, and a pre-filled GitHub Discussions **Q&A** link for the level. `pnpm game test` shows the ladder automatically after 5 attempts on a mission.
+- `pnpm game hint --walkthrough` pinpoints the first failing assertion: suite, test name, failure message, intent, and the `it(...)` source block. It counts as a third hint the first time; re-running it is free. It isn't charged when nothing is failing or the runner errors.
+- A progress delta on failing runs (for example `Behavior 3/5 → 4/5 ▲   Red Team 0/2 → 0/2 =`) with a one-line verdict. This works in both `test` and `watch`.
+- `estimatedMinutes` on every level manifest. It's shown in `level`, `status` (incomplete levels), and `map` (time remaining per path). `create-level` accepts `--minutes`.
+- Milestone rewards: badges for every completed path and season, and a rank ladder (Recruit → Analyst at 3 → Responder at 6 → Specialist at 12) before the final campaign titles. The win banner announces new badges and promotions. `status` shows your rank and badges.
+- `pnpm game badge` lists earned and locked badges, with share text for each earned badge.
+- Local daily streaks (consecutive days with at least one test run). A "Welcome back" panel on `pnpm game` shows when you last played, your streak, and the badge closest to completion. `status` shows the streak. Nothing is sent anywhere.
 - Curated mutation and valid-alternative checks for enrolled levels, starting with token lifecycle, human approval, and trusted tool resolution.
-- `pnpm test:unit` for CLI helper and quality-gate regression coverage.
+- `pnpm test:unit` for CLI helper and quality-gate regression coverage, now covering routing, XP, ranks, badges, streaks, walkthrough extraction, social moments, and community links.
 
 ### Changed
+- The Quickstart Path now starts with the offline induction mission: Season 2 Level 1 `Merchant Mirage` → Season 1 Level 1 `First Contact` → Season 4 Level 1 `Tool Gatekeeper`.
+- **XP is now graduated.** The hint bonus is +50/+25/+10/+0 for 0/1/2/3+ hints (previously +50 only for 0 hints). The attempt bonus is +25 for 1–2 attempts, +10 for 3–4, and +0 for 5+ (previously +25 only for ≤2). Max XP is unchanged.
+- The win banner shows an XP breakdown (base, hints, attempts, boss), and unlocking a hint shows the level's new hint bonus.
+- The win banner, `status`, and `certificate` now name the next mission on the Quickstart Path, then the Grandmaster Run, instead of the next level in season order.
+- Rewrote the `Merchant Mirage` and `First Contact` mission briefs so the Response Cell induction reads naturally in either play order.
+- Carry-forward case files and reference/journal addenda now show `not assessed yet` until the source Season 1 mission has been played, instead of projecting default posture.
+- The Security Path now includes replay protection and SSRF-safe callbacks (7 missions).
+- Updated README, facilitator guide, authoring guide, Windows setup, troubleshooting, architecture overview, demo guide, and CONTRIBUTING for v2.
 - Strict level validation now reports curated quality coverage alongside the normal starter/reference checks.
+- CLI and workspace version bumped to `2.0.0`.
 
 ### Fixed
 - Strengthened token-refresh, approval, and registry assertions to reject stale-token reuse, truthy non-boolean policy values, and prefix-based bypasses.
 - Kept working solutions restored during validation so contributor work is not clobbered during checks.
-- Existing progress and reference implementations remain unchanged.
 
 ## [1.7.0] - 2026-05-19
 

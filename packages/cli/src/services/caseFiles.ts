@@ -56,11 +56,21 @@ function buildConsequenceSummary(manifest: LevelManifest, flags: ArcFlags, flagC
   }
 
   if (manifest.season >= 2) {
-    const visibility = deriveIncidentVisibilityFromLogging(flags.s1_logging_maturity)
-    outcomes.push(`Incident visibility now ${visibility.quality}`)
+    const hasFlagEvidence = (flag: string) => evidence.some((row) => row.flag === flag)
 
-    const chain = deriveIncidentChainFromBeneficiaryRisk(flags.s1_beneficiary_risk)
-    outcomes.push(`Beneficiary chain is ${chain.status}`)
+    if (hasFlagEvidence('s1_logging_maturity')) {
+      const visibility = deriveIncidentVisibilityFromLogging(flags.s1_logging_maturity)
+      outcomes.push(`Incident visibility now ${visibility.quality}`)
+    } else {
+      outcomes.push('Incident visibility: not assessed yet')
+    }
+
+    if (hasFlagEvidence('s1_beneficiary_risk')) {
+      const chain = deriveIncidentChainFromBeneficiaryRisk(flags.s1_beneficiary_risk)
+      outcomes.push(`Beneficiary chain is ${chain.status}`)
+    } else {
+      outcomes.push('Beneficiary chain: not assessed yet')
+    }
   }
 
   if (manifest.season >= 3) {

@@ -1,21 +1,17 @@
 import type { Command } from 'commander'
 import { p, pc, showBanner } from '../ui/theme.js'
 import { loadAllLevels } from '../levels/loader.js'
-import { getAllCaseFiles, getAllProgress } from '../db/progress.js'
+import { getActivity, getAllCaseFiles, getAllProgress } from '../db/progress.js'
 import { getOperationalRiskProfile, hasOperationalRiskEvidence } from '../services/operationalRisk.js'
 import { buildCompletionSummary, playerTitle } from '../services/certificate.js'
+import { formatEstimate, levelCommand, resolveNextMission } from '../services/paths.js'
+import { SEASON_NAMES, listBadges } from '../services/milestones.js'
+import { activeStreak } from '../services/activity.js'
 
 const STATUS_ICON: Record<string, string> = {
   locked: pc.dim('○'),
   active: pc.yellow('◑'),
   complete: pc.green('●'),
-}
-
-const SEASON_NAMES: Record<number, string> = {
-  1: 'API Foundations',
-  2: 'Card Code & Rules Engine',
-  3: 'Secure Fintech Workflows',
-  4: 'Intelligent Banking Automation',
 }
 
 const DATE_FORMATTER = new Intl.DateTimeFormat('en-CA', {
@@ -66,10 +62,13 @@ function formatLevelLine(
   const completedAt = formatCompletionDate(progress?.completedAt)
 
   const difficulty = pc.dim(`[${level.manifest.difficulty}]`)
+  const estimate = status !== 'complete' && level.manifest.estimatedMinutes
+    ? pc.dim(` ${formatEstimate(level.manifest.estimatedMinutes)}`)
+    : ''
   const boss = level.manifest.boss ? pc.magenta('[boss]') : ''
   const name = status === 'complete' ? pc.dim(level.manifest.name) : level.manifest.name
 
-  return `${icon}  L${level.manifest.level} ${name} ${difficulty}${boss ? ` ${boss}` : ''}${attempts}${hints}${badge}${completedAt}`
+  return `${icon}  L${level.manifest.level} ${name} ${difficulty}${estimate}${boss ? ` ${boss}` : ''}${attempts}${hints}${badge}${completedAt}`
 }
 
 export function registerStatusCommand(program: Command): void {
@@ -113,11 +112,31 @@ export function registerStatusCommand(program: Command): void {
       const complete = summary.complete
       p.log.message(pc.dim(`\n${complete}/${levels.length} levels complete`))
       p.log.message(pc.dim(`XP: ${summary.totalXp}/${summary.maxXp}`))
+      p.log.message(pc.dim('Rank: ') + pc.cyan(playerTitle(summary)))
+
+      const badges = listBadges(levels, allProgress)
+      const earned = badges.filter((badge) => badge.earned)
+      p.log.message(
+        pc.dim(`Badges: ${earned.length}/${badges.length}`) +
+          (earned.length > 0 ? pc.dim(` (${earned.map((badge) => badge.name).join(', ')})`) : '') +
+          pc.dim('  ·  pnpm game badge')
+      )
+
+      const activity = getActivity()
+      if (activity) {
+        const streak = activeStreak(activity)
+        p.log.message(pc.dim(`Daily streak: ${streak} day${streak === 1 ? '' : 's'} (best ${activity.bestStreak})`))
+      }
 
       if (complete === 0) {
-        p.log.message(pc.cyan('Start here: pnpm game level 1 --season 1'))
+        p.log.message(pc.cyan('Start here: pnpm game start'))
+      } else {
+        const next = resolveNextMission(levels, allProgress)
+        if (next) {
+          p.log.message(pc.cyan(`Next mission: ${next.level.manifest.name} (${next.path.name}) → ${levelCommand(next.level)}`))
+        }
       }
-      p.log.message(pc.dim('Recommended next: pnpm game map'))
+      p.log.message(pc.dim('All routes: pnpm game map'))
 
       if (hasOperationalRiskEvidence()) {
         const riskProfile = getOperationalRiskProfile()

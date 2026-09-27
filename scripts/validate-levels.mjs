@@ -71,7 +71,7 @@ const API_ONLINE = isApiReachable()
 // ─── Schema validation ────────────────────────────────────────────────────────
 
 const REQUIRED_MANIFEST_FIELDS = [
-  'id', 'name', 'season', 'level', 'difficulty', 'apiRequired', 'attackName', 'tags',
+  'id', 'name', 'season', 'level', 'difficulty', 'apiRequired', 'attackName', 'estimatedMinutes', 'tags',
 ]
 const VALID_DIFFICULTIES = ['beginner', 'intermediate', 'advanced']
 const STORY_WORD_WARN_LIMIT = 220
@@ -88,6 +88,9 @@ function validateManifest(manifestPath) {
   if (typeof raw.apiRequired !== 'boolean') throw new Error('apiRequired must be a boolean')
   if (typeof raw.attackName !== 'string' || raw.attackName.trim().length === 0) {
     throw new Error('attackName must be a non-empty string')
+  }
+  if (!Number.isInteger(raw.estimatedMinutes) || raw.estimatedMinutes <= 0) {
+    throw new Error('estimatedMinutes must be a positive integer')
   }
   if (!Array.isArray(raw.tags)) throw new Error('tags must be an array')
 
@@ -113,6 +116,16 @@ function validateStorySections(storyPath) {
   }
 
   return []
+}
+
+const REQUIRED_DEBRIEF_SECTIONS = ['What changed', 'Why it matters', 'Production habit', 'Try it for real']
+
+function validateDebriefSections(debriefPath) {
+  const debrief = readFileSync(debriefPath, 'utf-8')
+  const missing = REQUIRED_DEBRIEF_SECTIONS.filter((section) => !new RegExp(`^##\\s+${section}\\s*$`, 'm').test(debrief))
+  if (missing.length > 0) {
+    throw new Error(`debrief.md missing section(s): ${missing.join(', ')}`)
+  }
 }
 
 function validateHints(hintsDir) {
@@ -163,6 +176,12 @@ function validateTemplate() {
 
   try {
     validateHints(join(TEMPLATE_DIR, 'hints'))
+  } catch (err) {
+    errors.push(`Template ${err.message}`)
+  }
+
+  try {
+    validateDebriefSections(join(TEMPLATE_DIR, 'debrief.md'))
   } catch (err) {
     errors.push(`Template ${err.message}`)
   }
@@ -247,6 +266,7 @@ function validateLevel(levelDir) {
 
   const warnings = validateStorySections(storyPath)
   validateHints(hintsDir)
+  validateDebriefSections(debriefPath)
 
   const errors = []
   const hadOriginalSolution = existsSync(solutionPath)

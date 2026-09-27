@@ -6,5 +6,6 @@
   "difficulty": "advanced",
   "apiRequired": false,
   "attackName": "Registry Poison",
+  "estimatedMinutes": 30,
   "tags": ["ai-agents", "tool-poisoning", "supply-chain", "registry-validation"]
 }

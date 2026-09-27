@@ -2,9 +2,9 @@
 
 ## Mission Brief
 
-**The Briefing Desk:** Welcome to Card Code. FinFlow cards are supposed to decline gambling transactions before authorization. A tester has found that some restricted merchant category codes still pass.
+**The Briefing Desk:** Welcome to the Investec Developer Response Cell, or, if you have come across from the API desk, welcome to Card Code. New responders are inducted here because the loop is short: FinFlow cards are supposed to decline gambling transactions before authorization, and a tester has found that some restricted merchant category codes still pass.
 
-This is the fastest Quickstart mission: one event, one card rule, one boundary assumption to inspect.
+This is the Quickstart induction mission: one event, one card rule, one boundary assumption to inspect. No mock API needed. Run `pnpm game test` once before editing.
 
 ## Bug Report
 

@@ -65,6 +65,15 @@ export function buildBeneficiaryIncidentChainAddendumForLevel(season: number, is
   const chain = deriveIncidentChainFromBeneficiaryRisk(beneficiaryRisk)
   const evidence = latestEvidenceForFlag(getArcFlagEvidence(), 's1_beneficiary_risk')
 
+  if (!evidence) {
+    return [
+      '## Beneficiary Incident Chain',
+      '',
+      '- Chain status: not assessed yet',
+      '- Season 1 Level 4 `Beneficiary Blueprint` decides whether this incident chain is contained.',
+    ].join('\n')
+  }
+
   const lines: string[] = [
     '## Beneficiary Incident Chain',
     '',

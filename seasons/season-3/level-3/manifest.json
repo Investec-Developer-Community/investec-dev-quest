@@ -1,0 +1,11 @@
+{
+  "id": "s3-l3",
+  "name": "Callback Trap",
+  "season": 3,
+  "level": 3,
+  "difficulty": "intermediate",
+  "apiRequired": false,
+  "attackName": "Metadata Detour",
+  "estimatedMinutes": 25,
+  "tags": ["ssrf", "allowlist", "url-validation", "callbacks"]
+}

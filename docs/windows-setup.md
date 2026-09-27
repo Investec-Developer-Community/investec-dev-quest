@@ -62,11 +62,20 @@ Get-ExecutionPolicy
 ## First run checks
 
 ```powershell
+pnpm game
+pnpm game test
+```
+
+`pnpm game` loads the offline induction mission. To also confirm the mock API starts on your machine, run:
+
+```powershell
 pnpm game level 1 --season 1
 pnpm game test
 ```
 
 If the CLI detects a blocking PowerShell policy, it will stop early and print the exact fix command.
+
+Can't change the policy? Use GitHub Codespaces instead (see the badge in the README). It runs in a Linux container and needs no local setup.
 
 ---
 

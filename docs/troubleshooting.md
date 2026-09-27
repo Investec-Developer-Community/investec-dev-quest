@@ -132,6 +132,28 @@ pnpm game explain   # next-step coaching based on failing tests (non-spoiler)
 pnpm game journal   # recorded choices, evidence trail, downstream consequences
 ```
 
+Still stuck after both hints? Use the stuck-escape ladder:
+
+```bash
+pnpm game hint --walkthrough   # first failing assertion, what it saw, intent, and test source
+```
+
+The walkthrough counts as a third hint (hint bonus drops to +0 XP); re-running it is free. `pnpm game hint` also prints a pre-filled GitHub Discussions link for your level once the written hints are used up.
+
+### I don't want share/star prompts (demos, recordings, CI)
+
+Share prompts appear at most once per milestone per profile. To disable them entirely:
+
+```bash
+echo "GAME_QUIET_SOCIAL=1" >> .env
+# or per run
+pnpm game test --quiet-social
+```
+
+### My v1 profile says 19/23 instead of complete
+
+v2 added four Season 3 missions (`s3-l2` to `s3-l5`). Your progress is intact. Run `pnpm game` to load the next new mission. Swag eligibility now requires 23/23.
+
 If you need full raw traces:
 
 ```bash
@@ -145,6 +167,8 @@ Possible causes:
 1. The level/season doesn't render that section yet (for example some sections appear only on later seasons).
 2. Relevant rubric signals were never written because tests were run outside the CLI flow.
 3. Your progress file predates the latest arc flag schema.
+
+If a section shows `not assessed yet`, nothing is broken. You haven't completed the Season 1 mission that sets that posture yet. This is expected after the Quickstart induction (Season 2 Level 1) or any other out-of-order play.
 
 Fix:
 

@@ -56,6 +56,15 @@ export function buildIncidentVisibilityAddendumForSeason(season: number): string
   const profile = getIncidentVisibilityProfile()
   const evidence = latestEvidenceForFlag(getArcFlagEvidence(), 's1_logging_maturity')
 
+  if (!evidence) {
+    return [
+      '## Incident Visibility Context',
+      '',
+      '- Visibility quality: not assessed yet',
+      '- Season 1 Level 3 `Transaction Trail` decides how much incident evidence the Response Cell can see here.',
+    ].join('\n')
+  }
+
   const lines: string[] = [
     '## Incident Visibility Context',
     '',

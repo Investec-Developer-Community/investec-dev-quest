@@ -5,6 +5,12 @@ import { renderMarkdown } from '../ui/markdown.js'
 import { EXIT_CODES } from '@investec-game/shared'
 import { findLevelDir, loadLevel } from '../levels/loader.js'
 import { getProgress, upsertProgress, setCurrentLevel } from '../db/progress.js'
+import { formatEstimate } from '../services/paths.js'
+
+interface LoadLevelForPlayOptions {
+  full?: boolean
+  banner?: boolean
+}
 
 export function registerLevelCommand(program: Command): void {
   program
@@ -13,72 +19,75 @@ export function registerLevelCommand(program: Command): void {
     .option('-s, --season <n>', 'Season number (defaults to 1)', '1')
     .option('--full', 'Show full mission story instead of the compact brief')
     .action((levelNum: string, opts: { season: string; full?: boolean }) => {
-      const season = parseInt(opts.season, 10)
-      const level = parseInt(levelNum, 10)
-
-      const levelDir = findLevelDir(season, level)
-      if (!levelDir) {
-        p.cancel(pc.red(`Level S${season}L${level} not found.`))
-        p.log.message(pc.dim(`Looked in: seasons/season-${season}/level-${level}`))
-        process.exit(EXIT_CODES.USAGE_ERROR)
-      }
-
-      const resolved = loadLevel(levelDir)
-      const { manifest, storyPath, solutionPath, starterPath } = resolved
-
-      showBanner()
-
-      // Print story
-      if (existsSync(storyPath)) {
-        const story = renderMarkdown(readFileSync(storyPath, 'utf-8'), { compact: !opts.full })
-        const storyTitle = opts.full ? manifest.name : `${manifest.name} (Quick Brief)`
-        p.note(story, pc.bold(storyTitle))
-        if (!opts.full) {
-          p.log.message(pc.dim(`Need full context? Run: pnpm game level ${level} --season ${season} --full`))
-        }
-      }
-
-      // Initialise solution.js from starter only if not already started
-      let progress = getProgress(manifest.id)
-      if (!existsSync(solutionPath)) {
-        if (!existsSync(starterPath)) {
-          p.cancel(pc.red(`No starter code found at ${starterPath}`))
-          process.exit(EXIT_CODES.USAGE_ERROR)
-        }
-        mkdirSync(levelDir, { recursive: true })
-        copyFileSync(starterPath, solutionPath)
-        p.log.success(pc.cyan(`→ Starter code copied to: ${pc.bold(solutionPath)}`))
-      } else {
-        p.log.message(pc.dim(`→ solution.js already exists at: ${solutionPath} — resuming previous work`))
-      }
-
-      // Record progress
-      if (!progress) {
-        progress = {
-          levelId: manifest.id,
-          status: 'active',
-          attempts: 0,
-          hintsUsed: 0,
-          startedAt: new Date().toISOString(),
-          completedAt: null,
-        }
-        upsertProgress(progress)
-      } else if (progress.status === 'locked') {
-        upsertProgress({ ...progress, status: 'active', startedAt: new Date().toISOString() })
-      }
-
-      // Persist "currently selected" level for commands that omit --season/--level.
-      setCurrentLevel(manifest.id)
-
-      p.log.step(
-        pc.bold(`Level: ${manifest.name}`) +
-          pc.dim(` (S${manifest.season} L${manifest.level} — ${manifest.difficulty})`)
-      )
-      p.log.info(pc.dim(`Edit ${solutionPath} then run: `) + pc.cyan('pnpm game test'))
-      if (manifest.apiRequired) {
-        p.log.message(
-          pc.dim('This level uses the mock Investec API — it will start automatically.')
-        )
-      }
+      loadLevelForPlay(parseInt(opts.season, 10), parseInt(levelNum, 10), { full: opts.full === true })
     })
+}
+
+export function loadLevelForPlay(season: number, level: number, options: LoadLevelForPlayOptions = {}): void {
+  const full = options.full === true
+  const levelDir = findLevelDir(season, level)
+  if (!levelDir) {
+    p.cancel(pc.red(`Level S${season}L${level} not found.`))
+    p.log.message(pc.dim(`Looked in: seasons/season-${season}/level-${level}`))
+    process.exit(EXIT_CODES.USAGE_ERROR)
+  }
+
+  const resolved = loadLevel(levelDir)
+  const { manifest, storyPath, solutionPath, starterPath } = resolved
+
+  if (options.banner !== false) showBanner()
+
+  // Print story
+  if (existsSync(storyPath)) {
+    const story = renderMarkdown(readFileSync(storyPath, 'utf-8'), { compact: !full })
+    const storyTitle = full ? manifest.name : `${manifest.name} (Quick Brief)`
+    p.note(story, pc.bold(storyTitle))
+    if (!full) {
+      p.log.message(pc.dim(`Need full context? Run: pnpm game level ${level} --season ${season} --full`))
+    }
+  }
+
+  // Initialise solution.js from starter only if not already started
+  let progress = getProgress(manifest.id)
+  if (!existsSync(solutionPath)) {
+    if (!existsSync(starterPath)) {
+      p.cancel(pc.red(`No starter code found at ${starterPath}`))
+      process.exit(EXIT_CODES.USAGE_ERROR)
+    }
+    mkdirSync(levelDir, { recursive: true })
+    copyFileSync(starterPath, solutionPath)
+    p.log.success(pc.cyan(`→ Starter code copied to: ${pc.bold(solutionPath)}`))
+  } else {
+    p.log.message(pc.dim(`→ solution.js already exists at: ${solutionPath} — resuming previous work`))
+  }
+
+  // Record progress
+  if (!progress) {
+    progress = {
+      levelId: manifest.id,
+      status: 'active',
+      attempts: 0,
+      hintsUsed: 0,
+      startedAt: new Date().toISOString(),
+      completedAt: null,
+    }
+    upsertProgress(progress)
+  } else if (progress.status === 'locked') {
+    upsertProgress({ ...progress, status: 'active', startedAt: new Date().toISOString() })
+  }
+
+  // Persist "currently selected" level for commands that omit --season/--level.
+  setCurrentLevel(manifest.id)
+
+  const estimate = formatEstimate(manifest.estimatedMinutes)
+  p.log.step(
+    pc.bold(`Level: ${manifest.name}`) +
+      pc.dim(` (S${manifest.season} L${manifest.level} — ${manifest.difficulty}${estimate ? `, ${estimate}` : ''})`)
+  )
+  p.log.info(pc.dim(`Edit ${solutionPath} then run: `) + pc.cyan('pnpm game test'))
+  if (manifest.apiRequired) {
+    p.log.message(
+      pc.dim('This level uses the mock Investec API — it will start automatically.')
+    )
+  }
 }

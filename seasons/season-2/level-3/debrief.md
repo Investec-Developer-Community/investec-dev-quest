@@ -12,3 +12,8 @@ Fraud velocity is about recent sequences, not lifetime totals.
 
 For rate limits, prune old state before making the current decision.
 
+## Try it for real
+
+- Velocity rules must stay fast: real `beforeTransaction` code has a roughly 2-second window. Keep the pruning step cheap. See the [card IDE guide](https://developer.investec.com/individuals).
+- Explore what others have built with card code in [community projects](https://github.com/Investec-Developer-Community/Community-Projects).
+

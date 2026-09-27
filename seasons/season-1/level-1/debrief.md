@@ -12,3 +12,8 @@ Authentication bugs and first-page assumptions are quiet failures. They can look
 
 Trust explicit inputs, not hidden constants. Treat pagination as part of the contract, not an edge case.
 
+## Try it for real
+
+- Get a real token with the [Authorisation API (OAuth) quickstart](https://developer.investec.com/api-reference/SA%20Open%20API%20-%20Authorization#description/quickstart-curl). It uses the same client-credentials flow you just fixed.
+- No Investec account? Call the [Private Bank API sandbox](https://developer.investec.com/api-reference/SA%20PB%20Account%20Information#description/sandbox) with its published sandbox credentials, then follow the [accounts quickstart](https://developer.investec.com/api-reference/SA%20PB%20Account%20Information#description/quickstarts).
+

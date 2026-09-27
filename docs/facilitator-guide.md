@@ -28,19 +28,27 @@ pnpm game status
 
 If `status` shows available levels and no errors, they're ready.
 
-For first-time rooms, run `pnpm game map` and start the Quickstart Path in campaign order:
+**No-install option:** participants can click **Open in GitHub Codespaces** in the README. The dev container installs Node, pnpm, dependencies, and `.env` automatically. This is the fastest fix for locked-down or Windows machines.
 
-1. Season 1 Level 1 `First Contact`
-2. Season 2 Level 1 `Merchant Mirage`
+For first-time rooms, have everyone run `pnpm game`. It briefs new players and loads the first Quickstart mission. The Quickstart Path runs in this order:
+
+1. Season 2 Level 1 `Merchant Mirage`, the offline induction mission (no mock API)
+2. Season 1 Level 1 `First Contact`, the first mock-API mission
 3. Season 4 Level 1 `Tool Gatekeeper`
+
+After each win, the CLI names the next mission on the Quickstart Path, then continues the Grandmaster Run in campaign order. Running `pnpm game` again always resumes the active mission.
 
 ---
 
 ## Suggested session formats
 
-> **Facilitator note:** While the Player Paths and session tracks below are great for learning or workshop pacing, remind participants that *to claim swag, they must complete all 19 levels* (not just a single path or track). Encourage them to use the paths for learning, but check their full progress with `pnpm game status` if they want to claim a prize.
+> **Facilitator note:** While the Player Paths and session tracks below are great for learning or workshop pacing, remind participants that *to claim swag, they must complete all 23 levels* (not just a single path or track). Encourage them to use the paths for learning, but check their full progress with `pnpm game status` if they want to claim a prize.
 >
-> XP is intentionally a secondary score for replay quality and bragging rights. Completion unlocks the campaign; clean solves earn more XP.
+> XP is intentionally a secondary score for replay quality and bragging rights. Completion unlocks the campaign; clean solves earn more XP. Hint and attempt bonuses are graduated (0/1/2 hints = +50/+25/+10; 1–2/3–4 attempts = +25/+10), so one hint is never "all or nothing".
+>
+> Mid-campaign rewards keep rooms motivated: ranks at 3/6/12 missions, and badges for each completed path and season (`pnpm game badge`). Each level's time estimate in `pnpm game status` and `pnpm game map` helps you plan session length.
+>
+> For demo machines or recorded sessions, set `GAME_QUIET_SOCIAL=1` in `.env` to hide the one-time share prompts.
 
 ### Junior workshop track
 
@@ -49,9 +57,9 @@ Use this when the room is new to Investec API, Programmable Banking, or test-dri
 | Time | Activity |
 |------|----------|
 | 0-10 min | Setup check and explanation of behavior tests versus attack tests |
-| 10-35 min | Season 1 Level 1 as a guided walkthrough |
-| 35-55 min | Season 1 Level 2 or Season 2 Level 1 in pairs |
-| 55-75 min | Independent solve time with hints encouraged |
+| 10-25 min | Season 2 Level 1 `Merchant Mirage` as a guided walkthrough (offline, fastest first win) |
+| 25-50 min | Season 1 Level 1 `First Contact` in pairs |
+| 50-75 min | Independent solve time with hints encouraged |
 | 75-90 min | Run `pnpm game reference` for completed levels and discuss debriefs |
 
 Facilitation style: encourage small edits, frequent `pnpm game test`, and early hint usage. The goal is confidence with the loop, not speed.
@@ -75,9 +83,9 @@ Facilitation style: ask participants to describe the exploit before coding, then
 | Time | Activity |
 |------|----------|
 | 0–10 min | Introduction to the game, concept of dual-validation testing |
-| 10–20 min | Setup verification (everyone runs `pnpm game status` and `pnpm game map`) |
-| 20–50 min | Season 1, Level 1 "First Contact" — pair programming recommended |
-| 50–80 min | Season 2, Level 1 "Merchant Mirage" — solo attempt |
+| 10–20 min | Setup verification (everyone runs `pnpm game`, which loads the induction mission) |
+| 20–40 min | Season 2, Level 1 "Merchant Mirage" — solo first win |
+| 40–80 min | Season 1, Level 1 "First Contact" — pair programming recommended |
 | 80–90 min | Debrief: what patterns did you notice? |
 
 ### Hackathon track (half day)
@@ -90,7 +98,10 @@ Facilitation style: ask participants to describe the exploit before coding, then
 
 - Session 1: Season 2 level recap (defensive card code)
 - Session 2: Season 3 Level 1 `Webhook Whiplash` (HMAC verification)
-- Session 3: Threat modeling exercise (replay, SSRF, tamper-evident logs)
+- Session 3: Season 3 Level 2 `Replay Rewind` (freshness windows and delivery IDs)
+- Session 4: Season 3 Level 3 `Callback Trap` (SSRF-safe callback validation)
+- Session 5: Season 3 Level 4 `Ledger Lock` (tamper-evident hash-chained audit logs)
+- Close: Season 3 boss `Settlement Sentinel` in pairs, then compare pipeline ordering
 
 ### AI-automation track (half day)
 
@@ -118,6 +129,10 @@ Facilitation style: ask participants to describe the exploit before coding, then
 | S2 L4 Country Control | Exact country allowlists and default-deny logic | Building the allow path but forgetting the deny path |
 | S2 L5 Limit Loop | State writes only after approved decisions | Recording declined transactions as spend |
 | S3 L1 Webhook Whiplash | HMAC verification and timing-safe comparison | Accepting partial or malformed signatures |
+| S3 L2 Replay Rewind | Freshness windows plus delivery-ID replay caches | Checking duplicates but not timestamp age (or only past, not future) |
+| S3 L3 Callback Trap | SSRF-safe callback URLs via parsed, exact host allowlists | String `includes` checks fooled by userinfo (`@`) or look-alike domains |
+| S3 L4 Ledger Lock | Verifying hash-chain links, positions, and hashes in audit logs | Checking each entry's own hash but not the link to the previous entry |
+| S3 L5 Settlement Sentinel (boss) | Ordered webhook pipeline with one audited exit | Recording delivery IDs before authenticating, or skipping audit on rejects |
 | S4 L1 Tool Gatekeeper | Exact tool allowlists for AI agents | Prefix matching tool names |
 | S4 L2 Approval Anchor | Human approval for high-risk automation | Trusting action metadata as approval evidence |
 | S4 L3 Citation Checkpoint | Validating every answer claim has support | Checking only the first claim |
@@ -135,6 +150,8 @@ Use these after participants complete a level and run `pnpm game reference`:
 4. Did your fix reject anything legitimate?
 5. What additional edge case would you add to the tests?
 
+The CLI now shows these same five questions after `pnpm game reference`, with a pre-filled GitHub Discussions link in **Show and tell**. Players (or your whole room) can post approaches there after the session. Every debrief also ends with a **Try it for real** section pointing to the matching Investec API reference, sandbox, card IDE guide, or community resource. It's a good way to close a workshop.
+
 Then ask participants to inspect the generated case file (via `pnpm game reference`, `pnpm game journal`, or `pnpm game status`) and discuss:
 
 1. Which adversary was blocked?
@@ -149,6 +166,7 @@ Expected branches:
 
 | Logging maturity (`s1_logging_maturity`) | Visibility quality | Facilitation cue |
 |------|------|------|
+| no evidence yet | `not assessed yet` | The player has not reached Season 1 Level 3 (common after the Quickstart induction). Ask what they would want logged before that mission reveals it. |
 | `none` | `opaque` | Ask what incident evidence was unavailable and how that changed response speed. |
 | `basic` | `partial` | Ask which fields helped and which blind spots still forced guesswork. |
 | `forensic` | `forensic` | Ask how complete traceability changed triage confidence and ownership clarity. |
@@ -163,6 +181,7 @@ Use this to reinforce that observability choices are not local optimizations; th
 | Behavior passes but attack fails | Ask what the exploit input is proving |
 | Attack passes but behavior fails | Ask whether the fix became too restrictive |
 | Hints feel like failure | Frame hints as workshop pacing tools, not scoring penalties |
+| Player has used both hints and is still stuck | Point them to `pnpm game explain`, then `pnpm game hint --walkthrough` (the stuck-escape ladder). The CLI also offers it automatically after 5 attempts. |
 | Mock API confusion | Show `curl http://localhost:3001/health` and explain the CLI auto-starts it |
 
 ---
@@ -179,12 +198,15 @@ Players win a level only when **both suites pass**. This is the dual-validation 
 ### The flow
 
 ```
-pnpm game level 1 --season 1          # read the brief and story
+pnpm game                             # brief + load the next mission (start or resume)
+pnpm game level 1 --season 1          # or load a specific level
 pnpm game map                         # see paths and next missions
 pnpm game hint --season 1 --level 1   # optional: unlock a hint
+pnpm game hint --walkthrough          # after both hints: pinpoint the first failing assertion
+pnpm game badge                       # path/season badges earned so far
 pnpm game test --season 1 --level 1   # run tests (real-time feedback)
 pnpm game reference --season 1 --level 1 # after completion, review reference/debrief
-pnpm game certificate                 # after 19/19 completion
+pnpm game certificate                 # after every mission is complete (23/23)
 ```
 
 The game auto-starts the mock API if it isn't running.

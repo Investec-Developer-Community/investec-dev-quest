@@ -11,3 +11,9 @@ Access tokens are intentionally reusable for their lifetime. Fetching a token fo
 ## Production habit
 
 Cache tokens until expiry, refresh deliberately, and keep recovery explicit, observable, and bounded.
+
+## Try it for real
+
+- Real Investec access tokens expire after about 30 minutes, so this cache-and-refresh pattern is exactly what a long-running integration needs. See the [Authorisation API (OAuth)](https://developer.investec.com/api-reference/SA%20Open%20API%20-%20Authorization).
+- Try it against the [sandbox](https://developer.investec.com/api-reference/SA%20PB%20Account%20Information#description/sandbox): fetch one token and reuse it across several account calls.
+

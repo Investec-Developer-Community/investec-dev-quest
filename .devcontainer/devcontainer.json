@@ -1,0 +1,22 @@
+{
+  "name": "Investec Developer Quest",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:1-20-bookworm",
+  "containerEnv": {
+    "COREPACK_ENABLE_DOWNLOAD_PROMPT": "0"
+  },
+  "postCreateCommand": "npm install -g pnpm@9.12.3 && pnpm install && cp -n .env.example .env",
+  "portsAttributes": {
+    "3001": {
+      "label": "Mock Investec API",
+      "onAutoForward": "silent"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vitest.explorer",
+        "dbaeumer.vscode-eslint"
+      ]
+    }
+  }
+}

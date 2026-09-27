@@ -8,6 +8,7 @@ A local-first CLI game for learning Investec API patterns, Programmable Banking 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Node >=20](https://img.shields.io/badge/node-%3E%3D20-339933.svg)](https://nodejs.org)
 [![pnpm 9](https://img.shields.io/badge/pnpm-9-F69220.svg)](https://pnpm.io)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Investec-Developer-Community/investec-dev-quest)
 
 You will:
 - fix intentionally flawed integration code
@@ -15,13 +16,34 @@ You will:
 - run attack tests to prove the exploit is blocked
 - unlock references, debriefs, case files, and a completion certificate
 
-Current content: **19 playable levels** across Seasons 1 to 4.
+Current content: **23 playable levels** across Seasons 1 to 4 (v2.0.0).
+
+### ✨ What's new in v2
+
+- **Faster start:** `pnpm game` briefs you and loads an offline induction mission. You can also play in GitHub Codespaces with zero install.
+- **Season 3 expanded** from 1 to 5 missions: replay protection, SSRF-safe callbacks, tamper-evident audit logs, and a season boss.
+- **Never stuck for long:** a stuck-escape ladder (explain → walkthrough → community), plus progress deltas on every failing run.
+- **Rewards along the way:** graduated XP, ranks, path and season badges, daily streaks, and time estimates.
+- **Social and community:** one-time share prompts at big moments, and "Share your approach" discussions after each reference.
+- **Take it to the real API:** every debrief ends with a "Try it for real" section linking the matching Investec API docs, sandbox, card IDE guide, or community resources.
+
+See [CHANGELOG.md](CHANGELOG.md) for details.
 
 🏆 See who has completed the quest so far in the [Community Completion Leaderboard](#-community-completion-leaderboard). Completed the game? Submit your completion through the swag claim process below.
 
 ![Investec Developer Quest CLI screenshot](docs/dev_quest_hp_v3.png)
 
 ## 🚀 Start Here (5 minutes)
+
+### ☁️ Zero-install option: GitHub Codespaces
+
+Click **Open in GitHub Codespaces** above. The dev container installs Node 20, pnpm 9, all dependencies, and `.env` for you. When the terminal is ready, run:
+
+```bash
+pnpm game
+```
+
+Prefer to play locally? Follow the steps below.
 
 ### 🧰 1) Prerequisites
 
@@ -44,17 +66,20 @@ git clone https://github.com/Investec-Developer-Community/investec-dev-quest.git
 cd investec-dev-quest
 pnpm install
 cp .env.example .env
-pnpm game map
-pnpm game level 1 --season 1
+pnpm game
 ```
+
+`pnpm game` (or `pnpm game start`) is the front door. On a fresh profile it briefs you and loads your induction mission. After that, it resumes your active mission or loads the next one.
 
 The Quickstart Path is the recommended first route:
 
-1. Season 1 Level 1: `First Contact`
-2. Season 2 Level 1: `Merchant Mirage`
+1. Season 2 Level 1: `Merchant Mirage`, the induction mission. It runs offline with one card rule to fix.
+2. Season 1 Level 1: `First Contact`, your first mission against the mock Investec API.
 3. Season 4 Level 1: `Tool Gatekeeper`
 
-To claim swag, you still need the Grandmaster Run: **all 19 levels**.
+After the Quickstart Path, the win banner and `pnpm game` route you through the Grandmaster Run in campaign order.
+
+To claim swag, you still need the Grandmaster Run: **all 23 levels**.
 
 ### 🧪 3) Run once, then edit once
 
@@ -65,7 +90,7 @@ pnpm game test
 Edit this file:
 
 ```text
-seasons/season-1/level-1/solution.js
+seasons/season-2/level-1/solution.js
 ```
 
 ### 🔁 4) Tight feedback loop
@@ -80,6 +105,19 @@ pnpm game watch
 - Failures unclear? Use `pnpm game explain`
 - Journal and case files become richer after solved levels record evidence: `pnpm game journal`
 
+Each failing run also shows how far you've moved since your last run, for example `Behavior 3/5 → 4/5 ▲`.
+
+### 🪜 Stuck-escape ladder
+
+If you're stuck, work up the ladder:
+
+1. `pnpm game hint` unlocks the two written hints, one at a time.
+2. `pnpm game explain` gives free, non-spoiler coaching for every failing test.
+3. `pnpm game hint --walkthrough` becomes available after both written hints. It points at the first failing assertion, what it saw, its intent, and the test source. It counts as a third hint, and re-running it is free.
+4. Ask the community. The CLI prints a pre-filled GitHub Discussions link for your level. Share your approach, not a full solution.
+
+After 5 attempts on the same mission, `pnpm game test` shows this ladder automatically.
+
 ### ✅ 5) Confirm you are on track
 
 ```bash
@@ -87,19 +125,40 @@ pnpm game status
 ```
 
 Behavior tests prove the feature works. Attack tests prove the exploit is blocked. A level is complete only when both pass.
-XP is a bragging-rights score derived from how cleanly you solve completed levels; swag eligibility still requires **19/19 levels complete**.
+XP is a bragging-rights score derived from how cleanly you solve completed levels; swag eligibility still requires **23/23 levels complete**.
+
+### ⭐ XP, ranks, badges and streaks
+
+**XP per level** = 100 base + hint bonus + attempt bonus (+100 for boss levels). The win banner shows the breakdown.
+
+- Hint bonus: 0 hints +50 · 1 hint +25 · 2 hints +10 · walkthrough (hint 3) +0
+- Attempt bonus: 1–2 attempts +25 · 3–4 attempts +10 · 5+ attempts +0
+
+`watch` re-runs don't count as attempts. XP is derived from your progress, so existing profiles are re-scored automatically.
+
+**Ranks** grow as you complete missions: Recruit (0), Analyst (3), Responder (6), Specialist (12). When every mission is complete, you get a final title based on how cleanly you solved.
+
+**Badges** are earned for each completed path (Quickstart Graduate, API Foundations Engineer, Card Code Operator, Security Specialist, Grandmaster) and each season (API Desk Lead, Card Desk Lead, Workflow Sentinel, AI Guardian). The win banner announces new badges and promotions. When you finish a path, it also suggests something to build next with real Investec APIs. `pnpm game badge` lists your badges, with share text for each.
+
+**Share moments:** the first time you block an exploit, beat a season boss, finish a path, or complete the campaign, the CLI shows one share prompt: a GitHub star link, an X post link, and a LinkedIn link. Each moment appears once per profile. Turn them off with `GAME_QUIET_SOCIAL=1` in `.env`, or pass `--quiet-social` to `test` or `watch`.
+
+**Share your approach:** after `pnpm game reference`, the CLI shows five debrief questions and a pre-filled [Show and tell](https://github.com/Investec-Developer-Community/investec-dev-quest/discussions/categories/show-and-tell) discussion link. Compare approaches without posting full solutions.
+
+**Daily streaks** count consecutive days on which you ran at least one test. `pnpm game` welcomes you back with when you last played, your streak, and the badge closest to completion. Everything is stored locally. There is no telemetry.
+
+**Time estimates** appear in `level`, `status`, and `map` (remaining time per path), so you can plan a session.
 
 ## 🧭 Player Paths
 
-These are suggested learning tracks. To claim swag, you must complete **all 19 levels**.
+These are suggested learning tracks. To claim swag, you must complete **all 23 levels**.
 
 | Path | Recommended levels | Best for |
 |---|---|---|
-| Quickstart path | Season 1 Level 1, Season 2 Level 1, Season 4 Level 1 | First-time players learning the edit-test-hint loop |
+| Quickstart path | Season 2 Level 1, Season 1 Level 1, Season 4 Level 1 | First-time players learning the edit-test-hint loop |
 | API foundations path | Season 1 Levels 1-6 | OAuth2, pagination, token reuse/refresh, beneficiaries, idempotent payments |
 | Card code path | Season 2 Levels 1-6 | `beforeTransaction` rules, MCCs, budgets, velocity limits |
-| Security path | Season 2 Level 1, Season 3 Level 1, Season 4 Levels 1, 4, 5 | Validation, HMAC verification, exact allowlists, injection defense |
-| Grandmaster Run | All 19 levels | Swag eligibility |
+| Security path | Season 2 Level 1, Season 3 Levels 1-3, Season 4 Levels 1, 4, 5 | Validation, HMAC verification, replay windows, SSRF-safe callbacks, exact allowlists, injection defense |
+| Grandmaster Run | All 23 levels | Swag eligibility |
 
 Run `pnpm game map` to see path progress and the next incomplete mission.
 
@@ -108,7 +167,7 @@ Run `pnpm game map` to see path progress and the next incomplete mission.
 ### Most-used commands
 
 ```bash
-pnpm game level 1 --season 1
+pnpm game                    # start or continue the campaign
 pnpm game test
 pnpm game watch
 pnpm game hint
@@ -120,9 +179,12 @@ pnpm game map
 ### More command examples
 
 ```bash
-pnpm game level <n> --season <n>   # load a level
+pnpm game start                     # same as bare `pnpm game`
+pnpm game level <n> --season <n>   # load a specific level
 pnpm game test --verbose            # full failure traces
 pnpm game hint --topic auth         # topic-focused hint mode
+pnpm game hint --walkthrough        # after both hints: pinpoint the first failing assertion
+pnpm game badge                     # earned badges and share text
 pnpm game reference --season 2 --level 1
 pnpm game reset --yes
 pnpm game journal --all-evidence
@@ -161,7 +223,7 @@ Each level lives in `seasons/season-N/level-N/`.
 | `hints/hint-1.md` | First hint |
 | `hints/hint-2.md` | Second hint |
 | `reference/solution.js` | Reference implementation after completion |
-| `debrief.md` | Required post-solve explanation |
+| `debrief.md` | Required post-solve explanation, ending with a "Try it for real" section linking real Investec resources |
 
 ### 🏁 Win condition
 
@@ -183,6 +245,8 @@ On completion, each level writes a case file entry with:
 
 Case files and consequence context are surfaced via `status`, `journal`, and `reference`.
 
+Carry-forward context only reports decisions you have actually made. If you reach a later mission before the Season 1 mission that sets a posture (for example, starting with the Quickstart induction in Season 2), that context shows `not assessed yet`.
+
 For architecture and consequence internals, see [docs/architecture-overview.md](docs/architecture-overview.md).
 
 ## 📚 Seasons
@@ -191,7 +255,7 @@ For architecture and consequence internals, see [docs/architecture-overview.md](
 |---|---|
 | 1 | API Foundations: OAuth2, accounts, transactions, pagination |
 | 2 | Card Code and Rules Engine |
-| 3 | Secure Fintech Workflows |
+| 3 | Secure Fintech Workflows: webhook signatures, replay protection, SSRF-safe callbacks, tamper-evident audit logs |
 | 4 | Intelligent Banking Automation |
 
 ## 🔌 Mock API
@@ -205,11 +269,13 @@ Troubleshooting and health-check steps are in [docs/troubleshooting.md](docs/tro
 
 ## 🎁 Claim Your Prize
 
-Swag eligibility requires **19/19 levels complete**.
+Swag eligibility requires **23/23 levels complete**.
+
+> **Upgrading from v1?** Your progress carries over. v2 adds four Season 3 missions, so a v1 19/19 profile shows 19/23. Run `pnpm game` to go straight to the first new mission.
 
 Claim flow:
 
-1. Run `pnpm game status` and confirm `19/19 levels complete`.
+1. Run `pnpm game status` and confirm `23/23 levels complete`.
 2. Run `pnpm game certificate`.
 3. Check your total XP, no-hint solves, and low-attempt solves for bragging rights.
 4. Open the swag claim issue directly: [Swag claim template](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/new?template=swag_claim.yml).
@@ -218,7 +284,7 @@ Claim flow:
 
 ## 🏆 Community Completion Leaderboard
 
-This leaderboard shows publicly submitted completion claims. There may be additional players who completed the game without submitting an issue.
+This leaderboard shows publicly submitted completion claims. There may be additional players who completed the game without submitting an issue. Entries submitted before v2.0.0 completed the original 19-level campaign.
 
 | Rank | Player | Reported time | Feedback | Submission |
 |---:|---|---:|---|---|
@@ -239,13 +305,13 @@ Quick checklist:
 1. Scaffold a level:
 
 ```bash
-pnpm create-level -- --season <n> --level <n> --name "<Level Name>" --difficulty beginner --attackName "Exploit Name"
+pnpm create-level -- --season <n> --level <n> --name "<Level Name>" --difficulty beginner --attackName "Exploit Name" --minutes 15
 ```
 
 2. Write scenario in `story.md`.
 3. Implement buggy/incomplete `starter/solution.js`.
 4. Add behavior tests and attack script.
-5. Add two hints and a `debrief.md`.
+5. Add two hints and a `debrief.md` (including a `## Try it for real` section).
 6. Verify starter fails and reference passes.
 7. Open a PR.
 

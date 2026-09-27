@@ -8,7 +8,7 @@ import { ensureApiRunning } from '../services/apiProcess.js'
 import { resolveLevelSelection } from './levelSelection.js'
 import { summarizeFailureMessage } from '../runner/failureSummary.js'
 
-function nextStepFor(testName: string, failureSummary: string, isAttack: boolean): string {
+export function nextStepFor(testName: string, failureSummary: string, isAttack: boolean): string {
   const text = `${testName} ${failureSummary}`.toLowerCase()
 
   if (/(hardcoded|hard-coded|hard code|literal credentials?|client[ _-]?id|client[ _-]?secret)/.test(text)) {
@@ -31,6 +31,15 @@ function nextStepFor(testName: string, failureSummary: string, isAttack: boolean
   }
   if (/(daily_spend|declined|state|mutate|approve-then-write)/.test(text)) {
     return 'Review write timing: only persist state after approval outcomes, not during declined or pre-check paths.'
+  }
+  if (/(replay|stale|fresh|timestamp|delivery id|burn)/.test(text)) {
+    return 'Separate "is this authentic?" from "is this new?": check the timestamp window both ways and only record a delivery id after every other check passes.'
+  }
+  if (/(callback|ssrf|userinfo|metadata|hostname|port)/.test(text)) {
+    return 'Parse the URL and compare its real parts (protocol, credentials, port, hostname) exactly, instead of string-matching the raw input.'
+  }
+  if (/(audit|chain|brokenat|prevhash|ledger|reorder|deleted)/.test(text)) {
+    return 'Walk the log by position and carry the expected previous hash forward; each entry must link, sit at its index, and recompute to its own hash.'
   }
   if (/(tool|allowlist|trusted|registry|prefix)/.test(text)) {
     return 'Re-check tool resolution/authorization rules for exact matching and trust requirements before execution.'

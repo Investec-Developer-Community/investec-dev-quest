@@ -1,0 +1,11 @@
+{
+  "id": "s3-l4",
+  "name": "Ledger Lock",
+  "season": 3,
+  "level": 4,
+  "difficulty": "advanced",
+  "apiRequired": false,
+  "attackName": "Quiet Rewrite",
+  "estimatedMinutes": 30,
+  "tags": ["audit-log", "hash-chain", "tamper-evidence", "integrity"]
+}

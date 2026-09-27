@@ -1,0 +1,19 @@
+{
+  "id": "s3-l5",
+  "name": "Season Boss: Settlement Sentinel",
+  "season": 3,
+  "level": 5,
+  "difficulty": "advanced",
+  "boss": true,
+  "apiRequired": false,
+  "attackName": "Sentinel Breach",
+  "estimatedMinutes": 50,
+  "tags": [
+    "boss",
+    "webhooks",
+    "hmac",
+    "replay",
+    "ssrf",
+    "audit-log"
+  ]
+}

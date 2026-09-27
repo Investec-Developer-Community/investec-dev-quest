@@ -4,11 +4,16 @@ import { join } from 'path'
 import { p, pc } from '../ui/theme.js'
 import { renderMarkdown } from '../ui/markdown.js'
 import { EXIT_CODES } from '@investec-game/shared'
-import { findLevelDir, loadLevel } from '../levels/loader.js'
+import { findLevelDir, loadLevel, type ResolvedLevel } from '../levels/loader.js'
 import { getProgress, recordHintUnlock, getUnlockedHints } from '../db/progress.js'
 import { resolveLevelSelection } from './levelSelection.js'
 import { runAttack, runTests } from '../runner/testRunner.js'
 import { ensureApiRunning } from '../services/apiProcess.js'
+import { renderStuckLadder } from '../runner/feedback.js'
+import { summarizeFailureMessage } from '../runner/failureSummary.js'
+import { hintBonusFor } from '../services/certificate.js'
+import { extractTestSource } from '../services/walkthrough.js'
+import { nextStepFor } from './explain.js'
 
 const TOPIC_ALIASES: Record<string, string[]> = {
   auth: ['auth', 'authentication', 'oauth', 'oauth2', 'token', 'credentials'],
@@ -22,6 +27,9 @@ const TOPIC_ALIASES: Record<string, string[]> = {
   citations: ['citation', 'citations', 'source', 'sources', 'hallucination'],
   'loop-safety': ['loop', 'loops', 'infinite-loops', 'runaway'],
   webhooks: ['webhook', 'webhooks', 'hmac', 'signature', 'timing-safe-compare'],
+  replay: ['replay', 'replays', 'freshness', 'timestamp', 'timestamps', 'delivery-id'],
+  ssrf: ['ssrf', 'callback', 'callbacks', 'url', 'url-validation'],
+  'audit-log': ['audit', 'audit-log', 'hash-chain', 'tamper-evidence', 'ledger'],
 }
 
 function normalizeTopic(topic: string): string {
@@ -60,6 +68,9 @@ function extractFailureTopics(text: string): string[] {
     { topic: 'citations', pattern: /(citation|claim|source|hallucination)/ },
     { topic: 'loop-safety', pattern: /(loop|consecutive|repeat|runaway)/ },
     { topic: 'webhooks', pattern: /(webhook|hmac|signature|timing-safe)/ },
+    { topic: 'replay', pattern: /(replay|stale|fresh|timestamp|delivery id)/ },
+    { topic: 'ssrf', pattern: /(ssrf|callback|userinfo|metadata|hostname|allowlisted host)/ },
+    { topic: 'audit-log', pattern: /(audit|hash chain|brokenat|prevhash|ledger|tamper)/ },
   ]
 
   for (const rule of topicPatterns) {
@@ -129,6 +140,105 @@ async function inferFailureTopics(
   return [...topics]
 }
 
+function renderHintBonusChange(before: number, after: number): void {
+  const was = hintBonusFor(before)
+  const now = hintBonusFor(after)
+  if (was !== now) {
+    p.log.message(pc.dim(`Hint bonus for this level: +${now} XP (was +${was}).`))
+  }
+}
+
+async function runWalkthrough(resolved: ResolvedLevel, hintsTotal: number, unlocked: number[]): Promise<void> {
+  const { manifest, solutionPath, testsDir, attackDir } = resolved
+
+  if (unlocked.length < hintsTotal) {
+    p.log.warn(pc.yellow(`The walkthrough unlocks after the ${hintsTotal} written hints (${unlocked.length}/${hintsTotal} unlocked).`))
+    p.log.message(pc.dim('Run `pnpm game hint` to unlock the next one.'))
+    return
+  }
+
+  if (!existsSync(solutionPath)) {
+    p.cancel(pc.red(`No solution.js found. Run: pnpm game level ${manifest.level} --season ${manifest.season}`))
+    process.exit(EXIT_CODES.USAGE_ERROR)
+  }
+
+  if (manifest.apiRequired) {
+    try {
+      await ensureApiRunning()
+    } catch (err) {
+      p.cancel(pc.red(err instanceof Error ? err.message : 'Failed to start mock API'))
+      process.exit(EXIT_CODES.USAGE_ERROR)
+    }
+  }
+
+  const spinner = p.spinner()
+  spinner.start('Finding your first failing assertion…')
+  const behavior = await runTests(testsDir, manifest.id)
+  const attack = await runAttack(attackDir, manifest.id)
+  spinner.stop('Analysis complete')
+
+  const runnerError = behavior.error ?? attack.error
+  if (runnerError) {
+    p.note(pc.red(`Runner error:\n${runnerError}`), pc.red('Walkthrough unavailable'))
+    p.log.message(pc.dim('Fix the runner error first. The walkthrough was not charged.'))
+    return
+  }
+
+  const behaviorFailure = behavior.tests.find((test) => test.status === 'fail')
+  const attackFailure = attack.tests.find((test) => test.status === 'fail')
+  const failure = behaviorFailure ?? attackFailure
+  if (!failure) {
+    p.log.success(pc.green('Nothing is failing. Run `pnpm game test` to record the win. The walkthrough was not charged.'))
+    return
+  }
+
+  const isAttack = !behaviorFailure
+  const walkthroughIndex = hintsTotal
+  const firstUnlock = !unlocked.includes(walkthroughIndex)
+  if (firstUnlock) {
+    recordHintUnlock(manifest.id, walkthroughIndex)
+  }
+
+  const summary = failure.message ? summarizeFailureMessage(failure.message) : 'Assertion failed'
+  const detail = failure.message
+    ? failure.message
+        .split('\n')
+        .filter((line) => line.trim().length > 0 && !/^\s*(at\s|❯|\(?file:\/\/)/.test(line))
+        .slice(0, 6)
+        .join('\n')
+    : summary
+  const source = extractTestSource(isAttack ? [attackDir] : [testsDir], failure.name)
+  const suiteLabel = isAttack
+    ? `Red Team${manifest.attackName ? `: ${manifest.attackName}` : ''}`
+    : 'Behavior tests'
+
+  const lines = [
+    pc.bold('Suite: ') + suiteLabel,
+    pc.bold('Failing test: ') + failure.name,
+    '',
+    pc.bold('What the test saw:'),
+    pc.red(detail),
+    '',
+    pc.bold('Intent: ') + nextStepFor(failure.name, summary, isAttack),
+  ]
+
+  if (source) {
+    lines.push('')
+    lines.push(pc.bold(`Assertion source (${isAttack ? 'attack' : 'tests'}/${source.file}):`))
+    lines.push(pc.dim(source.source))
+  }
+
+  lines.push('')
+  lines.push(pc.cyan('Make only this assertion pass, then run `pnpm game test` again.'))
+
+  p.note(lines.join('\n'), pc.yellow(`Walkthrough (hint ${hintsTotal + 1})`))
+
+  if (firstUnlock) {
+    renderHintBonusChange(unlocked.length, unlocked.length + 1)
+    p.log.message(pc.dim('Re-run `pnpm game hint --walkthrough` any time for the current first failure at no extra cost.'))
+  }
+}
+
 export function registerHintCommand(program: Command): void {
   program
     .command('hint')
@@ -137,7 +247,8 @@ export function registerHintCommand(program: Command): void {
     .option('-l, --level <n>', 'Level number')
     .option('--all', 'Show all previously unlocked hints')
     .option('--topic <name>', 'Focus hint output on a topic (for example: auth, pagination, mcc)')
-    .action(async (opts: { season?: string; level?: string; all?: boolean; topic?: string }) => {
+    .option('--walkthrough', 'After the written hints: pinpoint the first failing assertion and its intent (counts as a hint)')
+    .action(async (opts: { season?: string; level?: string; all?: boolean; topic?: string; walkthrough?: boolean }) => {
       const { season, level } = resolveLevelSelection(program, opts)
 
       const levelDir = findLevelDir(season, level)
@@ -164,6 +275,11 @@ export function registerHintCommand(program: Command): void {
       }
 
       const unlocked = getUnlockedHints(manifest.id)
+
+      if (opts.walkthrough) {
+        await runWalkthrough(resolved, hintFiles.length, unlocked)
+        return
+      }
 
       const requestedTopic = opts.topic ? canonicalTopic(opts.topic) : null
       const manifestTopics = manifest.tags.map((tag) => canonicalTopic(tag))
@@ -214,8 +330,13 @@ export function registerHintCommand(program: Command): void {
       const nextIndex = unlocked.length
 
       if (nextIndex >= hintFiles.length) {
-        p.log.warn(pc.yellow(`You've already unlocked all ${hintFiles.length} hint(s) for this level.`))
-        p.log.message(pc.dim('Run with --all to review them.'))
+        renderStuckLadder({
+          manifest,
+          hintsUnlocked: hintFiles.length,
+          hintsTotal: hintFiles.length,
+          walkthroughUnlocked: unlocked.includes(hintFiles.length),
+          intro: `All ${hintFiles.length} written hints are unlocked (review them with \`pnpm game hint --all\`).`,
+        })
         return
       }
 
@@ -269,10 +390,13 @@ export function registerHintCommand(program: Command): void {
         ? `Hint ${nextIndex + 1} of ${hintFiles.length} (focus: ${requestedTopic})`
         : `Hint ${nextIndex + 1} of ${hintFiles.length}`
       p.note(renderMarkdown(nextContent), title)
+      renderHintBonusChange(unlocked.length, unlocked.length + 1)
 
       const remaining = hintFiles.length - nextIndex - 1
       if (remaining > 0) {
         p.log.message(pc.dim(`${remaining} more hint(s) available.`))
+      } else {
+        p.log.message(pc.dim('That was the last written hint. Still stuck? `pnpm game explain` is free, then `pnpm game hint --walkthrough`.'))
       }
 
       // Ensure progress row exists

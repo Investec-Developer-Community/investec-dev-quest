@@ -27,7 +27,7 @@ pnpm --filter @investec-game/webhook-emitter build
 Use the scaffold generator — don't copy-paste manually:
 
 ```bash
-pnpm create-level -- --season 3 --level 1 --name "Webhook Whiplash" --difficulty intermediate
+pnpm create-level -- --season 3 --level 6 --name "Your Level Name" --difficulty intermediate --minutes 25
 ```
 
 This creates the full directory structure from the template. Then:
@@ -37,7 +37,9 @@ This creates the full directory structure from the template. Then:
 3. Write `tests/behavior.test.js` — these must **fail** on the starter
 4. Write `attack/exploit.test.js` — assertions that **pass** when the exploit is blocked
 5. Implement the correct `reference/solution.js`
-6. Add `hints/hint-1.md` and `hints/hint-2.md`
+6. Add `hints/hint-1.md` and `hints/hint-2.md`, and set a realistic `estimatedMinutes` in `manifest.json`
+7. Write `debrief.md` with `What changed`, `Why it matters`, `Production habit`, and `Try it for real` (links to the matching Investec API docs, sandbox, card IDE guide, or community resources)
+8. Add the level id to the relevant paths in `packages/cli/src/services/paths.ts` (always the Grandmaster Run)
 
 Validate before opening a PR:
 
@@ -93,7 +95,7 @@ node scripts/validate-levels.mjs s1-l1
 - [ ] New level follows the single-objective-per-level principle
 - [ ] Starter code fails tests, reference passes everything
 - [ ] Enrolled mutation cases fail the intended assertion and valid alternatives pass both suites
-- [ ] Before a public push/release, run one fresh-install Windows smoke test (`pnpm install`, `cp .env.example .env`, `pnpm game level 1 --season 1`, `pnpm game test`)
+- [ ] Before a public push/release, run one fresh-install Windows smoke test (`pnpm install`, `cp .env.example .env`, `pnpm game`, `pnpm game test`, then `pnpm game level 1 --season 1` and `pnpm game test` to cover mock API startup)
 
 ---
 

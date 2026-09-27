@@ -1,7 +1,7 @@
 import type { Command } from 'commander'
-import { existsSync } from 'fs'
+import { existsSync, readdirSync } from 'fs'
 import { p, pc } from '../ui/theme.js'
-import { EXIT_CODES } from '@investec-game/shared'
+import { EXIT_CODES, type TestRunResult } from '@investec-game/shared'
 import { findLevelDir, loadLevel, loadAllLevels } from '../levels/loader.js'
 import { runTests, runAttack } from '../runner/testRunner.js'
 import {
@@ -9,13 +9,24 @@ import {
   renderAttackResult,
   renderWinBanner,
   renderBeginnerGuidance,
+  renderMilestones,
+  renderProgressDelta,
+  renderSocialPrompt,
+  renderStuckLadder,
 } from '../runner/feedback.js'
 import {
+  getAllProgress,
   getArcFlagEvidence,
   getArcFlags,
   getCaseFile,
+  getLastRun,
   getProgress,
+  getShownSocialPrompts,
+  getUnlockedHints,
   incrementAttempts,
+  markSocialPromptsShown,
+  recordActivity,
+  setLastRun,
   upsertCaseFile,
   upsertProgress,
 } from '../db/progress.js'
@@ -24,30 +35,21 @@ import { applyFlagWritesFromResults } from '../services/arcFlags.js'
 import type { ResolvedLevel } from '../levels/loader.js'
 import { resolveLevelSelection } from './levelSelection.js'
 import { deriveCaseFileEntry } from '../services/caseFiles.js'
+import { levelCommand, resolveNextMission } from '../services/paths.js'
+import { detectMilestones } from '../services/milestones.js'
+import { collectSocialMoments, socialPromptsDisabled } from '../services/social.js'
+
+export const STUCK_LADDER_ATTEMPT_THRESHOLD = 5
+
+function passedCount(results: TestRunResult): number {
+  return results.tests.filter((test) => test.status === 'pass').length
+}
 
 interface RunLevelEvaluationOptions {
   countAttempt?: boolean
   showWinBanner?: boolean
-  nextLevelCommand?: string
   verbose?: boolean
-}
-
-function getNextLevelCommand(currentLevelId: string): string | undefined {
-  const sortedLevels = loadAllLevels().sort((a, b) => {
-    if (a.manifest.season !== b.manifest.season) {
-      return a.manifest.season - b.manifest.season
-    }
-    return a.manifest.level - b.manifest.level
-  })
-
-  const currentIndex = sortedLevels.findIndex((entry) => entry.manifest.id === currentLevelId)
-  if (currentIndex < 0 || currentIndex >= sortedLevels.length - 1) {
-    return undefined
-  }
-
-  const next = sortedLevels[currentIndex + 1]?.manifest
-  if (!next) return undefined
-  return `pnpm game level ${next.level} --season ${next.season}`
+  quietSocial?: boolean
 }
 
 export async function runLevelEvaluation(
@@ -57,7 +59,6 @@ export async function runLevelEvaluation(
   const { manifest, testsDir, attackDir } = level
   const countAttempt = options.countAttempt ?? true
   const showBanner = options.showWinBanner ?? true
-  const nextLevelCommand = options.nextLevelCommand
   const verbose = options.verbose ?? false
 
   // Run behaviour tests
@@ -99,10 +100,26 @@ export async function runLevelEvaluation(
 
   const levelComplete = testResults.passed && exploitBlocked
 
+  recordActivity()
+
+  const currentRun = {
+    behaviorPassed: passedCount(testResults),
+    behaviorTotal: testResults.total,
+    attackPassed: passedCount(attackResults),
+    attackTotal: attackResults.total,
+    at: new Date().toISOString(),
+  }
+  const previousRun = getLastRun(manifest.id)
+  setLastRun(manifest.id, currentRun)
+  if (!levelComplete && previousRun && !testResults.error && !attackResults.error) {
+    renderProgressDelta(previousRun, currentRun)
+  }
+
   // Deterministic consequence tracking: write arc flags only from explicit test signals.
   applyFlagWritesFromResults(manifest.id, testResults, attackResults, levelComplete)
 
   if (levelComplete) {
+    const progressBefore = getAllProgress()
     const arcFlags = getArcFlags()
     const arcEvidence = getArcFlagEvidence()
     const existingCaseFile = getCaseFile(manifest.id)
@@ -122,14 +139,36 @@ export async function runLevelEvaluation(
       completedAt: progress.completedAt ?? new Date().toISOString(),
     })
     if (showBanner) {
+      const levels = loadAllLevels()
+      const progressAfter = getAllProgress()
+      const next = resolveNextMission(levels, progressAfter)
       renderWinBanner(manifest.name, {
         attempts,
         hintsUsed: progress.hintsUsed,
         referenceCommand: `pnpm game reference --season ${manifest.season} --level ${manifest.level}`,
         boss: manifest.boss === true,
         caseFile,
-        ...(nextLevelCommand ? { nextLevelCommand } : {}),
+        nextMission: next
+          ? {
+              command: levelCommand(next.level),
+              name: next.level.manifest.name,
+              pathName: next.path.name,
+              complete: next.complete,
+              total: next.total,
+            }
+          : null,
       })
+      renderMilestones(detectMilestones(levels, progressBefore, progressAfter))
+
+      const moments = collectSocialMoments(levels, progressBefore, progressAfter, manifest)
+      if (moments.length > 0) {
+        const shown = getShownSocialPrompts()
+        const moment = moments.find((entry) => !shown.has(entry.key))
+        if (moment && !options.quietSocial && !socialPromptsDisabled()) {
+          renderSocialPrompt(moment)
+        }
+        markSocialPromptsShown(moments.map((entry) => entry.key))
+      }
     }
   }
 
@@ -143,7 +182,8 @@ export function registerTestCommand(program: Command): void {
     .option('-s, --season <n>', 'Season number')
     .option('-l, --level <n>', 'Level number')
     .option('-v, --verbose', 'Show full test failure traces')
-    .action(async (opts: { season?: string; level?: string; verbose?: boolean }) => {
+    .option('--quiet-social', 'Skip share/star prompts on milestones (or set GAME_QUIET_SOCIAL=1)')
+    .action(async (opts: { season?: string; level?: string; verbose?: boolean; quietSocial?: boolean }) => {
       const { season, level } = resolveLevelSelection(program, opts)
 
       const levelDir = findLevelDir(season, level)
@@ -178,14 +218,28 @@ export function registerTestCommand(program: Command): void {
 
       p.log.step(pc.bold(`Running: ${manifest.name}`))
 
-      const nextLevelCommand = getNextLevelCommand(manifest.id)
-      const evaluationOptions: RunLevelEvaluationOptions = nextLevelCommand
-        ? { nextLevelCommand, verbose: opts.verbose === true }
-        : { verbose: opts.verbose === true }
-      const complete = await runLevelEvaluation(resolved, evaluationOptions)
+      const complete = await runLevelEvaluation(resolved, {
+        verbose: opts.verbose === true,
+        quietSocial: opts.quietSocial === true,
+      })
       if (!complete) {
-        const hasArcEvidence = getArcFlagEvidence().length > 0
-        renderBeginnerGuidance({ includeJournal: hasArcEvidence })
+        const attempts = getProgress(manifest.id)?.attempts ?? 0
+        if (attempts >= STUCK_LADDER_ATTEMPT_THRESHOLD) {
+          const hintsTotal = existsSync(resolved.hintsDir)
+            ? readdirSync(resolved.hintsDir).filter((file) => file.endsWith('.md')).length
+            : 0
+          const unlocked = getUnlockedHints(manifest.id)
+          renderStuckLadder({
+            manifest,
+            hintsUnlocked: Math.min(unlocked.length, hintsTotal),
+            hintsTotal,
+            walkthroughUnlocked: unlocked.length > hintsTotal,
+            intro: `${attempts} attempts on this mission. Here's how to get unstuck:`,
+          })
+        } else {
+          const hasArcEvidence = getArcFlagEvidence().length > 0
+          renderBeginnerGuidance({ includeJournal: hasArcEvidence })
+        }
         process.exitCode = EXIT_CODES.EXPECTED_TEST_FAILURE
       } else {
         p.outro(pc.green('Done!'))

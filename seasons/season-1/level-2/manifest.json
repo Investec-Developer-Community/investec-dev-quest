@@ -6,5 +6,6 @@
   "difficulty": "intermediate",
   "apiRequired": true,
   "attackName": "Token Treadmill",
+  "estimatedMinutes": 30,
   "tags": ["oauth2", "token-cache", "token-refresh", "retry", "resilience"]
 }

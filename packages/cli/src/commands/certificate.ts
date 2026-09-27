@@ -3,7 +3,8 @@ import { p, pc, showBanner } from '../ui/theme.js'
 import { getAllProgress } from '../db/progress.js'
 import { loadAllLevels } from '../levels/loader.js'
 import { buildCertificateText, buildCompletionSummary, playerTitle } from '../services/certificate.js'
-import { levelCommand } from '../services/paths.js'
+import { levelCommand, resolveNextMission } from '../services/paths.js'
+import { renderBuildNext } from '../runner/feedback.js'
 
 export function registerCertificateCommand(program: Command): void {
   program
@@ -29,7 +30,7 @@ export function registerCertificateCommand(program: Command): void {
           lines.push(pc.dim(`...and ${summary.remainingLevels.length - remaining.length} more.`))
         }
 
-        const next = summary.remainingLevels[0]
+        const next = resolveNextMission(levels, progress)?.level
         if (next) {
           lines.push('')
           lines.push(pc.cyan(`Next: ${levelCommand(next)}`))
@@ -47,5 +48,6 @@ export function registerCertificateCommand(program: Command): void {
         pc.green('Campaign Complete')
       )
       console.log(buildCertificateText(summary))
+      renderBuildNext('grandmaster')
     })
 }

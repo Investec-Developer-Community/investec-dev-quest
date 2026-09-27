@@ -15,6 +15,8 @@ import { registerJournalCommand } from './commands/journal.js'
 import { registerExplainCommand } from './commands/explain.js'
 import { registerMapCommand } from './commands/map.js'
 import { registerCertificateCommand } from './commands/certificate.js'
+import { registerStartCommand } from './commands/start.js'
+import { registerBadgeCommand } from './commands/badge.js'
 import { CLI_VERSION } from './version.js'
 
 loadEnv({ path: join(REPO_ROOT, '.env') })
@@ -27,6 +29,7 @@ program
   .version(CLI_VERSION)
   .showHelpAfterError('(run with --help for usage examples)')
 
+registerStartCommand(program)
 registerLevelCommand(program)
 registerTestCommand(program)
 registerHintCommand(program)
@@ -38,5 +41,9 @@ registerJournalCommand(program)
 registerExplainCommand(program)
 registerMapCommand(program)
 registerCertificateCommand(program)
+registerBadgeCommand(program)
 
-await program.parseAsync()
+// Bare `pnpm game` starts or continues the campaign instead of printing help.
+const argv = process.argv.length <= 2 ? [...process.argv, 'start'] : process.argv
+
+await program.parseAsync(argv)

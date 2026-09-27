@@ -10,6 +10,7 @@ import { buildArcPostmortemAddendum } from '../services/arcPostmortem.js'
 import { buildIncidentVisibilityAddendumForSeason } from '../services/incidentVisibility.js'
 import { buildBeneficiaryIncidentChainAddendumForLevel } from '../services/beneficiaryIncidentChain.js'
 import { buildOperationalRiskAddendumForSeason } from '../services/operationalRisk.js'
+import { DEBRIEF_QUESTIONS, buildShareApproachUrl } from '../services/community.js'
 
 interface AddendumBlock {
   title: string
@@ -101,5 +102,17 @@ export function registerReferenceCommand(program: Command): void {
           console.log(renderMarkdown(addendum.content))
         }
       }
+
+      p.note(
+        [
+          pc.bold('Compare approaches with other responders:'),
+          '',
+          ...DEBRIEF_QUESTIONS.map((question, index) => `${index + 1}. ${question}`),
+          '',
+          pc.dim('Post your answers (not your full solution) in Show and tell. The link below pre-fills them.'),
+        ].join('\n'),
+        pc.cyan('Share Your Approach')
+      )
+      console.log(`   ${buildShareApproachUrl(manifest)}`)
     })
 }

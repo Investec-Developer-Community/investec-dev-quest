@@ -138,6 +138,8 @@ function compactStoryMarkdown(source: string): string {
 }
 
 function applyInline(text: string): string {
+  // Links: [label](url) -> label (url), before code so labels can contain backticks
+  text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_match, label: string, url: string) => `${label} ${pc.dim(`(${url})`)}`)
   // Inline code: `...`
   text = text.replace(/`([^`]+)`/g, (_match, code: string) => pc.cyan(code))
   // Bold: **...**

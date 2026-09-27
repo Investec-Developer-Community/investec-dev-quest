@@ -6,5 +6,6 @@
   "difficulty": "intermediate",
   "apiRequired": false,
   "attackName": "Approval Masquerade",
+  "estimatedMinutes": 20,
   "tags": ["ai-agents", "approval-gates", "risk-control", "human-in-the-loop"]
 }
