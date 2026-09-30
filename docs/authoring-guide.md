@@ -1,6 +1,6 @@
 # Level Authoring Guide
 
-This guide explains how to write a new level for the Investec Developer Game.
+This guide explains how to write a new level for Investec Developer Quest.
 
 ---
 
@@ -18,7 +18,13 @@ The best levels are:
 
 ## Directory structure
 
-Copy `templates/level-template/` into the right season folder:
+Use the scaffold generator from the repository root (choose an unused level number):
+
+```bash
+pnpm create-level -- --season 3 --level 6 --name "Your Level Name" --difficulty intermediate --attackName "Your Attack Name" --minutes 25
+```
+
+It creates the following structure from `templates/level-template/`:
 
 ```
 seasons/
@@ -37,6 +43,7 @@ seasons/
         │   └── hint-2.md
         ├── reference/
         │   └── solution.js   ← correct solution (not shown until complete)
+        ├── debrief.md        ← required post-solve lesson and real-API links
         └── vitest.config.js
 ```
 

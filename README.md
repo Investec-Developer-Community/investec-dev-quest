@@ -10,11 +10,15 @@ A local-first CLI game for learning Investec API patterns, Programmable Banking 
 [![pnpm 9](https://img.shields.io/badge/pnpm-9-F69220.svg)](https://pnpm.io)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/Investec-Developer-Community/investec-dev-quest)
 
-You will:
-- fix intentionally flawed integration code
-- run behavior tests to prove the feature works
-- run attack tests to prove the exploit is blocked
-- unlock references, debriefs, case files, and a completion certificate
+![DEV QUEST logo and all 23 missions across four seasons, with Merchant Mirage progressing from failing tests through a one-line repair to a blocked Red Team attack.](docs/media/gameplay-demo.gif)
+
+## What you'll learn in 10 minutes
+
+- **Find the bug:** see how a string merchant-category code bypasses a card rule in the offline induction mission.
+- **Prove the fix:** normalize the input, then pass behavior tests and block the Red Team attack.
+- **Keep the lesson:** unlock the reference, debrief, and case file before your next mission.
+
+Start with `pnpm game`, edit the mission's `solution.js`, then run `pnpm game test`. [Get set up in 5 minutes](#-start-here-5-minutes).
 
 Current content: **23 playable levels** across Seasons 1 to 4 (v2.0.0).
 
@@ -31,8 +35,6 @@ See [CHANGELOG.md](CHANGELOG.md) for details.
 
 🏆 See who has completed the quest so far in the [Community Completion Leaderboard](#-community-completion-leaderboard). Completed the game? Submit your completion through the swag claim process below.
 
-![Investec Developer Quest CLI screenshot](docs/dev_quest_hp_v3.png)
-
 ## 🚀 Start Here (5 minutes)
 
 ### ☁️ Zero-install option: GitHub Codespaces
@@ -48,7 +50,13 @@ Prefer to play locally? Follow the steps below.
 ### 🧰 1) Prerequisites
 
 - Node.js 20+
-- pnpm 9+
+- pnpm 9 (the repository pins 9.12.3)
+
+Install the matching pnpm version:
+
+```bash
+npm install -g pnpm@9.12.3
+```
 
 Quick check:
 
@@ -299,6 +307,8 @@ This leaderboard shows publicly submitted completion claims. There may be additi
 See [docs/authoring-guide.md](docs/authoring-guide.md).
 
 Architecture guide: [docs/architecture-overview.md](docs/architecture-overview.md).
+
+README demo assets and regeneration instructions: [docs/media/README.md](docs/media/README.md).
 
 Quick checklist:
 

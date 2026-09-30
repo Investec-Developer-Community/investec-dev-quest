@@ -389,7 +389,7 @@ let totalQualityChecks = 0
 if (!API_ONLINE) {
   if (strictMode) {
     console.log('  ⚠ Mock API is offline. API-required levels will fail in strict mode.')
-    console.log('  ▶ Run `npx tsx packages/mock-api/src/index.ts` for full strict validation.\n')
+    console.log('  ▶ Run `pnpm --filter @investec-game/mock-api exec tsx src/index.ts` for full strict validation.\n')
     console.log('  ✗ Strict mode is enabled: API-required levels must be validated, not skipped.\n')
   } else {
     console.log('  ⚠ Mock API is offline. API-required levels will be skipped.')
@@ -469,7 +469,7 @@ if (totalQualityChecks > 0) console.log(`  ${totalQualityChecks} curated mutatio
 
 if (skippedApiLevels > 0) {
   console.log(`  ⚠ Skipped ${skippedApiLevels} API-required level${skippedApiLevels === 1 ? '' : 's'}.`)
-  console.log('  ▶ Run `npx tsx packages/mock-api/src/index.ts` and re-run `node scripts/validate-levels.mjs --strict` for full validation parity.')
+  console.log('  ▶ Run `pnpm --filter @investec-game/mock-api exec tsx src/index.ts` and re-run `node scripts/validate-levels.mjs --strict` for full validation parity.')
 }
 
 if (failedLevels > 0 || failedQualityGates > 0) {

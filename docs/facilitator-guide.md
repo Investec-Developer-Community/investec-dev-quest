@@ -10,9 +10,9 @@ This guide is for Investec engineers and developer advocates running the game as
 
 Participants need:
 - **Node.js ≥ 20** — the CLI checks and blocks on startup if missing
-- **pnpm ≥ 9** — `npm install -g pnpm` if absent
+- **pnpm 9.12.3** — `npm install -g pnpm@9.12.3` if absent
 - A **code editor** (VS Code recommended)
-- A working **internet connection** is NOT required — the mock API runs fully locally
+- Internet for cloning and installing (and for Codespaces); after local setup, gameplay and the mock API run offline
 
 ### Pre-clone the repo
 
@@ -123,11 +123,13 @@ Facilitation style: ask participants to describe the exploit before coding, then
 | S1 L3 Transaction Trail | Date filtering and cursor pagination | Client-side filtering instead of sending query parameters |
 | S1 L4 Beneficiary Blueprint | Validating beneficiary IDs before payment flow | Returning truthy results without checking the fetched list |
 | S1 L5 Idempotency Island | Deterministic idempotency keys for payment retries | Generating a random key per retry |
+| S1 L6 Reconciliation Rift (boss) | Reconciliation with pagination, beneficiary validation, and idempotent payments | Fixing one stage while leaving unsafe orchestration elsewhere |
 | S2 L1 Merchant Mirage | Normalising external card event fields before decisions | Comparing string MCCs to numeric blocklists |
 | S2 L2 Budget Guardian | Pre-approval budget checks and post-approval state updates | Updating spend in the wrong hook |
 | S2 L3 Velocity Vault | Rolling-window transaction velocity limits | Counting all history instead of recent timestamps |
 | S2 L4 Country Control | Exact country allowlists and default-deny logic | Building the allow path but forgetting the deny path |
 | S2 L5 Limit Loop | State writes only after approved decisions | Recording declined transactions as spend |
+| S2 L6 Rule Reactor (boss) | Combining merchant, country, budget, and velocity rules without corrupting state | Mutating shared state before the final approval decision |
 | S3 L1 Webhook Whiplash | HMAC verification and timing-safe comparison | Accepting partial or malformed signatures |
 | S3 L2 Replay Rewind | Freshness windows plus delivery-ID replay caches | Checking duplicates but not timestamp age (or only past, not future) |
 | S3 L3 Callback Trap | SSRF-safe callback URLs via parsed, exact host allowlists | String `includes` checks fooled by userinfo (`@`) or look-alike domains |
@@ -236,7 +238,7 @@ Progress is stored in `~/.investec-game/progress.json` — safe to delete manual
 The CLI starts it automatically, but you can also run it directly for debugging:
 
 ```bash
-npx tsx packages/mock-api/src/index.ts
+pnpm --filter @investec-game/mock-api exec tsx src/index.ts
 ```
 
 Health check: `curl http://localhost:3001/health`
@@ -264,7 +266,7 @@ See [docs/troubleshooting.md](troubleshooting.md) for the full list. Quick refer
 Use the scaffold generator and follow the authoring guide:
 
 ```bash
-pnpm create-level -- --season 4 --level 1 --name "Investec-specific scenario" --difficulty intermediate
+pnpm create-level -- --season 4 --level 7 --name "Investec-specific scenario" --difficulty intermediate --attackName "Your Attack Name" --minutes 25
 ```
 
 ### Adjusting mock API fixture data

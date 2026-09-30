@@ -48,7 +48,7 @@ pnpm --filter @investec-game/shared build
 ### `pnpm: command not found`
 
 ```bash
-npm install -g pnpm
+npm install -g pnpm@9.12.3
 ```
 
 ### `File ... cannot be loaded because running scripts is disabled on this system` (Windows)
@@ -107,10 +107,12 @@ You haven't created a solution yet. The level brief shows the path:
 
 ```bash
 # For s1-l1
-cat seasons/season-1/level-1/starter/solution.js  # read the starter
-cp seasons/season-1/level-1/starter/solution.js seasons/season-1/level-1/solution.js
+pnpm game level 1 --season 1
 # Now edit solution.js
 ```
+
+Loading the level creates the working file and sets the active mission for
+`test`, `hint`, and `watch`.
 
 ---
 

@@ -1,4 +1,6 @@
 .env
+.env.*
+!.env.example
 .eslintcache
 node_modules/
 dist/
@@ -22,6 +24,7 @@ docs/media/raw/
 .agent/
 docs/terminal-demo-gif.md
 PLAN.md
+PLANv2.md
 docs/world-bible.md
 docs/SA Card Code.json
 docs/SA CIB Account, Shipment, Transaction Information and Payment Initiation.json

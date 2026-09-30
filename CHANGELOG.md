@@ -8,7 +8,17 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+
+- A 14-second README hero GIF featuring the DEV QUEST logo, all 23 missions, and the Merchant Mirage fail-repair-win loop.
+- An isolated demo recorder and regeneration guide in `docs/media/`, with checks for real gameplay outcomes and terminal alignment.
+
+### Changed
+
+- README onboarding now opens with a concise "What you'll learn in 10 minutes" preview and a direct setup link.
+- Ignore local environment variants such as `.env.local` while keeping the public `.env.example` configuration publishable.
+- Public setup and contributor guides now pin pnpm 9.12.3, cover strict CI validation, use the workspace mock-API command, and include complete Windows clone steps and all season boss learning outcomes.
+- The validator's offline-API guidance now uses the same supported workspace startup command as the contributor docs.
 
 ## [2.0.0] - 2026-09-27
 

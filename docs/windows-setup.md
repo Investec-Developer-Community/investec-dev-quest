@@ -10,7 +10,7 @@ Use this guide before your first game run on Windows.
 2. Install pnpm:
 
 ```powershell
-npm install -g pnpm
+npm install -g pnpm@9.12.3
 ```
 
 3. Verify tools:
@@ -24,9 +24,11 @@ pnpm -v
 
 ## Clone and install
 
-From your repo root:
+Clone the repository, then install from its root:
 
 ```powershell
+git clone https://github.com/Investec-Developer-Community/investec-dev-quest.git
+Set-Location investec-dev-quest
 pnpm install
 Copy-Item .env.example .env
 ```
@@ -65,6 +67,10 @@ Get-ExecutionPolicy
 pnpm game
 pnpm game test
 ```
+
+The starter deliberately fails some tests and leaves an attack exploitable.
+That is a successful setup check, not an installation failure. Edit the mission's
+`solution.js` until both suites pass.
 
 `pnpm game` loads the offline induction mission. To also confirm the mock API starts on your machine, run:
 
