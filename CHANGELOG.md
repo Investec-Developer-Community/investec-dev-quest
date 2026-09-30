@@ -8,17 +8,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
-### Added
-
-- A 14-second README hero GIF featuring the DEV QUEST logo, all 23 missions, and the Merchant Mirage fail-repair-win loop.
-- An isolated demo recorder and regeneration guide in `docs/media/`, with checks for real gameplay outcomes and terminal alignment.
-
-### Changed
-
-- README onboarding now opens with a concise "What you'll learn in 10 minutes" preview and a direct setup link.
-- Ignore local environment variants such as `.env.local` while keeping the public `.env.example` configuration publishable.
-- Public setup and contributor guides now pin pnpm 9.12.3, cover strict CI validation, use the workspace mock-API command, and include complete Windows clone steps and all season boss learning outcomes.
-- The validator's offline-API guidance now uses the same supported workspace startup command as the contributor docs.
+_No unreleased changes._
 
 ## [2.0.0] - 2026-09-27
 
@@ -30,6 +20,9 @@ Version 2 of Investec Developer Quest focuses on the whole player journey: a fas
 - **Stricter authoring contract.** Level manifests must include `estimatedMinutes`, and every `debrief.md` must include `What changed`, `Why it matters`, `Production habit`, and `Try it for real`. `scripts/validate-levels.mjs` enforces both.
 
 ### Added
+
+- A 14-second README hero GIF featuring the DEV QUEST logo, all 23 missions, and the Merchant Mirage fail-repair-win loop.
+- An isolated demo recorder and regeneration guide in `docs/media/`, with checks for real gameplay outcomes and terminal alignment.
 - **Season 3 expansion (4 new missions):**
   - `s3-l2` **Replay Rewind**: webhook freshness windows (past and future) and delivery-ID replay caches.
   - `s3-l3` **Callback Trap**: SSRF-safe callback URL validation with parsed, exact host allowlists (userinfo, look-alike domain, path-smuggling, and port attacks).
@@ -55,6 +48,11 @@ Version 2 of Investec Developer Quest focuses on the whole player journey: a fas
 - `pnpm test:unit` for CLI helper and quality-gate regression coverage, now covering routing, XP, ranks, badges, streaks, walkthrough extraction, social moments, and community links.
 
 ### Changed
+
+- README onboarding now opens with a concise "What you'll learn in 10 minutes" preview and a direct setup link.
+- Ignore local environment variants such as `.env.local` while keeping the public `.env.example` configuration publishable.
+- Public setup and contributor guides now pin pnpm 9.12.3, cover strict CI validation, use the workspace mock-API command, and include complete Windows clone steps and all season boss learning outcomes.
+- The validator's offline-API guidance now uses the same supported workspace startup command as the contributor docs.
 - The Quickstart Path now starts with the offline induction mission: Season 2 Level 1 `Merchant Mirage` → Season 1 Level 1 `First Contact` → Season 4 Level 1 `Tool Gatekeeper`.
 - **XP is now graduated.** The hint bonus is +50/+25/+10/+0 for 0/1/2/3+ hints (previously +50 only for 0 hints). The attempt bonus is +25 for 1–2 attempts, +10 for 3–4, and +0 for 5+ (previously +25 only for ≤2). Max XP is unchanged.
 - The win banner shows an XP breakdown (base, hints, attempts, boss), and unlocking a hint shows the level's new hint bonus.
