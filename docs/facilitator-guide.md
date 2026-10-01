@@ -209,9 +209,17 @@ pnpm game badge                       # path/season badges earned so far
 pnpm game test --season 1 --level 1   # run tests (real-time feedback)
 pnpm game reference --season 1 --level 1 # after completion, review reference/debrief
 pnpm game certificate                 # after every mission is complete (23/23)
+pnpm game claim                       # save a bundle and open a pre-filled swag claim (23/23)
 ```
 
 The game auto-starts the mock API if it isn't running.
+
+Swag claims no longer need screenshots: `pnpm game claim` pre-fills the issue
+with completion metadata, but leaves time blank. Players enter their honest
+total play time in `HH:MM:SS`, excluding breaks and time away across sessions.
+Use `--no-open` on headless machines. Time is self-reported, not automatically
+measured or verified, and is not covered by the bundle hash. The hash is an
+integrity check, not anti-cheat verification. Workshop leaderboards remain manual.
 
 ---
 

@@ -43,7 +43,7 @@ export function registerCertificateCommand(program: Command): void {
       p.note(
         [
           pc.green(pc.bold(playerTitle(summary))),
-          pc.dim('All missions complete. Use this text in your swag claim issue.'),
+          pc.dim('All missions complete. Run `pnpm game claim` for your pre-filled swag issue.'),
         ].join('\n'),
         pc.green('Campaign Complete')
       )

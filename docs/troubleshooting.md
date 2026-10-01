@@ -69,6 +69,29 @@ Full Windows setup guide: [docs/windows-setup.md](windows-setup.md)
 
 ## Running levels
 
+### `pnpm game claim` is locked
+
+Claims require every mission in the current campaign to be complete, not just
+one path or season. Run `pnpm game status` or `pnpm game map` to find the remaining
+missions, and record completions through `pnpm game test`.
+
+### The claim browser does not open, or the pre-filled URL is too long
+
+Run `pnpm game claim --no-open` and open the printed URL manually. Alternatively,
+open the [swag claim template](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/new?template=swag_claim.yml)
+and paste the complete JSON from the saved file under `~/.investec-game/claims/`.
+The CLI prints the file path before trying to open a browser.
+
+### The claim time field is blank
+
+This is intentional. Enter your honest total time spent playing in `HH:MM:SS`,
+excluding breaks and periods away from the game. For example, 20 minutes on
+Monday plus 15 minutes on Friday is `00:35:00`. Time is self-reported, not
+automatically measured or verified, and is not covered by the bundle hash.
+Older profiles with missing timestamps can still claim after completing all
+missions. If you saved a bundle with calculated time from an earlier prototype,
+run `pnpm game claim` again to generate the current bundle and issue URL.
+
 ### Tests show `0 tests collected` or skip immediately
 
 This usually means the vitest include pattern doesn't match any files. Check:

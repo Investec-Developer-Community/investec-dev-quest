@@ -178,7 +178,7 @@ export function registerStatusCommand(program: Command): void {
             `No-hint solves: ${summary.noHintSolves}`,
             `Low-attempt solves: ${summary.lowAttemptSolves}`,
             '',
-            pc.cyan('Run `pnpm game certificate` and open the swag claim issue.'),
+            pc.cyan('Run `pnpm game claim` to open your pre-filled swag issue (no screenshot needed).'),
           ].join('\n'),
           pc.green('Campaign Complete')
         )

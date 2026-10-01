@@ -6,9 +6,11 @@ body:
   - type: markdown
     attributes:
       value: |
-        Congrats on finishing the quest! Fill in below so we can verify and share the claim form link with you.
+        Congrats on finishing the quest! Run `pnpm game claim` to save your completion bundle and open this form pre-filled. No screenshot is needed.
 
-        From v2.0.0, the campaign has 23 levels, so your status should show `23/23 levels complete`. Please also paste the output of `pnpm game certificate`.
+        The current campaign has 23 missions. Review the bundle, enter your GitHub handle, and confirm your own completion before submitting. A maintainer reviews the claim and shares the claim form link.
+
+        The SHA-256 hash checks bundle integrity; local progress and timestamps are self-reported, not independent proof of solving. Enter your total play time below, excluding breaks and time away from the game. This time is self-reported, not measured or verified, and is not covered by the bundle hash.
 
   - type: input
     id: github_username
@@ -20,11 +22,12 @@ body:
       required: true
 
   - type: textarea
-    id: status_screenshot
+    id: claim_bundle
     attributes:
-      label: "pnpm game status screenshot"
-      description: "Paste a screenshot showing ALL levels complete. Drag-and-drop an image here."
-      placeholder: "Drag your screenshot here"
+      label: Completion claim bundle
+      description: "Pre-filled by pnpm game claim. If opening this form manually, paste the JSON from the saved claim file."
+      placeholder: "Paste the complete JSON bundle here"
+      render: json
     validations:
       required: true
 
@@ -35,7 +38,7 @@ body:
       options:
         - label: I completed all levels myself (not copied/generated)
           required: true
-        - label: My screenshot shows ALL levels complete
+        - label: My claim bundle includes ALL current missions complete
           required: true
 
   - type: textarea
@@ -49,8 +52,8 @@ body:
   - type: input
     id: timestamp
     attributes:
-      label: "How long did it take you to complete?"
-      description: "Please enter the total honest time."
+      label: How long did it take you to complete?
+      description: "Please enter your honest total time spent playing across all sessions, excluding breaks and time away from the game. This time is self-reported, not automatically measured."
       placeholder: "HH:MM:SS (e.g., 01:40:02)"
     validations:
       required: true

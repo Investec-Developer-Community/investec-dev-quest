@@ -8,7 +8,15 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ## [Unreleased]
 
-_No unreleased changes._
+### Added
+
+- `pnpm game claim` saves a deterministic completion bundle with mission IDs, attempts, hints, timestamps as metadata, XP, CLI version, and a SHA-256 content hash, then opens a pre-filled swag claim issue. `--no-open` prints the URL for manual use.
+- Focused claim tests cover completion gating, existing XP rules, stable hashes, unchanged multi-day timestamps, missing legacy timestamps, absence of calculated durations and time prefill, and 23-mission issue URL size.
+
+### Changed
+
+- Swag claims use a JSON bundle instead of a required screenshot. The existing `HH:MM:SS` field remains manual: players report their honest total play time across sessions, excluding breaks and time away. No duration is calculated or pre-filled from mission timestamps; progress timestamps remain unchanged. Completion banners, README, facilitator guidance, and troubleshooting now point to the one-command flow.
+- Bundle hashes check integrity, not independent solving or self-reported play time. Maintainer review remains required; automatic verification and leaderboard updates are still pending. Automated session timing is deferred.
 
 ## [2.0.0] - 2026-09-27
 

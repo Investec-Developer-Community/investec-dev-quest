@@ -193,6 +193,8 @@ pnpm game test --verbose            # full failure traces
 pnpm game hint --topic auth         # topic-focused hint mode
 pnpm game hint --walkthrough        # after both hints: pinpoint the first failing assertion
 pnpm game badge                     # earned badges and share text
+pnpm game claim                     # after all missions: save a bundle and open the swag issue
+pnpm game claim --no-open           # save the bundle and print the pre-filled URL only
 pnpm game reference --season 2 --level 1
 pnpm game reset --yes
 pnpm game journal --all-evidence
@@ -284,11 +286,28 @@ Swag eligibility requires **23/23 levels complete**.
 Claim flow:
 
 1. Run `pnpm game status` and confirm `23/23 levels complete`.
-2. Run `pnpm game certificate`.
-3. Check your total XP, no-hint solves, and low-attempt solves for bragging rights.
-4. Open the swag claim issue directly: [Swag claim template](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/new?template=swag_claim.yml).
-5. Include your `pnpm game status` screenshot and certificate text.
-6. A maintainer shares the claim form link directly.
+2. Run `pnpm game claim`. It saves a JSON bundle under `~/.investec-game/claims/` and opens the [swag claim issue](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/new?template=swag_claim.yml) with the bundle pre-filled. No screenshot is needed.
+3. Review the form, enter your GitHub handle and honest total play time (`HH:MM:SS`, excluding breaks and time away), confirm your own completion, and submit. Feedback is optional.
+4. A maintainer reviews the claim and shares the claim form link directly.
+
+No browser available? Run `pnpm game claim --no-open` and open the printed URL
+manually. If the URL cannot be opened, use the issue template above and paste the
+JSON from the saved file. `pnpm game certificate` still prints a shareable certificate.
+
+The bundle contains mission IDs, attempts, hints, timestamps, per-level and total
+XP, CLI version, and a SHA-256 content hash. It does not
+include your code, credentials, or personal details.
+
+Time is **self-reported**, not measured or verified, and is not covered by the
+bundle hash. Add the time spent playing across sessions and exclude breaks:
+20 minutes on Monday plus 15 minutes on Friday is `00:35:00`, not four days.
+The CLI leaves the time field blank and does not calculate a duration from
+mission timestamps. Those timestamps are metadata only; missing legacy
+timestamps do not prevent a completed player from claiming.
+
+The hash checks bundle integrity, **not independent solving**: local progress
+can be edited and references are public. Maintainer review is still required;
+automated verification and leaderboard updates are not implemented yet.
 
 ## 🏆 Community Completion Leaderboard
 
