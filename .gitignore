@@ -23,8 +23,14 @@ docs/media/raw/
 # Internal/local authoring artifacts (do not publish)
 .agent/
 docs/terminal-demo-gif.md
-PLAN.md
-PLANv2.md
+/PLAN*.md
+/plan*.md
+UIUX*.md
+uiux*.md
+UXUX*.md
+uxux*.md
+/internal/
+/docs/internal/
 docs/world-bible.md
 docs/SA Card Code.json
 docs/SA CIB Account, Shipment, Transaction Information and Payment Initiation.json
@@ -45,4 +51,3 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-

@@ -119,6 +119,7 @@ working solution files after its checks.
 - [ ] Add the player-facing changes to the `Unreleased` section of [CHANGELOG.md](CHANGELOG.md); set a release version and date only when cutting a release
 - [ ] Check README setup, all public documentation links, and the 23-level completion requirement
 - [ ] Keep `.env`, environment variants, player solutions, progress, raw recordings, and internal authoring artifacts out of the commit; `.env.example` and final demo assets should be included
+- [ ] Keep local plans (`PLAN*.md` or `plan*.md` at the repository root), UI/UX reports (`UIUX*.md`, `UXUX*.md`, and lowercase equivalents), and documents under `internal/` or `docs/internal/` ignored; keep player-facing and contributor documentation tracked
 - [ ] Review `git status` and `git diff --cached` before pushing; ignore rules do not remove files already tracked by Git
 - [ ] Run the secret-scanning CI check before merging; never publish real credentials or player data
 - [ ] For demo changes, follow [docs/media/README.md](docs/media/README.md) and inspect opening and completion frames

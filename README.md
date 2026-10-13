@@ -311,15 +311,16 @@ automated verification and leaderboard updates are not implemented yet.
 
 ## 🏆 Community Completion Leaderboard
 
-This leaderboard shows publicly submitted completion claims. There may be additional players who completed the game without submitting an issue. Entries submitted before v2.0.0 completed the original 19-level campaign.
+Publicly submitted completion claims, ordered by self-reported time. v1 has 19 missions; v2 has 23.
 
-| Rank | Player | Reported time | Feedback | Submission |
-|---:|---|---:|---|---|
-| 1 | [limanindou](https://github.com/limanindou) | 2 hours | — | [Issue #15](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/15) |
-| 2 | [sean-gordon](https://github.com/sean-gordon) | 8 hours | “That was a fun challenge! Thanks!” | [Issue #67](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/67) |
-| 3 | [lungilemooketsi](https://github.com/lungilemooketsi) | ~30 hours | “This was quite the learning experience for me, great fun and an even better challenge.” | [Issue #66](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/66) |
-| — | [EstherSewlall](https://github.com/EstherSewlall) | Not provided | — | [Issue #9](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/9) |
-| — | [Kimmicorn-glitch](https://github.com/Kimmicorn-glitch) | Not provided | — | [Issue #29](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/29) |
+| Rank | Player | Version | Reported time | Feedback | Submission |
+| ---: | --- | --- | ---: | --- | --- |
+| 1 | [limanindou](https://github.com/limanindou) | v1 | 2 hours | — | [Issue #15](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/15) |
+| 2 | [Irfaan-28](https://github.com/Irfaan-28) | v2 | 5 hours 45 minutes | — | [Issue #90](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/90) |
+| 3 | [sean-gordon](https://github.com/sean-gordon) | v1 | 8 hours | “That was a fun challenge! Thanks!” | [Issue #67](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/67) |
+| 4 | [lungilemooketsi](https://github.com/lungilemooketsi) | v1 | ~30 hours | “This was quite the learning experience for me, great fun and an even better challenge.” | [Issue #66](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/66) |
+| — | [EstherSewlall](https://github.com/EstherSewlall) | v1 | Not provided | — | [Issue #9](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/9) |
+| — | [Kimmicorn-glitch](https://github.com/Kimmicorn-glitch) | v1 | Not provided | — | [Issue #29](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/29) |
 
 ## 🤝 Contributing a Level
 
