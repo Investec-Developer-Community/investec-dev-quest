@@ -311,14 +311,15 @@ automated verification and leaderboard updates are not implemented yet.
 
 ## 🏆 Community Completion Leaderboard
 
-Publicly submitted completion claims, ordered by self-reported time. v1 has 19 missions; v2 has 23.
+Publicly submitted and maintainer-reviewed completion claims, ordered by self-reported playing time. Times are not independently verified. v1 contains 19 missions; v2 contains 23.
 
 | Rank | Player | Version | Reported time | Feedback | Submission |
 | ---: | --- | --- | ---: | --- | --- |
 | 1 | [limanindou](https://github.com/limanindou) | v1 | 2 hours | — | [Issue #15](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/15) |
 | 2 | [Irfaan-28](https://github.com/Irfaan-28) | v2 | 5 hours 45 minutes | — | [Issue #90](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/90) |
 | 3 | [sean-gordon](https://github.com/sean-gordon) | v1 | 8 hours | “That was a fun challenge! Thanks!” | [Issue #67](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/67) |
-| 4 | [lungilemooketsi](https://github.com/lungilemooketsi) | v1 | ~30 hours | “This was quite the learning experience for me, great fun and an even better challenge.” | [Issue #66](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/66) |
+| 4 | [CodingChampSA](https://github.com/CodingChampSA) | v2 | 28 hours | "Enjoyed the challenges and would love to see more in the future. Thank you for the opportunity!" | [Issue #95](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/95) |
+| 5 | [lungilemooketsi](https://github.com/lungilemooketsi) | v1 | ~30 hours | “This was quite the learning experience for me, great fun and an even better challenge.” | [Issue #66](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/66) |
 | — | [EstherSewlall](https://github.com/EstherSewlall) | v1 | Not provided | — | [Issue #9](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/9) |
 | — | [Kimmicorn-glitch](https://github.com/Kimmicorn-glitch) | v1 | Not provided | — | [Issue #29](https://github.com/Investec-Developer-Community/investec-dev-quest/issues/29) |
 
