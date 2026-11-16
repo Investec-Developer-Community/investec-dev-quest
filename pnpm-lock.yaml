@@ -71,13 +71,13 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.19.18
-        version: 1.19.18(hono@4.13.16)
+        version: 1.19.18(hono@4.13.18)
       '@investec-game/shared':
         specifier: workspace:*
         version: link:../shared
       hono:
-        specifier: ^4.13.16
-        version: 4.13.16
+        specifier: ^4.13.18
+        version: 4.13.18
     devDependencies:
       '@types/node':
         specifier: ^20.19.43
@@ -976,8 +976,8 @@ packages:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
 
-  hono@4.13.16:
-    resolution: {integrity: sha512-AOLOEhvrV+iH92xXCnFr/5+3KjPKcI3xP63XJtX5spAnkznPdHijlIsUTpi7/9EhWqrTCekw5c5zh1K+YsVw7A==}
+  hono@4.13.18:
+    resolution: {integrity: sha512-H9q/E1XizaWstJxUW881dmLxEj+t/TrGGnyxINkm4+sK0qUwsMtFdo2BWI9Vs3cIS19MU6b6iCijoUoEf4f3DA==}
     engines: {node: '>=16.9.0'}
 
   human-signals@8.0.1:
@@ -1581,9 +1581,9 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@hono/node-server@1.19.18(hono@4.13.16)':
+  '@hono/node-server@1.19.18(hono@4.13.18)':
     dependencies:
-      hono: 4.13.16
+      hono: 4.13.18
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -2125,7 +2125,7 @@ snapshots:
 
   has-flag@4.0.0: {}
 
-  hono@4.13.16: {}
+  hono@4.13.18: {}
 
   human-signals@8.0.1: {}
 

@@ -12,7 +12,7 @@
   "dependencies": {
     "@hono/node-server": "^1.19.18",
     "@investec-game/shared": "workspace:*",
-    "hono": "^4.13.16"
+    "hono": "^4.13.18"
   },
   "devDependencies": {
     "@types/node": "^20.19.43",
